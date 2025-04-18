@@ -1,36 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Calculator</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #474e5d;
+      font-family: Helvetica, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .timeline {
+      position: relative;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 10px 0;
+    }
+
+    .timeline::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      background-color: white;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      margin-left: -3px;
+    }
+
+    .container {
+      padding: 10px 40px;
+      position: relative;
+      background-color: inherit;
+      width: 50%;
+    }
+
+    .left {
+      left: 0;
+    }
+
+    .right {
+      left: 50%;
+    }
+
+    .container::after {
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      right: -17px;
+      background-color: white;
+      border: 4px solid #FF9F55;
+      top: 15px;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .right::after {
+      left: -16px;
+    }
+
+    .content {
+      padding: 20px 30px;
+      background-color: white;
+      position: relative;
+      border-radius: 6px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .content h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .content p {
+      margin: 10px 0 0;
+      color: #555;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    @media screen and (max-width: 768px) {
+      .timeline::after {
+        left: 31px;
+      }
+
+      .container {
+        width: 100%;
+        padding-left: 70px;
+        padding-right: 25px;
+      }
+
+      .container::after {
+        left: 15px;
+      }
+
+      .right {
+        left: 0%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="calculator">
-            <div class="display" id="display">0</div>
-            <div class="keys">
-                <button class="operator" data-key="/">÷</button>
-                <button class="operator" data-key="*">x</button>
-                <button class="key" data-key="7">7</button>
-                <button class="key" data-key="8">8</button>
-                <button class="key" data-key="9">9</button>
-                <button class="operator" data-key="-">-</button>
-                <button class="key" data-key="4">4</button>
-                <button class="key" data-key="5">5</button>
-                <button class="key" data-key="6">6</button>
-                <button class="operator" data-key="+">+</button>
-                <button class="key" data-key="1">1</button>
-                <button class="key" data-key="2">2</button>
-                <button class="key" data-key="3">3</button>
-                <button class="clear" data-key="C">C</button>
-                <button class="key" data-key="0">0</button>
-                <button class="decimal" data-key=".">.</button>
-                <button class="calculate" data-key="=">=</button>
-            </div>
-        </div>
+
+<div class="timeline">
+  <div class="container left">
+    <div class="content">
+      <h2>100,000 Registered Companies</h2>
+      <p>Once we reach 100,000 registered companies, each verified business will receive a unique digital certificate—boosting brand credibility, user trust, and market reputation.</p>
     </div>
-    <script src="script.js"></script>
+  </div>
+  <div class="container right">
+    <div class="content">
+      <h2>Business Legitimacy Support</h2>
+      <p>We’ll assist registered businesses in securing official CAC (Corporate Affairs Commission) certification—empowering entrepreneurs with the legal recognition they need to scale confidently.</p>
+    </div>
+  </div>
+  <div class="container left">
+    <div class="content">
+      <h2>500,000 Companies Milestone</h2>
+      <p>At 500,000 registered companies, we’ll launch a TV series called <strong>"Day in a Life"</strong>—a live storytelling show across TikTok, YouTube, and more—giving users the spotlight to showcase their brand, journey, and services globally.</p>
+    </div>
+  </div>
+  <div class="container right">
+    <div class="content">
+      <h2>1 Million Companies & Beyond</h2>
+      <p>Upon hitting 1 million companies, we’ll introduce a robust Learning Hub—providing skill development courses, mentorship, and entrepreneurship guidance. This powerful move helps reduce unemployment and uplifts Nigeria’s workforce.</p>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
