@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced Company Management App</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <style>
+    :root {
+      --dark: #212121;
+      --darker: #1A1D23;
+      --green: #34C759;
+      --white: #ffffff;
+    }* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--dark);
+  color: var(--white);
+  padding: 10px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  background: var(--darker);
+  padding: 20px;
+  border-radius: 10px;
+  display: none;
+}
+
+input, textarea, select, button {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 5px;
+}
+
+button {
+  background: var(--green);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+h1, h2, h3 {
+  text-align: center;
+  color: var(--green);
+}
+
+.nav, .nav button {
+  text-align: center;
+  margin: 10px auto;
+  display: inline-block;
+}
+
+.section {
+  margin-top: 20px;
+  background: #2b2b2b;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Advanced Company Management App</h1>
+  <div class="nav">
+    <button onclick="showPage('register')">Register</button>
+    <button onclick="showPage('login')">Login</button>
+    <button onclick="logout()">Logout</button>
+  </div>  <!-- Register Section -->  <div id="register" class="container">
+    <h2>Register</h2>
+    <input type="email" id="regEmail" placeholder="Email">
+    <input type="password" id="regPassword" placeholder="Password">
+    <select id="regRole">
+      <option value="user">Manager</option>
+      <option value="worker">Worker</option>
+    </select>
+    <button onclick="register()">Register</button>
+  </div>  <!-- Login Section -->  <div id="login" class="container">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>  <!-- Dashboard -->  <div id="dashboard" class="container">
+    <h2>Dashboard</h2>
+    <div id="dashboardContent"></div>
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    let currentUser = null;
+    let userRole = null;
+
+    function showPage(id) {
+      document.querySelectorAll(".container").forEach(div => div.style.display = "none");
+      document.getElementById(id).style.display = "block";
+    }
+
+    async function register() {
+      const email = document.getElementById("regEmail").value.trim();
+      const password = document.getElementById("regPassword").value.trim();
+      const role = document.getElementById("regRole").value;
+
+      if (!email || !password) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        await db.collection("users").doc(cred.user.uid).set({ email, role });
+        alert("Registered successfully!");
+        showPage("login");
+      } catch (err) {
+        alert("Registration Error: " + err.message);
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      if (!email || !password) {
+        alert("Please enter email and password.");
+        return;
+      }
+
+      try {
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+        currentUser = cred.user;
+        const snap = await db.collection("users").doc(currentUser.uid).get();
+        userRole = snap.data().role;
+        loadDashboard();
+      } catch (err) {
+        alert("Login Error: " + err.message);
+      }
+    }
+
+    function logout() {
+      auth.signOut();
+      location.reload();
+    }
+
+    function loadDashboard() {
+      showPage("dashboard");
+      const dashboard = document.getElementById("dashboardContent");
+      dashboard.innerHTML = '';
+
+      dashboard.innerHTML += `
+        <div class="section"><h3>Employee Management</h3>Manage profiles, roles, and attendance.</div>
+        <div class="section"><h3>Project Management</h3>Create and assign projects with deadlines.</div>
+        <div class="section"><h3>Task Management</h3>Assign tasks and track their status.</div>
+        <div class="section"><h3>Communication</h3>Send notifications and updates.</div>
+        <div class="section"><h3>Time Tracking</h3>Monitor work hours and productivity.</div>
+        <div class="section"><h3>Leave Management</h3>Approve and track leave requests.</div>
+        <div class="section"><h3>Document Management</h3>Upload and access company files.</div>
+        <div class="section"><h3>Reports & Analytics</h3>Generate reports on key metrics.</div>
+      `;
+    }
+
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        currentUser = user;
+        const snap = await db.collection("users").doc(user.uid).get();
+        userRole = snap.data().role;
+        loadDashboard();
+      } else {
+        showPage("login");
+      }
+    });
+  </script></body>
+</html>

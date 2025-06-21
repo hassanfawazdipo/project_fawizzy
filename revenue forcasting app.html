@@ -1,0 +1,136 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revenue Forecasting App</title>
+  <style>
+    :root {
+      --bg-dark: #1A1D23;
+      --bg-light: #212121;
+      --green: #34C759;
+      --text: #ffffff;
+    }* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text);
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: var(--bg-light);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+h1 {
+  text-align: center;
+  color: var(--green);
+  margin-bottom: 20px;
+}
+
+label, input, select {
+  display: block;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+input, select {
+  padding: 10px;
+  background: #2a2a2a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+button {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #28a745;
+}
+
+.forecast {
+  margin-top: 30px;
+  padding: 15px;
+  background: #2a2a2a;
+  border-radius: 10px;
+}
+
+.forecast h2 {
+  color: var(--green);
+  margin-bottom: 10px;
+}
+
+@media (max-width: 600px) {
+  input, select, button {
+    font-size: 14px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📈 Revenue Forecasting (₦)</h1>
+    <label for="currentRevenue">Current Monthly Revenue (₦)</label>
+    <input type="number" id="currentRevenue" placeholder="Enter current monthly revenue in Naira" required><label for="growthRate">Expected Monthly Growth Rate (%)</label>
+<input type="number" id="growthRate" placeholder="Enter growth rate">
+
+<label for="months">Forecast Period (Months)</label>
+<input type="number" id="months" placeholder="Enter number of months">
+
+<button onclick="calculateForecast()">Calculate Forecast</button>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+
+<div class="forecast" id="forecastOutput">
+  <!-- Forecast result will appear here -->
+</div>
+
+  </div>  <script>
+    function formatNaira(value) {
+      return '₦' + value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+
+    function calculateForecast() {
+      const revenue = parseFloat(document.getElementById('currentRevenue').value);
+      const growth = parseFloat(document.getElementById('growthRate').value) / 100;
+      const months = parseInt(document.getElementById('months').value);
+      const output = document.getElementById('forecastOutput');
+
+      if (isNaN(revenue) || isNaN(growth) || isNaN(months)) {
+        output.innerHTML = `<p>Please fill all fields with valid numbers.</p>`;
+        return;
+      }
+
+      let forecastHTML = '<h2>Forecast Summary</h2><ul>';
+      let total = 0;
+      let current = revenue;
+
+      for (let i = 1; i <= months; i++) {
+        current += current * growth;
+        total += current;
+        forecastHTML += `<li>Month ${i}: ${formatNaira(current)}</li>`;
+      }
+
+      forecastHTML += `</ul><p><strong>Total Projected Revenue: ${formatNaira(total)}</strong></p>`;
+      output.innerHTML = forecastHTML;
+    }
+  </script></body>
+</html>

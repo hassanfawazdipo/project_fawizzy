@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profit Calculator</title>
+  <style>
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #212121;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      color: #34C759;
+      margin-bottom: 20px;
+      animation: fadeIn 1.2s ease;
+    }
+
+    .calculator-card {
+      background-color: #1A1D23;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(52, 199, 89, 0.2);
+      transition: transform 0.4s ease;
+    }
+
+    .calculator-card:hover {
+      transform: scale(1.02);
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+      animation: slideIn 0.5s ease;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #ccc;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background-color: #2C2F36;
+      color: #fff;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      border: 1px solid #34C759;
+      box-shadow: 0 0 5px #34C759;
+    }
+
+    .calculate-btn {
+      background-color: #34C759;
+      color: #000;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .calculate-btn:hover {
+      background-color: #28a745;
+    }
+
+    .results {
+      margin-top: 20px;
+      text-align: left;
+      animation: fadeIn 1s ease;
+    }
+
+    .hidden { display: none; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Profit Calculator</h1>
+    <div class="calculator-card">
+      <form id="profit-form">
+        <div class="input-group">
+          <label>Total Cost Price of Goods (₦):</label>
+          <input type="number" id="total-cost-price" required />
+        </div>
+        <div class="input-group">
+          <label>Quantity (Number of Units):</label>
+          <input type="number" id="quantity" required />
+        </div>
+        <div class="input-group">
+          <label>Total Transportation Cost (₦):</label>
+          <input type="number" id="transport" required />
+        </div>
+        <div class="input-group">
+          <label>Other Expenses (₦):</label>
+          <input type="number" id="others" required />
+        </div>
+        <div class="input-group">
+          <label>Profit Percentage per Unit (%):</label>
+          <input type="number" id="profit-percent" required />
+        </div>
+        <button type="submit" class="calculate-btn">Calculate</button>
+      </form>
+
+      <div id="results" class="results hidden">
+        <h3>Result:</h3>
+        <p><strong>Unit Cost Price (incl. expenses):</strong> ₦<span id="unit-cost">0</span></p>
+        <p><strong>Selling Price per Unit:</strong> ₦<span id="unit-sell">0</span></p>
+        <p><strong>Profit per Unit:</strong> ₦<span id="unit-profit">0</span></p>
+        <p><strong>Total Selling Price:</strong> ₦<span id="total-sell">0</span></p>
+        <p><strong>Total Profit:</strong> ₦<span id="total-profit">0</span></p>
+      </div>
+      <br>
+       <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    </div>
+    
+  </div>
+
+  <script>
+    document.getElementById('profit-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const totalCostPrice = parseFloat(document.getElementById('total-cost-price').value);
+      const qty = parseFloat(document.getElementById('quantity').value);
+      const transport = parseFloat(document.getElementById('transport').value);
+      const others = parseFloat(document.getElementById('others').value);
+      const percent = parseFloat(document.getElementById('profit-percent').value);
+
+      if (isFinite(totalCostPrice) && isFinite(qty) && qty > 0) {
+        const adjustedTotalCost = totalCostPrice + transport + others;
+        const unitCost = adjustedTotalCost / qty;
+        const unitProfit = unitCost * (percent / 100);
+        const unitSell = unitCost + unitProfit;
+        const totalSell = unitSell * qty;
+        const totalProfit = totalSell - adjustedTotalCost;
+
+        document.getElementById('unit-cost').innerText = unitCost.toFixed(2);
+        document.getElementById('unit-sell').innerText = unitSell.toFixed(2);
+        document.getElementById('unit-profit').innerText = unitProfit.toFixed(2);
+        document.getElementById('total-sell').innerText = totalSell.toFixed(2);
+        document.getElementById('total-profit').innerText = totalProfit.toFixed(2);
+
+        document.getElementById('results').classList.remove('hidden');
+      } else {
+        alert('Please fill all values correctly.');
+      }
+    });
+  </script>
+</body>
+</html>

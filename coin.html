@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buy Coins & Upgrade</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --bg: #212121;
+      --card: #1A1D23;
+      --accent: #34C759;
+      --text: #ffffff;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    h1, h2 {
+      color: var(--accent);
+      text-align: center;
+    }
+    .section {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    .option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 15px 0;
+      background: #2c2c2c;
+      padding: 10px 15px;
+      border-radius: 8px;
+    }
+    .option span {
+      font-size: 16px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #28b94f;
+    }
+    .balance {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>👛 Coin & Premium Hub</h1>
+
+  <div class="balance" id="balance">Balance: ₦0 coins</div>
+
+  <div class="section">
+    <h2>🪙 Buy Coins (₦1 = 1 Coin)</h2>
+    <div class="option"><span>₦1,000 = 1,000 Coins</span><button onclick="buyCoins(1000)">Buy</button></div>
+    <div class="option"><span>₦5,000 = 5,000 Coins</span><button onclick="buyCoins(5000)">Buy</button></div>
+    <div class="option"><span>₦10,000 = 10,000 Coins</span><button onclick="buyCoins(10000)">Buy</button></div>
+     <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <div class="section">
+    <h2>🚀 Upgrade to Premium</h2>
+    <div class="option"><span>₦5,000 → 1 Week Access</span><button onclick="upgradePremium(5000, 7)">Upgrade</button></div>
+    <div class="option"><span>₦10,000 → 2 Weeks Access</span><button onclick="upgradePremium(10000, 14)">Upgrade</button></div>
+    <div class="option"><span>₦15,000 → 1 Month Access</span><button onclick="upgradePremium(15000, 30)">Upgrade</button></div>
+     <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <script>
+    const toolToUnlock = new URLSearchParams(window.location.search).get("tool");
+
+    function updateBalanceUI() {
+      const balance = parseInt(localStorage.getItem("coins")) || 0;
+      document.getElementById("balance").textContent = `Balance: ₦${balance.toLocaleString()} coins`;
+    }
+    updateBalanceUI();
+
+    function buyCoins(nairaAmount) {
+      FlutterwaveCheckout({
+        public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X",
+        tx_ref: "tx-" + Date.now(),
+        amount: nairaAmount,
+        currency: "NGN",
+        payment_options: "card,ussd,banktransfer",
+        customer: {
+          email: "user@email.com",
+          phonenumber: "08000000000",
+          name: "User"
+        },
+        customizations: {
+          title: "Coin Purchase",
+          description: `Buying ${nairaAmount} coins`,
+        },
+        callback: function (data) {
+          if (data.status === "successful") {
+            const currentCoins = parseInt(localStorage.getItem("coins")) || 0;
+            localStorage.setItem("coins", currentCoins + nairaAmount);
+            updateBalanceUI();
+            alert(`₦${nairaAmount} credited as ${nairaAmount} coins`);
+          } else {
+            alert("Transaction was not successful.");
+          }
+        },
+        onclose: function () {
+          console.log("Transaction closed");
+        },
+      });
+    }
+
+    function upgradePremium(cost, days) {
+      let coins = parseInt(localStorage.getItem("coins")) || 0;
+      if (coins < cost) {
+        alert("Insufficient coins. Please purchase more.");
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to spend ₦${cost} for ${days} days premium?`)) return;
+
+      coins -= cost;
+      localStorage.setItem("coins", coins);
+      updateBalanceUI();
+
+      if (toolToUnlock) {
+        const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
+        const expiresAt = new Date(Date.now() + days * 86400000).toISOString();
+        unlocks[toolToUnlock] = { expiresAt };
+        localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
+        alert("Tool unlocked successfully!");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Premium access added successfully.");
+      }
+    }
+  </script>
+
+</body>
+</html>

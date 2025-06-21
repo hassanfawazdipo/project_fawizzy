@@ -1,0 +1,143 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Receipt Generator</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body {
+      background-color: #212121;
+      color: white;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background-color: #1A1D23;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(52,199,89,0.3);
+      width: 100%;
+      max-width: 600px;
+    }
+    h1 {
+      text-align: center;
+      color: #34C759;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2a2d33;
+      color: white;
+    }
+    button {
+      background-color: #34C759;
+      color: black;
+      font-weight: bold;
+      padding: 12px;
+      margin-top: 20px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #receiptOutput {
+      background: white;
+      color: black;
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      font-size: 14px;
+    }
+    #receiptOutput h2 {
+      color: #34C759;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Receipt Generator</h1>
+  <label>Seller's Name</label>
+  <input type="text" id="sellerName"><label>Seller's Address</label>
+
+  <textarea id="sellerAddress"></textarea><label>Seller's Phone Number</label> <input type="text" id="sellerPhone">
+
+<label>Seller TIN</label> <input type="text" id="sellerTIN">
+
+<label>Buyer's Name (Optional)</label> <input type="text" id="buyerName">
+
+<label>Date of Transaction</label> <input type="date" id="transDate">
+
+<label>Description of Goods/Services</label>
+
+  <textarea id="description"></textarea><label>Amount Paid (₦)</label> <input type="number" id="amountPaid">
+
+<label>Payment Method</label> <select id="paymentMethod"> <option value="Cash">Cash</option> <option value="Card">Card</option> <option value="Bank Transfer">Bank Transfer</option> <option value="POS">POS</option> </select>
+
+<label>Authorized Signature</label> <input type="text" id="signature" placeholder="Enter name of authorized personnel">
+
+<button onclick="generateReceipt()">Generate Receipt</button>
+
+  <div id="receiptOutput" style="display:none;"></div>
+</div><script>
+  let usedReceiptNumbers = new Set();
+
+  function generateReceiptNumber() {
+    let num;
+    do {
+      num = 'RCPT-' + Math.floor(100000 + Math.random() * 900000);
+    } while (usedReceiptNumbers.has(num));
+    usedReceiptNumbers.add(num);
+    return num;
+  }
+
+  function generateReceipt() {
+    const sellerName = document.getElementById('sellerName').value;
+    const sellerAddress = document.getElementById('sellerAddress').value;
+    const sellerPhone = document.getElementById('sellerPhone').value;
+    const sellerTIN = document.getElementById('sellerTIN').value;
+    const buyerName = document.getElementById('buyerName').value;
+    const transDate = document.getElementById('transDate').value;
+    const description = document.getElementById('description').value;
+    const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const signature = document.getElementById('signature').value;
+
+    if (!sellerName || !sellerAddress || !sellerPhone || !sellerTIN || !transDate || !description || isNaN(amountPaid) || !paymentMethod || !signature) {
+      return alert("Please fill in all required fields.");
+    }
+
+    const receiptNum = generateReceiptNumber();
+
+    const receipt = `
+      <h2>RECEIPT</h2>
+      <p><strong>Receipt Number:</strong> ${receiptNum}</p>
+      <p><strong>Date of Transaction:</strong> ${transDate}</p>
+      <hr>
+      <p><strong>Seller:</strong><br>${sellerName}<br>${sellerAddress}<br>${sellerPhone}<br>TIN: ${sellerTIN}</p>
+      ${buyerName ? `<p><strong>Buyer:</strong> ${buyerName}</p>` : ''}
+      <p><strong>Description:</strong><br>${description}</p>
+      <p><strong>Amount Paid:</strong> ₦${amountPaid.toLocaleString()}</p>
+      <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+      <p><strong>Authorized Signature:</strong> ${signature}</p>
+    `;
+
+    const output = document.getElementById('receiptOutput');
+    output.innerHTML = receipt;
+    output.style.display = 'block';
+  }
+</script></body>
+</html>

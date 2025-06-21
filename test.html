@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Finance Advisor</title>
+  <style>
+    :root {
+      --bg-light: #ffffff;
+      --bg-dark: #1a1d23;
+      --text-light: #000000;
+      --text-dark: #ffffff;
+      --accent: #34c759;
+    }body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  transition: background 0.5s, color 0.5s;
+}
+
+body.light {
+  background-color: var(--bg-light);
+  color: var(--text-light);
+}
+
+body.dark {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+header {
+  padding: 16px;
+  text-align: center;
+  background-color: var(--accent);
+  color: #000;
+}
+
+#content {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.05);
+  transition: background 0.5s;
+}
+
+h2 {
+  color: var(--accent);
+  font-size: 1.5rem;
+}
+
+p {
+  line-height: 1.6;
+  margin-top: 1em;
+  font-size: 1.05rem;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.toggle-btn {
+  margin: 10px auto;
+  display: block;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  #content {
+    margin: 10px;
+    padding: 16px;
+  }
+}
+
+  </style>
+</head>
+<body class="light">
+  <header>
+    <h1>💡 AI Finance Advisor</h1>
+  </header>
+  <button class="toggle-btn" onclick="document.body.classList.toggle('dark');document.body.classList.toggle('light');">
+    Toggle Dark/Light Mode
+  </button>
+  <div id="content">
+    <h2>Cash-Flow Budgeting</h2>
+    <p>
+      Cash-flow budgeting is a crucial financial technique that focuses on monitoring, analyzing, and managing the flow of money into and out of an individual’s or business's account. Unlike traditional budgeting that might focus solely on expenses, cash-flow budgeting allows you to track when income is received and when expenses are paid. This insight gives you better control over your finances, helps prevent overdrafts, and ensures you have the liquidity to meet all financial obligations on time.
+    </p>
+    <p>
+      For personal finance, cash-flow budgeting starts by listing all sources of income and then scheduling all anticipated expenses. These expenses might include rent, utilities, groceries, debt payments, subscriptions, and discretionary spending. By placing these expenses on a calendar view aligned with your income schedule (weekly, bi-weekly, or monthly), you can identify periods where cash may be tight or where you have surplus funds that can be reallocated toward savings or investments.
+    </p>
+    <p>
+      Businesses also rely heavily on cash-flow budgets to maintain solvency. Even if a business is profitable on paper, poor cash-flow management can lead to an inability to pay vendors or employees on time. A cash-flow budget in this context helps business owners understand timing mismatches between accounts receivable and accounts payable, thus allowing them to make informed decisions such as delaying non-essential purchases, requesting payment extensions, or seeking short-term funding.
+    </p>
+    <p>
+      The power of cash-flow budgeting lies in its adaptability and predictive capability. When used effectively, it acts as a financial roadmap, warning you ahead of time about shortfalls or enabling strategic allocation of excess funds. Various tools and software like Excel, Google Sheets, YNAB, and QuickBooks can help streamline the process. However, the principle remains the same: manage the timing of your cash effectively to avoid surprises and make the most of your resources.
+    </p>
+  </div>
+</body>
+</html>

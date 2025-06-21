@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Finance Advisor</title>
+<style>
+  :root {
+    --bg-main: #212121;
+    --bg-card: #1A1D23;
+    --accent: #34C759;
+    --text: #fff;
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--bg-main); color: var(--text); display:flex; align-items:center; justify-content:center; height:100vh; }
+  #app { width:100%; max-width:480px; height:90vh; background: var(--bg-card); border-radius:12px; display:flex; flex-direction:column; overflow:hidden; }
+  header { padding:16px; background: var(--bg-main); text-align:center; }
+  header h1 { color: var(--accent); font-size:1.5rem; }
+  #chatBox { flex:1; padding:12px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+  .msg { max-width:80%; padding:10px 14px; border-radius:14px; animation:fadeIn .3s ease; }
+  .bot { background: var(--bg-main); align-self:flex-start; }
+  .user { background: var(--accent); color:#000; align-self:flex-end; }
+  .options { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+  .opt-btn { background: var(--bg-main); color:var(--text); border:1px solid var(--accent); padding:6px 12px; border-radius:20px; cursor:pointer; font-size:14px; }
+  .opt-btn:hover { background: var(--accent); color:#000; }
+  .input-bar { display:flex; padding:10px; background: var(--bg-main); gap:8px; }
+  .input-bar input { flex:1; padding:10px; border:none; border-radius:8px; outline:none; }
+  .input-bar button { background: var(--accent); border:none; color:#000; padding:10px 14px; border-radius:8px; cursor:pointer; }
+  #loginBar { display:flex; flex-direction: column; align-items:center; justify-content:center; flex:1; padding:20px; }
+  #loginBar input, #loginBar button { width:80%; padding:10px; margin:8px 0; border:none; border-radius:8px; }
+  #logoutBtn { background: #e33; padding:6px 12px; border:none; color:#fff; border-radius:6px; cursor:pointer; margin:8px; }
+  @keyframes fadeIn { from {opacity:0; transform:translateY(8px);} to {opacity:1; transform:translateY(0);} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>💡 AI Finance Advisor</h1></header>
+  <div id="loginBar">
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button id="loginBtn">Login / Register</button>
+  </div>
+  <button id="logoutBtn" style="display:none;">Logout</button>
+  <div id="chatBox" style="display:none;"></div>
+  <div class="input-bar" id="inputBar" style="display:none;">
+    <input id="userInput" placeholder="Ask me..." />
+    <button id="sendBtn">Send</button>
+  </div>
+</div><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script><script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+  authDomain: "conectcamp-db2c2.firebaseapp.com",
+  projectId: "conectcamp-db2c2",
+  storageBucket: "conectcamp-db2c2.appspot.com",
+  messagingSenderId: "648442230919",
+  appId: "1:648442230919:web:28b61283dbb72f8f966022",
+  measurementId: "G-3Q2ZS872YC"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const loginBar = document.getElementById('loginBar'),
+      logoutBtn = document.getElementById('logoutBtn'),
+      chatBox = document.getElementById('chatBox'),
+      inputBar = document.getElementById('inputBar'),
+      emailIn = document.getElementById('email'),
+      passIn = document.getElementById('password'),
+      loginBtn = document.getElementById('loginBtn'),
+      sendBtn = document.getElementById('sendBtn'),
+      userInput = document.getElementById('userInput');
+
+let curUser = null;
+
+auth.onAuthStateChanged(user => {
+  curUser = user;
+  if(user){
+    loginBar.style.display = 'none';
+    logoutBtn.style.display = 'block';
+    chatBox.style.display = 'flex';
+    inputBar.style.display = 'flex';
+    loadHistory();
+    greetUser();
+  } else {
+    loginBar.style.display = 'flex';
+    logoutBtn.style.display = 'none';
+    chatBox.style.display = 'none';
+    inputBar.style.display = 'none';
+  }
+});
+
+loginBtn.onclick = () => {
+  const email = emailIn.value;
+  const pass = passIn.value;
+  if(!email||!pass) return alert('Enter email and password');
+  auth.signInWithEmailAndPassword(email,pass)
+    .catch(() => auth.createUserWithEmailAndPassword(email,pass))
+    .catch(e => alert(e.message));
+};
+
+logoutBtn.onclick = () => auth.signOut();
+
+async function loadHistory(){
+  chatBox.innerHTML = '';
+  const snap = await db.collection('chats')
+    .doc(curUser.uid)
+    .collection('messages').orderBy('ts')
+    .get();
+  snap.docs.forEach(d => appendMessage(d.data().text, d.data().sender,false));
+}
+
+function saveMessage(text,sender){
+  if(!curUser) return;
+  db.collection('chats').doc(curUser.uid)
+    .collection('messages').add({ text, sender, ts: firebase.firestore.FieldValue.serverTimestamp() });
+}
+
+function appendMessage(text,type,save=true){
+  const div = document.createElement('div');
+  div.className = 'msg '+type;
+  div.textContent = text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  if(save) saveMessage(text,type);
+}
+
+function greetUser(){
+  appendMessage('Welcome back! I am your personal finance AI advisor. How can I assist you today?', 'bot');
+  showOptions(mainOptions);
+}
+
+const mainOptions = ['💡 Budget Tips','💰 Saving Tips','📈 Investment Ideas','💼 Income Boosters','📟 Expense Tracker'];
+
+const responses = {
+  '50/30/20 Rule': 'The 50/30/20 rule helps you divide your income into 50% for needs, 30% for wants, and 20% for savings. It brings clarity to your monthly financial planning.',
+  'Envelope Method': 'This budgeting technique assigns specific cash amounts into envelopes for each spending category. It helps reduce overspending by enforcing limits physically.',
+  'Zero-Based Budgeting': 'With zero-based budgeting, every dollar you earn is assigned a job. At the end of the month, your income minus expenses should equal zero, encouraging intentional spending.',
+  'Pay Yourself First': 'Before spending on anything else, set aside a portion of your income for savings and investments. It ensures that your financial goals are a priority, not an afterthought.',
+  'Auto‑Save Accounts': 'Set up automatic transfers to savings as soon as your income hits your account. It removes the temptation to spend and builds consistent saving habits.',
+  'Emergency Fund': 'Build a savings cushion that can cover 3 to 6 months of your essential expenses. It provides peace of mind and financial stability during unexpected events.',
+  'Spare Change Saving': 'Use apps that round up your purchases to the nearest dollar and save the change. These micro-savings can accumulate significantly over time without you noticing.',
+  'No-Spend Challenge': 'Designate a week or month to avoid all non-essential spending. It resets your spending habits and helps you redirect funds to savings.',
+  'Mutual Funds': 'Mutual funds allow you to pool money with others to invest in diversified assets. They are ideal for beginners seeking expert-managed, relatively low-risk investments.',
+  'Real Estate': 'Investing in properties, or through REITs, can generate rental income and long-term appreciation. It’s a tangible asset class with the potential for passive income.',
+  'Fixed Deposits': 'Fixed deposits offer guaranteed returns for locking your money over a period. They are safe, low-risk options ideal for conservative investors.',
+  'Index Funds': 'Index funds mirror market indexes like the S&P 500, offering low fees and broad market exposure. They are great for long-term passive investors.',
+  'Freelancing': 'Offer your skills online through platforms like Fiverr or Upwork. It gives you the flexibility to work from anywhere and boost your income on your schedule.',
+  'Online Biz': 'Start an eCommerce store, create digital products, or run social media services. Online businesses offer scalability and low startup costs.',
+  'Upskill Courses': 'Learning high-demand skills like coding, design, or copywriting increases your earning potential and employability, opening doors to better-paying jobs.',
+  'Affiliate Marketing': 'Earn commissions by promoting products online. With the right audience, affiliate marketing can become a passive income stream.',
+  'Weekly Review': 'Track all your expenses weekly. Reviewing your spending helps identify wasteful habits and allows timely adjustments to stay on track.',
+  'Apps & Tools': 'Use apps like YNAB, Mint, or Spendee to automate and simplify your expense tracking. These tools give you real-time insights into your financial behavior.',
+  'Excel/Google Sheets': 'Build custom spreadsheets to monitor income, expenses, and savings. Spreadsheets offer flexibility and are perfect for detailed financial control.',
+};
+
+const subOptions = {
+  '💡 Budget Tips': ['50/30/20 Rule','Envelope Method','Zero-Based Budgeting','Pay Yourself First','Back 🔙'],
+  '💰 Saving Tips': ['Auto‑Save Accounts','Emergency Fund','Spare Change Saving','No-Spend Challenge','Back 🔙'],
+  '📈 Investment Ideas': ['Mutual Funds','Real Estate','Fixed Deposits','Index Funds','Back 🔙'],
+  '💼 Income Boosters': ['Freelancing','Online Biz','Upskill Courses','Affiliate Marketing','Back 🔙'],
+  '📟 Expense Tracker': ['Weekly Review','Apps & Tools','Excel/Google Sheets','Back 🔙']
+};
+
+function showOptions(arr){
+  const wrap = document.createElement('div');
+  wrap.className = 'options';
+  arr.forEach(o=>{
+    const b = document.createElement('button');
+    b.textContent = o;
+    b.className = 'opt-btn';
+    b.onclick = () => handleOption(o);
+    wrap.appendChild(b);
+  });
+  chatBox.appendChild(wrap);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function handleOption(opt){
+  appendMessage(opt,'user');
+  if(opt=='Back 🔙'){
+    appendMessage('Returning...', 'bot');
+    showOptions(mainOptions);
+    return;
+  }
+  if(mainOptions.includes(opt)){
+    appendMessage(`Select a sub-option for ${opt}`, 'bot');
+    showOptions(subOptions[opt]);
+    return;
+  }
+  const resp = responses[opt] || `You chose "${opt}". Tell me more or choose another option.`;
+  appendMessage(resp,'bot');
+  showOptions(['Back 🔙']);
+}
+
+sendBtn.onclick = () => {
+  const text = userInput.value.trim();
+  if(!text) return;
+  appendMessage(text,'user');
+  userInput.value='';
+  setTimeout(()=>{
+    appendMessage("I'm processing your request with advanced AI algorithms. For now, please use the buttons for the best experience.", 'bot');
+    showOptions(mainOptions);
+  },500);
+};
+
+userInput.addEventListener('keypress', e => { if(e.key==='Enter') sendBtn.click(); });
+</script></body>
+</html>

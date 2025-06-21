@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loan Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #212121;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #34C759;
+      animation: fadeIn 1.2s ease;
+    }
+
+    .calculator-card {
+      background-color: #1A1D23;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(52, 199, 89, 0.2);
+      transition: transform 0.4s ease;
+    }
+
+    .calculator-card:hover {
+      transform: scale(1.02);
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+      animation: slideIn 0.5s ease;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #ccc;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.3s ease;
+      background-color: #2C2F36;
+      color: #fff;
+    }
+
+    input:focus, select:focus {
+      border: 1px solid #34C759;
+      box-shadow: 0 0 5px #34C759;
+    }
+
+    .calculate-btn {
+      background-color: #34C759;
+      color: #000;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .calculate-btn:hover {
+      background-color: #28a745;
+    }
+
+    .results {
+      margin-top: 20px;
+      text-align: left;
+      animation: fadeIn 1s ease;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Loan Calculator</h1>
+    <div class="calculator-card">
+      <form id="loan-form">
+        <div class="input-group">
+          <label for="amount">Loan Amount (₦):</label>
+          <input type="number" id="amount" placeholder="Enter amount" required />
+        </div>
+        <div class="input-group">
+          <label for="interest">Interest Rate (%):</label>
+          <input type="number" id="interest" placeholder="e.g. 10" required />
+        </div>
+        <div class="input-group">
+          <label for="duration">Loan Duration:</label>
+          <input type="number" id="duration" placeholder="e.g. 2" required />
+        </div>
+        <div class="input-group">
+          <label for="type">Duration Type:</label>
+          <select id="type" required>
+            <option value="years">Years</option>
+            <option value="months">Months</option>
+          </select>
+        </div>
+        <button type="submit" class="calculate-btn">Calculate</button>
+      </form>
+
+      <div id="results" class="results hidden">
+        <h3>Results</h3>
+        <p><strong>Monthly Payment:</strong> ₦<span id="monthly-payment">0</span></p>
+        <p><strong>Total Payment:</strong> ₦<span id="total-payment">0</span></p>
+        <p><strong>Total Interest:</strong> ₦<span id="total-interest">0</span></p>
+      </div>
+    </div>
+    <br>
+     <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('loan-form');
+    const results = document.getElementById('results');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const amount = parseFloat(document.getElementById('amount').value);
+      const interest = parseFloat(document.getElementById('interest').value);
+      let duration = parseFloat(document.getElementById('duration').value);
+      const type = document.getElementById('type').value;
+
+      if (type === "years") {
+        duration *= 12; // Convert years to months
+      }
+
+      const principal = amount;
+      const calculatedInterest = interest / 100 / 12;
+      const calculatedPayments = duration;
+
+      const x = Math.pow(1 + calculatedInterest, calculatedPayments);
+      const monthly = (principal * x * calculatedInterest) / (x - 1);
+
+      if (isFinite(monthly)) {
+        document.getElementById('monthly-payment').innerText = monthly.toFixed(2);
+        document.getElementById('total-payment').innerText = (monthly * calculatedPayments).toFixed(2);
+        document.getElementById('total-interest').innerText = ((monthly * calculatedPayments) - principal).toFixed(2);
+        results.classList.remove('hidden');
+      } else {
+        results.classList.add('hidden');
+        alert('Please enter valid input values.');
+      }
+    });
+  </script>
+</body>
+</html>

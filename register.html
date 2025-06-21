@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro Registration & Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(145deg, #1A1D23, #212121);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: #1A1D23;
+      border-radius: 20px;
+      box-shadow: 0 0 40px rgba(52, 199, 89, 0.3);
+      overflow: hidden;
+      animation: pop 0.8s ease forwards;
+    }
+    .form-container {
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      animation: fadeInUp 0.8s ease forwards;
+    }
+    .form-container h2 {
+      text-align: center;
+      color: #34C759;
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .input-group input {
+      width: 100%;
+      background: #212121;
+      border: 1.5px solid transparent;
+      padding: 15px 45px 15px 15px;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      transition: border 0.3s ease, background 0.3s ease;
+    }
+    .input-group input:focus {
+      border: 1.5px solid #34C759;
+      background: #1a1a1a;
+      outline: none;
+    }
+    .input-group i {
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      color: #888;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .form-container button {
+      background: #34C759;
+      border: none;
+      color: #1A1D23;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .form-container button:hover {
+      background: #2eb14f;
+    }
+    .toggle {
+      text-align: center;
+      margin-top: 20px;
+      color: #bbb;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .toggle:hover {
+      color: #34C759;
+    }
+    .forgot-link {
+      text-align: right;
+      margin: -10px 0 10px;
+      color: #bbb;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .forgot-link:hover {
+      color: #34C759;
+    }
+    .hidden { display: none; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pop {
+      0% { transform: scale(0.95); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @media (max-width: 480px) {
+      .form-container { padding: 30px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Register Form -->
+    <form id="registerForm" class="form-container">
+      <h2>Register</h2>
+      <div class="input-group">
+        <input type="email" id="registerEmail" placeholder="Email" required>
+      </div>
+      <div class="input-group">
+        <input type="password" id="password" placeholder="Password" required>
+        <i class="fas fa-eye" onclick="togglePassword('password', this)"></i>
+      </div>
+      <div class="input-group">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+        <i class="fas fa-eye" onclick="togglePassword('confirmPassword', this)"></i>
+      </div>
+      <button type="submit">Register</button>
+      <div class="toggle" onclick="toggleForm('login')">Already have an account? Login</div>
+    </form>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="form-container hidden">
+      <h2>Login</h2>
+      <div class="input-group">
+        <input type="email" id="loginEmail" placeholder="Email" required>
+      </div>
+      <div class="input-group">
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <i class="fas fa-eye" onclick="togglePassword('loginPassword', this)"></i>
+      </div>
+      <div class="forgot-link" onclick="forgotPassword()">Forgot Password?</div>
+      <button type="submit">Login</button>
+      <div class="toggle" onclick="toggleForm('register')">Don't have an account? Register</div>
+    </form>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const registerForm = document.getElementById('registerForm');
+    const loginForm = document.getElementById('loginForm');
+
+    function toggleForm(type) {
+      if (type === 'login') {
+        registerForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+      } else {
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+      }
+    }
+
+    function togglePassword(inputId, icon) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    }
+
+    registerForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+      if (password.length < 6) return alert("Password must be at least 6 characters.");
+      if (password !== confirmPassword) return alert("Passwords do not match!");
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const user = userCredential.user;
+          return db.collection("users").doc(user.uid).set({
+            uid: user.uid,
+            email: user.email,
+            coins: 0,
+            status: "free",
+            toolUnlocks: {},
+            registeredAt: firebase.firestore.FieldValue.serverTimestamp(),
+            premiumExpiresAt: null
+          });
+        })
+        .then(() => {
+          alert("Registration successful! Please login.");
+          toggleForm("login");
+        })
+        .catch(err => alert("Error: " + err.message));
+    });
+
+    loginForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          const user = userCredential.user;
+          return db.collection("users").doc(user.uid).get().then(doc => {
+            if (!doc.exists) throw new Error("User record not found");
+            const data = doc.data();
+            localStorage.setItem("uid", user.uid);
+            localStorage.setItem("email", data.email);
+            localStorage.setItem("coins", data.coins || 0);
+            localStorage.setItem("status", data.status || "free");
+            localStorage.setItem("toolUnlocks", JSON.stringify(data.toolUnlocks || {}));
+
+            if (user.email === "conectcamp.ng@gmail.com" || user.uid === "g2dSuHRqB5aYDhfMoF5MIKUmmRZ2") {
+              window.location.href = "Admin_dashboard.html";
+            } else {
+              window.location.href = "dashboard.html";
+            }
+          });
+        })
+        .catch(err => alert("Login failed: " + err.message));
+    });
+
+    function forgotPassword() {
+      const email = prompt("Enter your registered email:");
+      if (!email) return;
+      auth.sendPasswordResetEmail(email.trim())
+        .then(() => alert("Password reset link sent to your email."))
+        .catch(err => alert("Error: " + err.message));
+    }
+  </script>
+</body>
+</html>

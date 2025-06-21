@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Invoice Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      background-color: #212121;
+      color: white;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background-color: #1A1D23;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(52,199,89,0.3);
+      width: 100%;
+      max-width: 900px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #34C759;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2a2d33;
+      color: white;
+    }
+    button {
+      background-color: #34C759;
+      color: black;
+      font-weight: bold;
+      padding: 12px;
+      margin-top: 20px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      background-color: #2a2d33;
+      color: white;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #444;
+    }
+    #invoiceOutput {
+      background: white;
+      color: black;
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    #invoiceOutput h2 {
+      color: #34C759;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+    .product-group {
+      margin-top: 20px;
+      border: 1px dashed #34C759;
+      padding: 10px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Invoice Generator</h1>
+    <label>Company Name</label>
+    <input type="text" id="companyName"><label>Company Address</label>
+<textarea id="companyAddress"></textarea>
+
+<label>Company Contact</label>
+<input type="text" id="companyContact">
+
+<label>Bill To Name</label>
+<input type="text" id="billToName">
+
+<label>Bill To Address</label>
+<textarea id="billToAddress"></textarea>
+
+<label>Ship To Name</label>
+<input type="text" id="shipToName">
+
+<label>Ship To Address</label>
+<textarea id="shipToAddress"></textarea>
+
+<label>Invoice Date</label>
+<input type="date" id="invoiceDate">
+
+<label>Payment Terms</label>
+<input type="text" id="paymentTerms" placeholder="e.g. Net 30, bank transfer">
+
+<label>Payment Details</label>
+<textarea id="paymentDetails" placeholder="e.g. Bank Name, Account Number, Account Name"></textarea>
+
+<label>Means of Payment</label>
+<select id="paymentMethod">
+  <option value="Bank Transfer">Bank Transfer</option>
+  <option value="Cash">Cash</option>
+  <option value="POS">POS</option>
+  <option value="Cheque">Cheque</option>
+</select>
+
+<div id="productContainer">
+  <div class="product-group">
+    <label>Item Description</label>
+    <input type="text" class="itemDesc">
+
+    <label>Quantity</label>
+    <input type="number" class="itemQty">
+
+    <label>Unit Price</label>
+    <input type="number" class="itemPrice">
+  </div>
+</div>
+
+<button onclick="addProductGroup()">Add Product</button>
+<button onclick="addAllItems()">Generate Invoice</button>
+
+<div id="invoiceOutput" style="display:none;"></div>
+
+  </div>  <script>
+    const items = [];
+    let usedInvoices = new Set();
+
+    function generateInvoiceNumber() {
+      let num;
+      do {
+        num = 'INV-' + Math.floor(Math.random() * 900000 + 100000);
+      } while (usedInvoices.has(num));
+      usedInvoices.add(num);
+      return num;
+    }
+
+    function addProductGroup() {
+      const container = document.getElementById("productContainer");
+      const group = document.createElement("div");
+      group.classList.add("product-group");
+      group.innerHTML = `
+        <label>Item Description</label>
+        <input type="text" class="itemDesc">
+        <label>Quantity</label>
+        <input type="number" class="itemQty">
+        <label>Unit Price</label>
+        <input type="number" class="itemPrice">
+      `;
+      container.appendChild(group);
+    }
+
+    function addAllItems() {
+      items.length = 0;
+
+      const descriptions = document.querySelectorAll(".itemDesc");
+      const quantities = document.querySelectorAll(".itemQty");
+      const prices = document.querySelectorAll(".itemPrice");
+
+      for (let i = 0; i < descriptions.length; i++) {
+        const desc = descriptions[i].value;
+        const qty = parseInt(quantities[i].value);
+        const price = parseFloat(prices[i].value);
+        if (!desc || isNaN(qty) || isNaN(price)) {
+          alert(`Please fill all product fields correctly in item ${i + 1}`);
+          return;
+        }
+        items.push({ desc, qty, price });
+      }
+
+      generateInvoice();
+    }
+
+    function generateInvoice() {
+      const companyName = document.getElementById('companyName').value;
+      const companyAddress = document.getElementById('companyAddress').value;
+      const companyContact = document.getElementById('companyContact').value;
+      const billToName = document.getElementById('billToName').value;
+      const billToAddress = document.getElementById('billToAddress').value;
+      const shipToName = document.getElementById('shipToName').value;
+      const shipToAddress = document.getElementById('shipToAddress').value;
+      const date = document.getElementById('invoiceDate').value;
+      const paymentTerms = document.getElementById('paymentTerms').value;
+      const paymentDetails = document.getElementById('paymentDetails').value;
+      const paymentMethod = document.getElementById('paymentMethod').value;
+
+      if (!companyName || !billToName || !date) return alert("Please fill company, bill-to and date.");
+
+      const invoiceNo = generateInvoiceNumber();
+
+      let subtotal = 0;
+      let itemRows = items.map(item => {
+        const lineTotal = item.qty * item.price;
+        subtotal += lineTotal;
+        return `<tr><td>${item.desc}</td><td>${item.qty}</td><td>₦${item.price.toLocaleString()}</td><td>₦${lineTotal.toLocaleString()}</td></tr>`;
+      }).join('');
+
+      const taxRate = 7.5;
+      const tax = subtotal * (taxRate / 100);
+      const total = subtotal + tax;
+
+      const invoice = document.getElementById('invoiceOutput');
+      invoice.innerHTML = `
+        <h2>INVOICE</h2>
+        <p><strong>Invoice Number:</strong> ${invoiceNo}</p>
+        <p><strong>Date:</strong> ${date}</p>
+        <hr>
+        <p><strong>${companyName}</strong><br>${companyAddress}<br>${companyContact}</p>
+        <p><strong>Bill To:</strong><br>${billToName}<br>${billToAddress}</p>
+        <p><strong>Ship To:</strong><br>${shipToName || billToName}<br>${shipToAddress || billToAddress}</p>
+        <p><strong>Payment Terms:</strong> ${paymentTerms}</p>
+        <table>
+          <thead>
+            <tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+          </thead>
+          <tbody>${itemRows}</tbody>
+        </table>
+        <p style="text-align:right;"><strong>Subtotal:</strong> ₦${subtotal.toLocaleString()}</p>
+        <p style="text-align:right;"><strong>Tax (7.5%):</strong> ₦${tax.toLocaleString()}</p>
+        <h3 style="text-align:right;">Invoice Total: ₦${total.toLocaleString()}</h3>
+        <hr>
+        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+        <p><strong>Payment Details:</strong><br>${paymentDetails}</p>
+      `;
+
+      invoice.style.display = 'block';
+    }
+  </script></body>
+</html>

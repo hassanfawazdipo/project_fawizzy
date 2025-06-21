@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #212121;
+      --bg-light: #1A1D23;
+      --accent: #34C759;
+      --text: #ffffff;
+    }
+    * {
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      font-size: clamp(14px, 1.2vw, 18px);
+      line-height: 1.5;
+    }
+    header {
+      background: var(--bg-light);
+      padding: clamp(15px, 2vw, 30px);
+      text-align: center;
+      font-size: clamp(20px, 3vw, 26px);
+      font-weight: 700;
+      color: var(--accent);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: clamp(15px, 2vw, 30px);
+      padding: clamp(15px, 3vw, 40px);
+      max-width: 1300px;
+      margin: auto;
+    }
+    .card {
+      background: var(--bg-light);
+      border-radius: 15px;
+      padding: clamp(15px, 2vw, 30px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      color: var(--accent);
+      font-size: clamp(18px, 2vw, 22px);
+      margin-bottom: 10px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: clamp(8px, 1.5vw, 12px);
+      margin: 8px 0;
+      border-radius: 10px;
+      border: none;
+      font-size: clamp(13px, 1vw, 16px);
+    }
+    button {
+      background: var(--accent);
+      color: var(--bg-dark);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow-x: auto;
+      display: block;
+    }
+    th, td {
+      padding: clamp(8px, 1vw, 12px);
+      text-align: left;
+      border-bottom: 1px solid #333;
+      white-space: nowrap;
+    }
+    th {
+      color: var(--accent);
+    }
+    @media (max-width: 400px) {
+      header {
+        font-size: clamp(16px, 5vw, 20px);
+      }
+      h2 {
+        font-size: clamp(16px, 4vw, 18px);
+      }
+      input, select, button {
+        font-size: clamp(12px, 3vw, 14px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>Admin Dashboard</header>
+  <div class="container">
+    <div class="card">
+      <h2>Add New Tool</h2>
+      <form id="addToolForm">
+        <input type="text" id="toolName" placeholder="Tool Name" required />
+        <input type="text" id="toolDescription" placeholder="Tool Description" required />
+        <input type="url" id="toolLink" placeholder="Tool URL" required />
+        <select id="toolType">
+          <option value="free">Free</option>
+          <option value="premium">Premium</option>
+        </select>
+        <input type="number" id="toolPrice" placeholder="Price in coins (only for premium)" />
+        <button type="submit">Add Tool</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2>User Management</h2>
+      <div id="userList">Loading users...</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, getDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("addToolForm");
+    const userList = document.getElementById("userList");
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const name = form.toolName.value;
+      const description = form.toolDescription.value;
+      const link = form.toolLink.value;
+      const type = form.toolType.value;
+      const price = parseInt(form.toolPrice.value || 0);
+
+      await addDoc(collection(db, "toolList"), {
+        name, description, link, type, price
+      });
+      alert("Tool added successfully!");
+      form.reset();
+    };
+
+    async function loadUsers() {
+      const snapshot = await getDocs(collection(db, "users"));
+      let html = `<table><tr><th>Username</th><th>Coins</th><th>Add Coins</th></tr>`;
+      snapshot.forEach(docSnap => {
+        const user = docSnap.data();
+        html += `
+          <tr>
+            <td>${user.username || docSnap.id}</td>
+            <td>${user.coins || 0}</td>
+            <td><input type='number' id='coins_${docSnap.id}' placeholder='0'><button onclick='addCoins("${docSnap.id}")'>Add</button></td>
+          </tr>
+        `;
+      });
+      html += `</table>`;
+      userList.innerHTML = html;
+    }
+
+    window.addCoins = async (uid) => {
+      const input = document.getElementById(`coins_${uid}`);
+      const addAmount = parseInt(input.value);
+      if (!addAmount) return;
+      const userRef = doc(db, "users", uid);
+      const userSnap = await getDoc(userRef);
+      const current = userSnap.data().coins || 0;
+      await updateDoc(userRef, { coins: current + addAmount });
+      alert("Coins added");
+      loadUsers();
+    };
+
+    loadUsers();
+  </script>
+</body>
+</html>

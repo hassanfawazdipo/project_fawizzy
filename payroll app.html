@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced Payroll System</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: #212121;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    h2 {
+      color: #34C759;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .payroll-box {
+      background: #1A1D23;
+      padding: 20px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 10px rgba(52,199,89,0.2);
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      background: #2a2d33;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #34C759;
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .sheet-box {
+      background: #1A1D23;
+      padding: 20px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 800px;
+      box-shadow: 0 0 10px rgba(52,199,89,0.15);
+      overflow-x: auto;
+    }
+
+    .sheet-box table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      background: #2a2d33;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #34C759;
+      color: black;
+    }
+
+    tr:nth-child(even) td {
+      background: #26292f;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: #1A1D23;
+      padding: 20px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 500px;
+      color: white;
+      box-shadow: 0 0 15px rgba(52,199,89,0.3);
+    }
+
+    .modal-content h3 {
+      margin-bottom: 10px;
+      color: #34C759;
+    }
+
+    .modal-content p {
+      margin: 5px 0;
+    }
+
+    .modal-content button {
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      input, button, th, td {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Box (Login/Register) -->
+  <div id="authBox" style="text-align:center; max-width:400px; margin:auto;">
+     <p style="color:red; text-align:center;">use your initial login details and click login</p>
+    <h2>Login / Register</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="loginUser()">Login</button>
+    <button onclick="registerUser()">Register</button>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <!-- Payroll App UI (Visible after login) -->
+  <div id="payrollApp" style="display:none">
+    <div style="text-align:right; max-width:800px; margin-bottom:10px;">
+      <button onclick="logoutUser()">Logout</button>
+    </div>
+
+    <!-- Payroll Box (Add Payroll Details) -->
+    <div class="payroll-box">
+      <h2>Advanced Payroll System</h2>
+      <label>Employee Name</label>
+      <input type="text" id="name" placeholder="Enter employee name" />
+      <label>Bank Name</label>
+      <input type="text" id="bank" placeholder="Enter bank name" />
+      <label>Account Number</label>
+      <input type="text" id="accountNumber" placeholder="Enter account number" />
+      <label>Account Name</label>
+      <input type="text" id="accountName" placeholder="Enter account name" />
+      <label>Base Salary (₦)</label>
+      <input type="number" id="salary" placeholder="Enter base salary" />
+      <label>Allowance (₦)</label>
+      <input type="number" id="allowance" placeholder="Enter allowance" />
+      <label>Deductions (₦)</label>
+      <input type="number" id="deduction" placeholder="Enter deductions" />
+      <button onclick="addPayroll()">Add to Payroll</button>
+    </div>
+
+    <!-- Payroll Sheet -->
+    <div class="sheet-box">
+      <h2>Payroll Sheet</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="payrollTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal for View/Edit Payroll Details -->
+  <div class="modal" id="detailModal">
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+
+  <script type="module">
+    // Firebase Modular v9
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    let currentUserEmail = null;
+
+    // Auth listener
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUserEmail = user.email;
+        document.getElementById("authBox").style.display = "none";
+        document.getElementById("payrollApp").style.display = "block";
+        loadUserData();
+      } else {
+        document.getElementById("authBox").style.display = "block";
+        document.getElementById("payrollApp").style.display = "none";
+      }
+    });
+
+    // Register
+    window.registerUser = async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert("Registered and logged in!");
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    // Login
+    window.loginUser = async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("Login successful!");
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    // Logout
+    window.logoutUser = async () => {
+      await signOut(auth);
+    };
+
+    // Data functions
+    let payrollData = [];
+
+    function saveUserData() {
+      localStorage.setItem(`payroll_${currentUserEmail}`, JSON.stringify(payrollData));
+    }
+
+    function loadUserData() {
+      const data = localStorage.getItem(`payroll_${currentUserEmail}`);
+      payrollData = data ? JSON.parse(data) : [];
+      renderTable();
+    }
+
+    window.addPayroll = () => {
+      const name = document.getElementById("name").value.trim();
+      const bank = document.getElementById("bank").value.trim();
+      const accountNumber = document.getElementById("accountNumber").value.trim();
+      const accountName = document.getElementById("accountName").value.trim();
+      const salary = parseFloat(document.getElementById("salary").value);
+      const allowance = parseFloat(document.getElementById("allowance").value);
+      const deduction = parseFloat(document.getElementById("deduction").value);
+
+      if (!name || !bank || !accountNumber || !accountName || isNaN(salary) || isNaN(allowance) || isNaN(deduction)) {
+        alert("Please fill all fields correctly.");
+        return;
+      }
+
+      const net = salary + allowance - deduction;
+      const date = new Date().toLocaleString();
+
+      payrollData.push({ name, bank, accountNumber, accountName, salary, allowance, deduction, net, date });
+      saveUserData();
+      renderTable();
+      document.querySelectorAll("input").forEach(i => i.value = '');
+    };
+
+    window.viewDetail = (index) => {
+      const entry = payrollData[payrollData.length - 1 - index];
+      document.getElementById("modalContent").innerHTML = `
+        <h3>${entry.name}</h3>
+        <p><strong>Bank:</strong> ${entry.bank}</p>
+        <p><strong>Account Number:</strong> ${entry.accountNumber}</p>
+        <p><strong>Account Name:</strong> ${entry.accountName}</p>
+        <p><strong>Base Salary:</strong> ₦${entry.salary.toLocaleString()}</p>
+        <p><strong>Allowance:</strong> ₦${entry.allowance.toLocaleString()}</p>
+        <p><strong>Deductions:</strong> ₦${entry.deduction.toLocaleString()}</p>
+        <p><strong>Net Salary:</strong> <span style="color:#34C759;font-weight:bold">₦${entry.net.toLocaleString()}</span></p>
+        <p><strong>Date:</strong> ${entry.date}</p>
+        <button onclick="document.getElementById('detailModal').classList.remove('show')">Close</button>
+      `;
+      document.getElementById("detailModal").classList.add("show");
+    };
+
+    window.editEntry = (index) => {
+      const entry = payrollData[payrollData.length - 1 - index];
+      document.getElementById("name").value = entry.name;
+      document.getElementById("bank").value = entry.bank;
+      document.getElementById("accountNumber").value = entry.accountNumber;
+      document.getElementById("accountName").value = entry.accountName;
+      document.getElementById("salary").value = entry.salary;
+      document.getElementById("allowance").value = entry.allowance;
+      document.getElementById("deduction").value = entry.deduction;
+
+      payrollData.splice(payrollData.length - 1 - index, 1);
+      saveUserData();
+      renderTable();
+    };
+
+    function renderTable() {
+      const table = document.getElementById("payrollTable");
+      table.innerHTML = '';
+      payrollData.slice().reverse().forEach((entry, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.name}</td>
+          <td>
+            <button onclick="viewDetail(${index})">View</button>
+            <button onclick="editEntry(${index})">Edit</button>
+          </td>`;
+        table.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>

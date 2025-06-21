@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Budget Allocator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <style>
+    :root {
+      --bg-dark: #1A1D23;
+      --bg-light: #212121;
+      --green: #34C759;
+      --text: #ffffff;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: var(--bg-light);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.5);
+    }
+    h1 {
+      text-align: center;
+      color: var(--green);
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 8px;
+    }
+    input, select {
+      background: #2a2a2a;
+      color: white;
+    }
+    button {
+      background-color: var(--green);
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #28a745;
+    }
+    .budget-list {
+      margin-top: 30px;
+    }
+    .budget-item {
+      background: #2a2a2a;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .budget-item input {
+      width: 70px;
+      margin-right: 10px;
+    }
+    .total {
+      margin-top: 20px;
+      font-weight: bold;
+      color: var(--green);
+      font-size: 18px;
+    }
+    .filters {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    .filters input {
+      flex: 1;
+    }
+    canvas {
+      margin-top: 30px;
+      background: #2a2a2a;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .auth-box {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .logout-btn {
+      background: red;
+      margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      .budget-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  <div class="container" id="authSection">
+     <p style="color:red; text-align:center;">use your initial login details and click login</p>
+    <h1>Login to Access Budget</h1>
+    <div class="auth-box">
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+      <button onclick="register()">Register</button>
+    </div>
+  </div>
+
+  <div class="container" id="budgetSection" style="display:none;">
+    <h1>Budget Allocator (₦)</h1>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+
+    <input type="text" id="category" placeholder="Category (e.g. Rent, Food)" />
+    <input type="number" id="amount" placeholder="Amount in Naira (₦)" />
+    <button onclick="addBudget()">Add Allocation</button>
+
+    <div class="filters">
+      <input type="text" id="filterCategory" placeholder="Filter by category..." oninput="renderBudget()" />
+    </div>
+
+    <div class="budget-list" id="budgetList"></div>
+    <div class="total" id="totalBudget">Total: ₦0.00</div>
+    <canvas id="budgetChart"></canvas>
+  </div>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // DOM
+    const categoryInput = document.getElementById('category');
+    const amountInput = document.getElementById('amount');
+    const filterCategory = document.getElementById('filterCategory');
+    const budgetList = document.getElementById('budgetList');
+    const totalBudget = document.getElementById('totalBudget');
+    const authSection = document.getElementById('authSection');
+    const budgetSection = document.getElementById('budgetSection');
+    let budgetChart;
+    let currentUserUID = null;
+    let budgets = [];
+
+    function formatNaira(value) {
+      return '₦' + value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+
+    function renderBudget() {
+      budgetList.innerHTML = '';
+      const filter = filterCategory.value.toLowerCase();
+      let total = 0;
+      const categoryMap = {};
+
+      budgets.forEach((item, index) => {
+        if (item.category.toLowerCase().includes(filter)) {
+          total += item.amount;
+          categoryMap[item.category] = (categoryMap[item.category] || 0) + item.amount;
+
+          const div = document.createElement('div');
+          div.className = 'budget-item';
+          div.innerHTML = `
+            <div>
+              <strong>${item.category}</strong>:
+              <input type="number" value="${item.amount}" onchange="editAmount(${index}, this.value)" />
+              <span>${formatNaira(item.amount)}</span>
+            </div>
+            <button onclick="deleteBudget(${index})">Delete</button>
+          `;
+          budgetList.appendChild(div);
+        }
+      });
+
+      totalBudget.textContent = `Total: ${formatNaira(total)}`;
+      updateChart(categoryMap);
+    }
+
+    function updateChart(dataMap) {
+      const ctx = document.getElementById('budgetChart').getContext('2d');
+      const labels = Object.keys(dataMap);
+      const values = Object.values(dataMap);
+
+      if (budgetChart) budgetChart.destroy();
+
+      budgetChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Budget Breakdown',
+            data: values,
+            backgroundColor: [
+              '#34C759', '#4CD964', '#5AC8FA', '#007AFF',
+              '#FF9500', '#FF2D55', '#5856D6', '#FFCC00'
+            ],
+            borderColor: '#1A1D23',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#fff'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function addBudget() {
+      const category = categoryInput.value.trim();
+      const amount = parseFloat(amountInput.value);
+      if (!category || isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid category and amount");
+        return;
+      }
+      budgets.push({ category, amount });
+      saveBudgets();
+      categoryInput.value = '';
+      amountInput.value = '';
+      renderBudget();
+    }
+
+    function deleteBudget(index) {
+      budgets.splice(index, 1);
+      saveBudgets();
+      renderBudget();
+    }
+
+    function editAmount(index, newValue) {
+      const amount = parseFloat(newValue);
+      if (!isNaN(amount) && amount > 0) {
+        budgets[index].amount = amount;
+        saveBudgets();
+        renderBudget();
+      }
+    }
+
+    function saveBudgets() {
+      localStorage.setItem(`budgets-${currentUserUID}`, JSON.stringify(budgets));
+    }
+
+    function loadBudgets() {
+      const data = localStorage.getItem(`budgets-${currentUserUID}`);
+      budgets = data ? JSON.parse(data) : [];
+    }
+
+    // Firebase Auth Functions
+    function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(user => {
+          alert('Login successful!');
+        })
+        .catch(err => alert(err.message));
+    }
+
+    function register() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(user => {
+          alert('Registration successful!');
+        })
+        .catch(err => alert(err.message));
+    }
+
+    function logout() {
+      auth.signOut();
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUserUID = user.uid;
+        authSection.style.display = 'none';
+        budgetSection.style.display = 'block';
+        loadBudgets();
+        renderBudget();
+      } else {
+        currentUserUID = null;
+        budgets = [];
+        authSection.style.display = 'block';
+        budgetSection.style.display = 'none';
+      }
+    });
+
+    window.onload = () => {
+      // Render after auth listener
+    }
+  </script>
+</body>
+</html>

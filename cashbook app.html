@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cashbook Entry with Login</title>
+  <style>
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+    body {
+      background-color: #212121;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Hide container initially */
+    #container {
+      width: 100%;
+      max-width: 500px;
+      background: #1A1D23;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 0 10px rgba(52, 199, 89, 0.3);
+      transition: 0.3s ease;
+      display: none;
+      flex-direction: column;
+    }
+
+    h1 {
+      text-align: center;
+      color: #34C759;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    form input, form select, form button {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    form input, form select {
+      background: #2a2d33;
+      color: #fff;
+    }
+
+    form button {
+      background-color: #34C759;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    form button:hover {
+      background-color: #28a745;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      background: #2a2d33;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .entries {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .entry {
+      display: flex;
+      flex-direction: column;
+      background: #2a2d33;
+      padding: 10px;
+      border-left: 6px solid #34C759;
+      border-radius: 8px;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .entry.expense {
+      border-left-color: red;
+    }
+
+    .entry-top {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+
+    .entry-bottom {
+      margin-top: 5px;
+      font-size: 13px;
+      color: #aaa;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Login form styles */
+    #login-section {
+      background: #1A1D23;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 0 10px rgba(52, 199, 89, 0.3);
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #login-section h2 {
+      color: #34C759;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    #login-section input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      background: #2a2d33;
+      color: #fff;
+    }
+
+    #login-section button {
+      background-color: #34C759;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      transition: background 0.3s;
+    }
+
+    #login-section button:hover {
+      background-color: #28a745;
+    }
+
+    #logout-btn {
+      background-color: #ff4d4d;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 20px;
+      display: none;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    #logout-btn:hover {
+      background-color: #e60000;
+    }
+
+    @media screen and (max-width: 600px) {
+      #container {
+        padding: 15px;
+      }
+
+      form input, form select, form button, #login-section input, #login-section button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="login-section">
+     <p style="color:red; text-align:center;">use your initial login details and click login</p>
+    <h2>Login to Cashbook</h2>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button id="login-btn">Login</button>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    <p id="login-error" style="color: #ff4d4d; text-align:center; display:none;"></p>
+  </div>
+
+  <button id="logout-btn">Logout</button>
+
+  <div class="container" id="container">
+    <h1>📘 Cashbook</h1>
+    <form id="cashForm">
+      <input type="text" id="desc" placeholder="Description" required />
+      <input type="number" id="amount" placeholder="Amount" required />
+      <input type="date" id="date" required />
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <button type="submit">Add Entry</button>
+    </form>
+
+    <div class="summary">
+      <div>Income: ₦<span id="income">0</span></div>
+      <div>Expense: ₦<span id="expense">0</span></div>
+      <div>Balance: ₦<span id="balance">0</span></div>
+    </div>
+
+    <div class="entries" id="entries"></div>
+  </div>
+
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+  <script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const loginSection = document.getElementById("login-section");
+    const loginBtn = document.getElementById("login-btn");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginError = document.getElementById("login-error");
+
+    const container = document.getElementById("container");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    const form = document.getElementById("cashForm");
+    const desc = document.getElementById("desc");
+    const amount = document.getElementById("amount");
+    const date = document.getElementById("date");
+    const type = document.getElementById("type");
+    const entries = document.getElementById("entries");
+    const incomeEl = document.getElementById("income");
+    const expenseEl = document.getElementById("expense");
+    const balanceEl = document.getElementById("balance");
+
+    let cashData = [];
+
+    // Format date function
+    function formatDate(dateStr) {
+      return new Date(dateStr).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+    }
+
+    // Render cashbook entries
+    function renderEntries() {
+      entries.innerHTML = "";
+      let income = 0, expense = 0;
+
+      cashData.forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "entry " + (entry.type === "expense" ? "expense" : "");
+        div.innerHTML = `
+          <div class="entry-top">
+            <span>${entry.desc}</span>
+            <span>₦${Number(entry.amount).toLocaleString()}</span>
+          </div>
+          <div class="entry-bottom">
+            <span>${entry.type === "income" ? "🟢 Income" : "🔴 Expense"}</span>
+            <span>${formatDate(entry.date)}</span>
+          </div>
+        `;
+        entries.appendChild(div);
+
+        if (entry.type === "income") income += Number(entry.amount);
+        else expense += Number(entry.amount);
+      });
+
+      incomeEl.textContent = income.toLocaleString();
+      expenseEl.textContent = expense.toLocaleString();
+      balanceEl.textContent = (income - expense).toLocaleString();
+    }
+
+    // Load entries from localStorage by user
+    function loadUserEntries(uid) {
+      const stored = localStorage.getItem("cashbook_" + uid);
+      cashData = stored ? JSON.parse(stored) : [];
+      renderEntries();
+    }
+
+    // Save entries to localStorage by user
+    function saveUserEntries(uid) {
+      localStorage.setItem("cashbook_" + uid, JSON.stringify(cashData));
+    }
+
+    // Login event
+    loginBtn.addEventListener("click", () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!email || !password) {
+        loginError.textContent = "Please enter email and password.";
+        loginError.style.display = "block";
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          loginError.style.display = "none";
+          emailInput.value = "";
+          passwordInput.value = "";
+          loginSection.style.display = "none";
+          logoutBtn.style.display = "block";
+          container.style.display = "flex";
+          loadUserEntries(userCredential.user.uid);
+        })
+        .catch((error) => {
+          loginError.textContent = error.message;
+          loginError.style.display = "block";
+        });
+    });
+
+    // Logout event
+    logoutBtn.addEventListener("click", () => {
+      auth.signOut().then(() => {
+        // Redirect to dashboard.html after logout
+        window.location.href = "dashboard.html";
+      });
+    });
+
+    // Form submission for cashbook entries
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!auth.currentUser) return;
+
+      const entry = {
+        desc: desc.value.trim(),
+        amount: parseFloat(amount.value),
+        date: date.value,
+        type: type.value,
+      };
+
+      if (!entry.desc || isNaN(entry.amount) || !entry.date) return;
+
+      cashData.push(entry);
+      saveUserEntries(auth.currentUser.uid);
+      form.reset();
+      renderEntries();
+    });
+
+    // Check auth state on page load
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginSection.style.display = "none";
+        logoutBtn.style.display = "block";
+        container.style.display = "flex";
+        loadUserEntries(user.uid);
+      } else {
+        loginSection.style.display = "flex";
+        logoutBtn.style.display = "none";
+        container.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
