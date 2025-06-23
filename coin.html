@@ -60,6 +60,13 @@
       font-size: 18px;
       margin-bottom: 20px;
     }
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: var(--accent);
+        text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -86,7 +93,8 @@
 
   <script src="https://checkout.flutterwave.com/v3.js"></script>
   <script>
-    const toolToUnlock = new URLSearchParams(window.location.search).get("tool");
+    // This variable is no longer strictly necessary since upgrading to premium unlocks all tools
+    // const toolToUnlock = new URLSearchParams(window.location.search).get("tool");
 
     function updateBalanceUI() {
       const balance = parseInt(localStorage.getItem("coins")) || 0;
@@ -102,9 +110,9 @@
         currency: "NGN",
         payment_options: "card,ussd,banktransfer",
         customer: {
-          email: "user@email.com",
-          phonenumber: "08000000000",
-          name: "User"
+          email: "user@email.com", // Replace with dynamic user email if available
+          phonenumber: "08000000000", // Replace with dynamic user phone if available
+          name: "User" // Replace with dynamic user name if available
         },
         customizations: {
           title: "Coin Purchase",
@@ -117,7 +125,7 @@
             updateBalanceUI();
             alert(`₦${nairaAmount} credited as ${nairaAmount} coins`);
           } else {
-            alert("Transaction was not successful.");
+            alert("Transaction was not successful. Please try again.");
           }
         },
         onclose: function () {
@@ -128,27 +136,27 @@
 
     function upgradePremium(cost, days) {
       let coins = parseInt(localStorage.getItem("coins")) || 0;
+
       if (coins < cost) {
-        alert("Insufficient coins. Please purchase more.");
+        alert("Insufficient coins. Please purchase more to upgrade to Premium.");
         return;
       }
 
-      if (!confirm(`Are you sure you want to spend ₦${cost} for ${days} days premium?`)) return;
+      if (!confirm(`Are you sure you want to spend ₦${cost} for ${days} days of Premium access? This will unlock all premium tools.`)) {
+        return;
+      }
 
       coins -= cost;
       localStorage.setItem("coins", coins);
       updateBalanceUI();
 
-      if (toolToUnlock) {
-        const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
-        const expiresAt = new Date(Date.now() + days * 86400000).toISOString();
-        unlocks[toolToUnlock] = { expiresAt };
-        localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
-        alert("Tool unlocked successfully!");
-        window.location.href = "dashboard.html";
-      } else {
-        alert("Premium access added successfully.");
-      }
+      // Set premium status in localStorage with an expiry date
+      const premiumExpiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+      localStorage.setItem("isPremiumUser", "true");
+      localStorage.setItem("premiumExpiresAt", premiumExpiresAt);
+
+      alert(`Congratulations! You now have Premium access for ${days} days. All premium tools are unlocked.`);
+      window.location.href = "dashboard.html"; // Redirect to dashboard to reflect changes
     }
   </script>
 
