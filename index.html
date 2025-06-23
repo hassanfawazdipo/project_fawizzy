@@ -6,11 +6,13 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <style>
     :root {
-      --dark: #212121;
-      --darker: #1A1D23;
-      --green: #34C759;
-      --white: #ffffff;
-    }* {
+  --dark: #212121;
+  --darker: #1A1D23;
+  --green: #34C759;
+  --white: #ffffff;
+}
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -22,6 +24,7 @@ body {
   color: var(--white);
 }
 
+/* Header */
 header {
   background: var(--darker);
   padding: 20px;
@@ -33,10 +36,16 @@ header {
   z-index: 1000;
 }
 
-header .logo {
+.logo {
   font-size: 24px;
   color: var(--green);
   font-weight: bold;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 nav ul {
@@ -58,7 +67,14 @@ nav ul li a {
   cursor: pointer;
 }
 
-@media(max-width: 768px) {
+/* Responsive Navigation */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    width: 100%;
+  }
+
   nav ul {
     display: none;
     flex-direction: column;
@@ -79,6 +95,7 @@ nav ul li a {
   }
 }
 
+/* Hero Section */
 .hero {
   padding: 80px 20px;
   text-align: center;
@@ -112,6 +129,7 @@ nav ul li a {
   margin: 10px;
 }
 
+/* Tools Section */
 section {
   padding: 60px 20px;
   max-width: 1200px;
@@ -142,6 +160,7 @@ section {
   margin-bottom: 10px;
 }
 
+/* FAQ Section */
 details {
   background: var(--darker);
   margin: 10px 0;
@@ -156,6 +175,7 @@ summary {
   font-size: 18px;
 }
 
+/* Map */
 iframe {
   width: 100%;
   height: 300px;
@@ -163,6 +183,7 @@ iframe {
   margin: 40px 0;
 }
 
+/* Footer */
 footer {
   background: var(--darker);
   padding: 30px 20px;
@@ -185,7 +206,8 @@ footer {
 </head>
 <body>
   <header>
-    <div class="logo">ConectCamp</div>
+  <div class="logo">ConectCamp</div>
+  <div class="nav-container">
     <i class="fas fa-bars menu-toggle" onclick="toggleMenu()"></i>
     <nav>
       <ul id="menu">
@@ -193,16 +215,17 @@ footer {
         <li><a href="#mission">Mission</a></li>
         <li><a href="#vision">Vision</a></li>
         <li><a href="#faq">FAQ</a></li>
-         <li><a href="contact.html">reviews</a></li>
+        <li><a href="contact.html">Reviews</a></li>
         <li><a href="register.html">Register</a></li>
         <li><a href="register.html">Login</a></li>
       </ul>
     </nav>
-  </header>  <div class="hero">
+  </div>
+</header>
+  <div class="hero">
     <h1>Empowering Every Business with Smart Tools</h1>
     <p>No matter your industry, size, or goal — ConectCamp provides powerful tools for all. From automation to growth, we help businesses and individuals thrive.</p>
-    <img src="https://www.svgrepo.com/show/331188/business-growth.svg" alt="Business Growth Icon" />
-    <a href="register.html" class="btn">Get Started</a>
+      <a href="register.html" class="btn">Get Started</a>
   </div>  <section id="tools">
     <h2 style="text-align:center; margin-bottom:30px; color:var(--green);">Our Smart Business Tools</h2>
     <div class="tools-grid">
