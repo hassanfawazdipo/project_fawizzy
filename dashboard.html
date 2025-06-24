@@ -174,6 +174,62 @@
       background-color: #000;
       color: #fff;
     }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background-color: var(--card);
+        margin: auto;
+        padding: 30px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 400px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        text-align: center;
+        position: relative;
+    }
+    .close-button {
+        color: var(--text);
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .modal-content h3 {
+        margin-bottom: 20px;
+        color: var(--accent);
+    }
+    .modal-options button {
+        display: block;
+        width: calc(100% - 20px);
+        padding: 12px;
+        margin: 10px auto;
+        background-color: var(--accent);
+        color: #000;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .modal-options button:hover {
+        background-color: #28a745;
+    }
   </style>
 </head>
 <body>
@@ -187,226 +243,236 @@
         <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
         <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
         <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>  <div class="main-content" id="mainContent">
+    <div class="topbar">
+        <button class="toggle-menu" onclick="toggleMenu()">☰</button>
+        <div class="balance" id="balance">
+            <i class="fas fa-wallet"></i> ₦0
+        </div>
+        <input type="text" id="toolSearch" placeholder="Search tools...">
+        <label class="theme-switch">
+            <input type="checkbox" id="themeToggle">
+            Theme
+        </label>
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
-    <div class="main-content" id="mainContent">
-        <div class="topbar">
-            <button class="toggle-menu" onclick="toggleMenu()">☰</button>
-            <div class="balance" id="balance">
-                <i class="fas fa-wallet"></i> ₦0
-            </div>
-            <input type="text" id="toolSearch" placeholder="Search tools...">
-            <label class="theme-switch">
-                <input type="checkbox" id="themeToggle">
-                Theme
-            </label>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+    <h2>Free Tools</h2>
+    <div class="product-grid" id="freeTools">
+        <div class="product-box" data-link="cgpa calculator.html" data-plan="free" data-name="CGPA Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>CGPA Calculator</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
         </div>
-
-        <h2>Free Tools</h2>
-        <div class="product-grid" id="freeTools">
-            <div class="product-box" data-link="cgpa calculator.html" data-plan="free" data-name="CGPA Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>CGPA Calculator</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="profit calculator.html" data-plan="free" data-name="Profit Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>Profit Calculator</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="loan calculator .html" data-plan="free" data-name="Loan Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>Loan Calculator</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="Todolist app.html" data-plan="free" data-name="to do list app">
-                <i class="fas fa-list"></i>
-                <h3>To do list App</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="tax calculator.html" data-plan="free" data-name="Tax Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>Tax Calculator</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="vat calculator.html" data-plan="free" data-name="Vat Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>VAT Calculator</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="discount calculator .html" data-plan="free" data-name="Discount Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>Discount Calculator</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="tax planner app.html" data-plan="free" data-name="Tax Planner App">
-                <i class="fas fa-robot"></i>
-                <h3>Tax Planner App</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="intrest calculator.html" data-plan="free" data-name="Intrest Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>Intrest Calculator</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="ovwrtime calculator .html" data-plan="free" data-name="Overtime Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>Overtime Calculator</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="daily income calculator .html" data-plan="free" data-name="daily income Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>Daily Income Calculator</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="student budget app .html" data-plan="free" data-name="student budget app">
-                <i class="fas fa-calculator"></i>
-                <h3>Student Budget App</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="measurement.html" data-plan="free" data-name="Measurement Converter app">
-                <i class="fas fa-calculator"></i>
-                <h3>Measurement Converter App</h3>
-                <span class="tag free">free</span>
-                <button>Open</button>
-            </div>
+        <div class="product-box" data-link="profit calculator.html" data-plan="free" data-name="Profit Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>Profit Calculator</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
         </div>
+        <div class="product-box" data-link="loan calculator .html" data-plan="free" data-name="Loan Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>Loan Calculator</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="Todolist app.html" data-plan="free" data-name="to do list app">
+            <i class="fas fa-list"></i>
+            <h3>To do list App</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="tax calculator.html" data-plan="free" data-name="Tax Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>Tax Calculator</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="vat calculator.html" data-plan="free" data-name="Vat Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>VAT Calculator</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="discount calculator .html" data-plan="free" data-name="Discount Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>Discount Calculator</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="tax planner app.html" data-plan="free" data-name="Tax Planner App">
+            <i class="fas fa-robot"></i>
+            <h3>Tax Planner App</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="intrest calculator.html" data-plan="free" data-name="Intrest Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>Intrest Calculator</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="ovwrtime calculator .html" data-plan="free" data-name="Overtime Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>Overtime Calculator</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="daily income calculator .html" data-plan="free" data-name="daily income Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>Daily Income Calculator</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="student budget app .html" data-plan="free" data-name="student budget app">
+            <i class="fas fa-calculator"></i>
+            <h3>Student Budget App</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="measurement.html" data-plan="free" data-name="Measurement Converter app">
+            <i class="fas fa-calculator"></i>
+            <h3>Measurement Converter App</h3>
+            <span class="tag free">free</span>
+            <button>Open</button>
+        </div>
+    </div>
 
-        <h2 style="margin-top: 30px;">Premium Tools</h2>
-        <div class="product-grid" id="premiumTools">
-            <div class="product-box" data-link="bookkeeping-app.html" data-plan="premium" data-name="bookkeeping app">
-                <i class="fas fa-robot"></i>
-                <h3>Book-keeping App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="invoice generator .html" data-plan="premium" data-name="invoice generator">
-                <i class="fas fa-robot"></i>
-                <h3>Invoice Generator</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="recipt generator .html" data-plan="premium" data-name="Recipt generator">
-                <i class="fas fa-robot"></i>
-                <h3>Recipt Generator</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="cashbook app.html" data-plan="premium" data-name="Cashbook App">
-                <i class="fas fa-robot"></i>
-                <h3>Cashbook App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="comprative statment app.html" data-plan="premium" data-name="comprative statment app">
-                <i class="fas fa-robot"></i>
-                <h3>Comprative Statment App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="reviews generator .html" data-plan="premium" data-name="reviews generator">
-                <i class="fas fa-robot"></i>
-                <h3>Reviews Generator App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="imvrntory app.html" data-plan="premium" data-name="inventory app">
-                <i class="fas fa-robot"></i>
-                <h3>Inventory App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="payroll app.html" data-plan="premium" data-name="payroll app">
-                <i class="fas fa-robot"></i>
-                <h3>Payroll App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="revenue forcasting app.html" data-plan="premium" data-name="Revenue forcasting app">
-                <i class="fas fa-robot"></i>
-                <h3>Revenue Forcasting App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="sales recorder .html" data-plan="premium" data-name="Sales recorder">
-                <i class="fas fa-robot"></i>
-                <h3>Sales Recorder</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="material cost calculator .html" data-plan="premium" data-name="Material cost Calculator">
-                <i class="fas fa-calculator"></i>
-                <h3>Material Cost Calculator</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="profit and loss calculator.html" data-plan="premium" data-name="profit and loss calculator">
-                <i class="fas fa-robot"></i>
-                <h3>Profit and Loss Calculator</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="quotation generator app.html" data-plan="premium" data-name="quotation generator app">
-                <i class="fas fa-robot"></i>
-                <h3>Quotation Generator App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="budget allocating app.html" data-plan="premium" data-name="budget allocating app">
-                <i class="fas fa-robot"></i>
-                <h3>Budget Allocating App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="school.html" data-plan="premium" data-name="school managment app">
-                <i class="fas fa-robot"></i>
-                <h3>School Managment App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="church.html" data-plan="premium" data-name="church managment app">
-                <i class="fas fa-robot"></i>
-                <h3>Church Managment App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="pos.html" data-plan="premium" data-name="company managment app">
-                <i class="fas fa-robot"></i>
-                <h3>Company Managment App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="point.html" data-plan="premium" data-name="point of sales app">
-                <i class="fas fa-robot"></i>
-                <h3>Point Of Sales App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
-            <div class="product-box" data-link="report.html" data-plan="premium" data-name="Report-card generator App">
-                <i class="fas fa-robot"></i>
-                <h3>Report-card generator App</h3>
-                <span class="tag premium">premium</span>
-                <button>Open</button>
-            </div>
+    <h2 style="margin-top: 30px;">Premium Tools</h2>
+    <div class="product-grid" id="premiumTools">
+        <div class="product-box" data-link="bookkeeping-app.html" data-plan="premium" data-name="bookkeeping app">
+            <i class="fas fa-robot"></i>
+            <h3>Book-keeping App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="invoice generator .html" data-plan="premium" data-name="invoice generator">
+            <i class="fas fa-robot"></i>
+            <h3>Invoice Generator</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="recipt generator .html" data-plan="premium" data-name="Recipt generator">
+            <i class="fas fa-robot"></i>
+            <h3>Recipt Generator</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="cashbook app.html" data-plan="premium" data-name="Cashbook App">
+            <i class="fas fa-robot"></i>
+            <h3>Cashbook App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="comprative statment app.html" data-plan="premium" data-name="comprative statment app">
+            <i class="fas fa-robot"></i>
+            <h3>Comprative Statment App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="reviews generator .html" data-plan="premium" data-name="reviews generator">
+            <i class="fas fa-robot"></i>
+            <h3>Reviews Generator App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="imvrntory app.html" data-plan="premium" data-name="inventory app">
+            <i class="fas fa-robot"></i>
+            <h3>Inventory App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="payroll app.html" data-plan="premium" data-name="payroll app">
+            <i class="fas fa-robot"></i>
+            <h3>Payroll App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="revenue forcasting app.html" data-plan="premium" data-name="Revenue forcasting app">
+            <i class="fas fa-robot"></i>
+            <h3>Revenue Forcasting App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="sales recorder .html" data-plan="premium" data-name="Sales recorder">
+            <i class="fas fa-robot"></i>
+            <h3>Sales Recorder</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="material cost calculator .html" data-plan="premium" data-name="Material cost Calculator">
+            <i class="fas fa-calculator"></i>
+            <h3>Material Cost Calculator</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="profit and loss calculator.html" data-plan="premium" data-name="profit and loss calculator">
+            <i class="fas fa-robot"></i>
+            <h3>Profit and Loss Calculator</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="quotation generator app.html" data-plan="premium" data-name="quotation generator app">
+            <i class="fas fa-robot"></i>
+            <h3>Quotation Generator App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="budget allocating app.html" data-plan="premium" data-name="budget allocating app">
+            <i class="fas fa-robot"></i>
+            <h3>Budget Allocating App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="school.html" data-plan="premium" data-name="school managment app">
+            <i class="fas fa-robot"></i>
+            <h3>School Managment App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="church.html" data-plan="premium" data-name="church managment app">
+            <i class="fas fa-robot"></i>
+            <h3>Church Managment App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="pos.html" data-plan="premium" data-name="company managment app">
+            <i class="fas fa-robot"></i>
+            <h3>Company Managment App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="point.html" data-plan="premium" data-name="point of sales app">
+            <i class="fas fa-robot"></i>
+            <h3>Point Of Sales App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
+        </div>
+        <div class="product-box" data-link="report.html" data-plan="premium" data-name="Report-card generator App">
+            <i class="fas fa-robot"></i>
+            <h3>Report-card generator App</h3>
+            <span class="tag premium">premium</span>
+            <button>Open</button>
         </div>
     </div>
 </div>
 
-
-  <script>
+</div>
+<div id="unlockModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal()">&times;</span>
+        <h3>Unlock Premium Tool</h3>
+        <p>Choose an unlock duration:</p>
+        <div class="modal-options">
+            <button onclick="unlockTool(7, 3000)">7 Days - ₦3000</button>
+            <button onclick="unlockTool(14, 7000)">14 Days - ₦7000</button>
+            <button onclick="unlockTool(30, 10000)">1 Month - ₦10000</button>
+        </div>
+        <p id="modalMessage" style="color: red; margin-top: 10px;"></p>
+    </div>
+</div>
+    <script>
     const themeToggle = document.getElementById("themeToggle");
 const body = document.body;
 
@@ -425,6 +491,8 @@ themeToggle.addEventListener("change", () => {
 const balanceDisplay = document.getElementById("balance");
 let balance = parseInt(localStorage.getItem("coins")) || 0;
 balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
+
+let currentToolToUnlock = null; // To store the link of the tool being unlocked
 
 // Function to check if a tool is unlocked (either individually or by premium account status)
 function isToolUnlocked(link) {
@@ -451,18 +519,65 @@ function updateButtons() {
 
         if (plan === "free") {
             button.textContent = "Open";
-        } else { // Premium tools
-            button.textContent = isToolUnlocked(link) ? "Open" : "Unlock";
-        }
-
-        button.onclick = () => {
-            if (plan === "free" || isToolUnlocked(link)) {
+            button.onclick = () => {
                 window.location.href = link;
+            };
+        } else { // Premium tools
+            if (isToolUnlocked(link)) {
+                button.textContent = "Open";
+                button.onclick = () => {
+                    window.location.href = link;
+                };
             } else {
-                window.location.href = `coin.html?tool=${encodeURIComponent(link)}`;
+                button.textContent = "Unlock";
+                button.onclick = () => {
+                    currentToolToUnlock = link;
+                    openModal();
+                };
             }
-        };
+        }
     });
+}
+
+// Modal functions
+const unlockModal = document.getElementById("unlockModal");
+const modalMessage = document.getElementById("modalMessage");
+
+function openModal() {
+    unlockModal.style.display = "flex";
+    modalMessage.textContent = ""; // Clear previous messages
+}
+
+function closeModal() {
+    unlockModal.style.display = "none";
+    currentToolToUnlock = null;
+}
+
+function unlockTool(days, cost) {
+    if (balance >= cost) {
+        balance -= cost;
+        localStorage.setItem("coins", balance);
+        balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
+
+        const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + days);
+        unlocks[currentToolToUnlock] = {
+            unlocked: true,
+            expiresAt: expirationDate.toISOString()
+        };
+        localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
+
+        modalMessage.textContent = `Tool unlocked for ${days} days!`;
+        modalMessage.style.color = "green";
+        updateButtons(); // Update button text to "Open"
+        setTimeout(() => {
+            closeModal();
+        }, 1500); // Close modal after a short delay
+    } else {
+        modalMessage.textContent = "Insufficient coins to unlock this tool.";
+        modalMessage.style.color = "red";
+    }
 }
 
 // Function to filter tools based on search query
@@ -491,6 +606,13 @@ function toggleMenu() {
 
 // Initial update of buttons when the page loads
 updateButtons();
+
+// Close modal if user clicks outside of it
+window.onclick = function(event) {
+    if (event.target == unlockModal) {
+        closeModal();
+    }
+}
 
   </script>
 </body>

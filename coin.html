@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Buy Coins & Upgrade</title>
+  <title>Buy Coins</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
@@ -33,6 +33,9 @@
       padding: 20px;
       margin-bottom: 30px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      max-width: 500px; /* Added for better layout */
+      margin-left: auto;
+      margin-right: auto;
     }
     .option {
       display: flex;
@@ -75,27 +78,20 @@
 </head>
 <body>
 
-<h1>👛 Coin & Premium Hub</h1>
+<h1>👛 Buy Coins</h1>
 
 <div class="balance" id="balance">Balance: ₦0 coins</div>
 
 <div class="section">
-  <h2>🪙 Buy Coins (₦1 = 1 Coin)</h2>
+  <h2>🪙 Select Coin Pack (₦1 = 1 Coin)</h2>
   <div class="option"><span>₦1,000 = 1,000 Coins</span><button onclick="buyCoins(1000)">Buy</button></div>
   <div class="option"><span>₦5,000 = 5,000 Coins</span><button onclick="buyCoins(5000)">Buy</button></div>
   <div class="option"><span>₦10,000 = 10,000 Coins</span><button onclick="buyCoins(10000)">Buy</button></div>
   <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
 </div>
 
-<div class="section">
-  <h2>🚀 Upgrade to Premium</h2>
-  <div class="option"><span>₦5,000 → 1 Week Access</span><button onclick="upgradePremium(5000, 7)">Upgrade</button></div>
-  <div class="option"><span>₦10,000 → 2 Weeks Access</span><button onclick="upgradePremium(10000, 14)">Upgrade</button></div>
-  <div class="option"><span>₦15,000 → 1 Month Access</span><button onclick="upgradePremium(15000, 30)">Upgrade</button></div>
-  <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
-</div>
-
 <script>
+  // Firebase configuration (replace with your actual config)
   const firebaseConfig = {
     apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
     authDomain: "conectcamp-db2c2.firebaseapp.com",
@@ -106,115 +102,85 @@
     measurementId: "G-3Q2ZS872YC"
   };
 
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
   let currentUID = null;
 
+  // Check user authentication status
   auth.onAuthStateChanged(user => {
     if (!user) {
+      // If no user is logged in, redirect to login page
       alert("Please log in first.");
       window.location.href = "login.html";
     } else {
       currentUID = user.uid;
-      updateBalanceUI();
+      updateBalanceUI(); // Update UI with current coin balance
     }
   });
 
+  // Function to update the displayed coin balance
   function updateBalanceUI() {
-    db.collection("users").doc(currentUID).get().then(doc => {
-      const coins = doc.exists ? (doc.data().coins || 0) : 0;
-      document.getElementById("balance").textContent = `Balance: ₦${coins.toLocaleString()} coins`;
-    });
+    if (currentUID) {
+      db.collection("users").doc(currentUID).get().then(doc => {
+        const coins = doc.exists ? (doc.data().coins || 0) : 0;
+        document.getElementById("balance").textContent = `Balance: ₦${coins.toLocaleString()} coins`;
+      }).catch(error => {
+        console.error("Error fetching balance:", error);
+      });
+    }
   }
 
+  // Function to initiate coin purchase via Flutterwave
   function buyCoins(nairaAmount) {
     const user = auth.currentUser;
-    if (!user) return alert("Login required to buy coins.");
+    if (!user) {
+      alert("Login required to buy coins.");
+      return;
+    }
 
+    // Initialize Flutterwave Checkout
     FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X",
-      tx_ref: "tx-" + Date.now(),
+      public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X", // Replace with your actual Flutterwave Public Key
+      tx_ref: "coin_purchase_" + Date.now() + "_" + user.uid.substring(0, 5), // Unique transaction reference
       amount: nairaAmount,
       currency: "NGN",
-      payment_options: "card,ussd,banktransfer",
+      payment_options: "card,ussd,banktransfer", // Specify desired payment options
       customer: {
         email: user.email,
-        phonenumber: user.phoneNumber || "08000000000",
-        name: user.displayName || "User"
+        phonenumber: user.phoneNumber || "N/A", // Use N/A if phone number isn't available
+        name: user.displayName || "Customer"
       },
       customizations: {
         title: "Coin Purchase",
-        description: `Buying ${nairaAmount} coins`,
+        description: `Purchase ${nairaAmount} coins for ₦${nairaAmount}`,
+        logo: "https://your-website.com/logo.png", // Replace with your logo URL
       },
       callback: function (data) {
+        // This function is called when the payment is complete
         if (data.status === "successful") {
           const userRef = db.collection("users").doc(user.uid);
+          // Use a Firestore transaction to safely update the user's coin balance
           db.runTransaction(async (transaction) => {
             const doc = await transaction.get(userRef);
             const currentCoins = doc.exists ? (doc.data().coins || 0) : 0;
             transaction.update(userRef, { coins: currentCoins + nairaAmount });
           }).then(() => {
-            updateBalanceUI();
-            alert(`₦${nairaAmount} credited as ${nairaAmount} coins`);
+            updateBalanceUI(); // Update UI after successful transaction
+            alert(`Payment successful! ₦${nairaAmount} has been credited to your balance as ${nairaAmount} coins.`);
           }).catch(error => {
-            console.error("Transaction failed: ", error);
+            console.error("Firebase transaction failed:", error);
+            alert("Failed to credit coins. Please contact support.");
           });
         } else {
-          alert("Transaction failed. Please try again.");
+          alert("Payment failed. Please try again or contact support.");
         }
       },
       onclose: function () {
-        console.log("Transaction closed");
+        // This function is called when the checkout modal is closed without completing payment
+        console.log("Flutterwave payment modal closed.");
       },
-    });
-  }
-
-  function upgradePremium(cost, days) {
-    const user = auth.currentUser;
-    if (!user) return alert("Login required to upgrade.");
-
-    const userRef = db.collection("users").doc(user.uid);
-    db.runTransaction(async (transaction) => {
-      const doc = await transaction.get(userRef);
-      const data = doc.data();
-      const currentCoins = data.coins || 0;
-
-      if (currentCoins < cost) {
-        alert("Insufficient coins. Please purchase more to upgrade.");
-        throw "Insufficient coins";
-      }
-
-      if (!confirm(`Upgrade for ₦${cost} for ${days} days?`)) throw "Cancelled";
-
-      const now = new Date();
-      let newExpireDate = new Date(now.getTime() + days * 86400000);
-      if (data.premiumExpiresAt && data.premiumExpiresAt.toDate() > now) {
-        newExpireDate = new Date(data.premiumExpiresAt.toDate().getTime() + days * 86400000);
-      }
-
-      transaction.update(userRef, {
-        coins: currentCoins - cost,
-        status: "premium",
-        premiumExpiresAt: firebase.firestore.Timestamp.fromDate(newExpireDate),
-        toolUnlocks: {
-          invoice: "open",
-          receipt: "open",
-          payroll: "open",
-          forecast: "open",
-          report: "open",
-          pos: "open",
-          school: "open",
-          church: "open",
-          business: "open"
-        }
-      });
-    }).then(() => {
-      alert(`You now have Premium access for ${days} days.`);
-      updateBalanceUI();
-      window.location.href = "dashboard.html";
-    }).catch(error => {
-      console.error("Upgrade failed: ", error);
     });
   }
 </script>
