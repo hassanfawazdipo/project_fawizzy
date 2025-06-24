@@ -1,16 +1,20 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Professional Quotation Generator</title>
+  <title>Quotation Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
     :root {
-      --bg: #212121;
-      --card: #1A1D23;
-      --accent: #34C759;
-      --text: #ffffff;
-    }* {
+  --bg: #212121;
+  --card: #1A1D23;
+  --accent: #34C759;
+  --text: #ffffff;
+}
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -32,7 +36,7 @@ body {
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
 }
 
-h2 {
+h2, h3 {
   text-align: center;
   color: var(--accent);
   margin-bottom: 20px;
@@ -60,22 +64,6 @@ input, textarea {
   gap: 20px;
 }
 
-table {
-  width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid #444;
-  text-align: left;
-}
-
-th {
-  color: var(--accent);
-}
-
 .btn {
   background: var(--accent);
   color: black;
@@ -91,90 +79,178 @@ th {
   margin-top: 15px;
 }
 
+/* Table Styling */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  background: #2c2f35;
+  border-radius: 10px;
+  overflow: hidden;
+  word-break: break-word;
+  table-layout: fixed;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #444;
+  word-wrap: break-word;
+}
+
+th {
+  color: var(--accent);
+  background: #1f1f1f;
+}
+
+td {
+  color: var(--text);
+}
+
+/* Responsive Table on Small Screens */
 @media(max-width: 700px) {
   .row {
     grid-template-columns: 1fr;
   }
 }
 
+@media(max-width: 500px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tr {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #444;
+  }
+
+  td {
+    position: relative;
+    padding-left: 50%;
+  }
+
+  td::before {
+    position: absolute;
+    left: 10px;
+    width: 45%;
+    white-space: nowrap;
+    font-weight: bold;
+    color: var(--accent);
+  }
+
+  td:nth-child(1)::before { content: "Description"; }
+  td:nth-child(2)::before { content: "Unit Price (₦)"; }
+  td:nth-child(3)::before { content: "Quantity"; }
+  td:nth-child(4)::before { content: "Total (₦)"; }
+}
   </style>
 </head>
 <body>
+  <div class="container">
+    <h2>Create New Quotation</h2>
+    <div class="row">
+      <div>
+        <label>Quotation Number</label>
+        <input type="text" id="quoteNumber" placeholder="e.g. QUO-001" />
+
+        <label>Date</label>
+        <input type="date" id="quoteDate" />
+
+        <label>Company Name & Address</label>
+        <textarea id="companyInfo" rows="3" placeholder="Your Company Name, Address, Contact"></textarea>
+      </div>
+
+      <div>
+        <label>Client Name & Address</label>
+        <textarea id="clientInfo" rows="5" placeholder="Client Name, Address, Contact"></textarea>
+
+        <label>Payment Terms</label>
+        <input type="text" id="paymentTerms" placeholder="e.g. 50% upfront, 50% on delivery" />
+
+        <label>Delivery Terms</label>
+        <input type="text" id="deliveryTerms" placeholder="e.g. Within 7 business days" />
+      </div>
+    </div>
+
+    <h3>Quote Items</h3>
+    <div class="row">
+      <input type="text" id="desc" placeholder="Description of Goods/Services" />
+      <input type="number" id="unit" placeholder="Unit Price (₦)" />
+      <input type="number" id="qty" placeholder="Quantity" />
+      <button class="btn" onclick="addItem()">Add</button>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Taxes & Duties (₦)</label>
+        <input type="number" id="taxes" oninput="updateTotal()" placeholder="0.00" />
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn" onclick="generateQuotation()">✅ Generate Quotation</button>
+      <button class="btn" id="downloadBtn" onclick="downloadAsImage()">⬇️ Download Image</button>
+    </div>
+  </div>
+
+  <!-- Quotation Preview -->
   <div class="container" id="quotationArea">
-    <h2>Customer Quotation</h2><div class="row">
-  <div>
-    <label>Quotation Number</label>
-    <input type="text" id="quoteNumber" placeholder="e.g. QUO-001" />
+    <h2>Customer Quotation</h2>
+    <div class="row">
+      <div>
+        <p><strong>Quotation Number:</strong> <span id="viewQuoteNumber"></span></p>
+        <p><strong>Date:</strong> <span id="viewQuoteDate"></span></p>
+        <p><strong>Company:</strong><br><span id="viewCompany"></span></p>
+      </div>
+      <div>
+        <p><strong>Client:</strong><br><span id="viewClient"></span></p>
+        <p><strong>Payment Terms:</strong> <span id="viewPayment"></span></p>
+        <p><strong>Delivery Terms:</strong> <span id="viewDelivery"></span></p>
+      </div>
+    </div>
 
-    <label>Date</label>
-    <input type="date" id="quoteDate" />
+    <table id="quoteTable">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Unit Price (₦)</th>
+          <th>Quantity</th>
+          <th>Total (₦)</th>
+        </tr>
+      </thead>
+      <tbody id="quoteBody"></tbody>
+    </table>
 
-    <label>Company Name & Address</label>
-    <textarea id="companyInfo" rows="3" placeholder="Your Company Name, Address, Contact"></textarea>
+    <div class="total-box">
+      <h3>Total (incl. tax): ₦<span id="grand">0.00</span></h3>
+    </div>
   </div>
 
-  <div>
-    <label>Client Name & Address</label>
-    <textarea id="clientInfo" rows="5" placeholder="Client Name, Address, Contact"></textarea>
-
-    <label>Payment Terms</label>
-    <input type="text" id="paymentTerms" placeholder="e.g. 50% upfront, 50% on delivery" />
-
-    <label>Delivery Terms</label>
-    <input type="text" id="deliveryTerms" placeholder="e.g. Within 7 business days" />
-  </div>
-</div>
-
-<h3 style="margin-top:30px; color: var(--accent);">Quote Items</h3>
-<div class="row">
-  <input type="text" id="desc" placeholder="Description of Goods/Services" />
-  <input type="number" id="unit" placeholder="Unit Price (₦)" />
-  <input type="number" id="qty" placeholder="Quantity" />
-  <button class="btn" onclick="addItem()">Add</button>
-</div>
-
-<table id="quoteTable" style="display:none;">
-  <thead>
-    <tr>
-      <th>Description</th>
-      <th>Unit Price (₦)</th>
-      <th>Quantity</th>
-      <th>Total (₦)</th>
-    </tr>
-  </thead>
-  <tbody id="quoteBody"></tbody>
-</table>
-
-<div class="row">
-  <div>
-    <label>Taxes & Duties (₦)</label>
-    <input type="number" id="taxes" oninput="updateTotal()" placeholder="0.00" />
-  </div>
-</div>
-
-<div class="total-box">
-  <h3 style="color: var(--accent);">Grand Total: ₦<span id="grand">0.00</span></h3>
-</div>
-
-<button class="btn" onclick="window.print()">Print Quotation</button>
-<a href="dashboard.html" class="back-link">← Back to Dashboard</a>
-  </div>  <script>
+  <script>
     let grandTotal = 0;
+    const items = [];
 
     function addItem() {
-      let desc = document.getElementById("desc").value;
-      let unit = parseFloat(document.getElementById("unit").value);
-      let qty = parseFloat(document.getElementById("qty").value);
+      const desc = document.getElementById("desc").value;
+      const unit = parseFloat(document.getElementById("unit").value);
+      const qty = parseFloat(document.getElementById("qty").value);
 
       if (!desc || isNaN(unit) || isNaN(qty) || unit <= 0 || qty <= 0) {
-        alert("Fill valid description, unit price, and quantity.");
+        alert("Please enter valid item details.");
         return;
       }
 
-      let total = unit * qty;
+      const total = unit * qty;
+      items.push({ desc, unit, qty, total });
       grandTotal += total;
 
-      let row = `
+      const row = `
         <tr>
           <td>${desc}</td>
           <td>₦${unit.toFixed(2)}</td>
@@ -182,20 +258,55 @@ th {
           <td>₦${total.toFixed(2)}</td>
         </tr>
       `;
-
       document.getElementById("quoteBody").innerHTML += row;
-      document.getElementById("quoteTable").style.display = "table";
-      updateTotal();
 
+      updateTotal();
       document.getElementById("desc").value = "";
       document.getElementById("unit").value = "";
       document.getElementById("qty").value = "";
     }
 
     function updateTotal() {
-      let tax = parseFloat(document.getElementById("taxes").value) || 0;
-      let total = grandTotal + tax;
-      document.getElementById("grand").textContent = total.toFixed(2);
+      const tax = parseFloat(document.getElementById("taxes").value) || 0;
+      const fullTotal = grandTotal + tax;
+      document.getElementById("grand").textContent = fullTotal.toFixed(2);
     }
-  </script></body>
+
+    function generateQuotation() {
+      const quoteNumber = document.getElementById("quoteNumber").value;
+      const quoteDate = document.getElementById("quoteDate").value;
+      const companyInfo = document.getElementById("companyInfo").value;
+      const clientInfo = document.getElementById("clientInfo").value;
+      const paymentTerms = document.getElementById("paymentTerms").value;
+      const deliveryTerms = document.getElementById("deliveryTerms").value;
+
+      if (!quoteNumber || !quoteDate || !companyInfo || !clientInfo) {
+        alert("Please fill all necessary fields.");
+        return;
+      }
+
+      document.getElementById("viewQuoteNumber").textContent = quoteNumber;
+      document.getElementById("viewQuoteDate").textContent = quoteDate;
+      document.getElementById("viewCompany").textContent = companyInfo;
+      document.getElementById("viewClient").textContent = clientInfo;
+      document.getElementById("viewPayment").textContent = paymentTerms;
+      document.getElementById("viewDelivery").textContent = deliveryTerms;
+
+      updateTotal();
+      document.getElementById("quotationArea").style.display = "block";
+      document.getElementById("downloadBtn").style.display = "inline-block";
+    }
+
+    function downloadAsImage() {
+      const quote = document.getElementById("quotationArea");
+
+      html2canvas(quote).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "quotation.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+</body>
 </html>

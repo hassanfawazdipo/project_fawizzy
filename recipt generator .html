@@ -1,8 +1,8 @@
-<!DOCTYPE html><html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Receipt Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     body {
@@ -65,79 +65,75 @@
       border-bottom: 1px solid #ccc;
       padding-bottom: 10px;
     }
+    #downloadBtn {
+      display: none;
+      background-color: #00bfff;
+    }
   </style>
 </head>
 <body>
 <div class="container">
   <h1>Receipt Generator</h1>
   <label>Seller's Name</label>
-  <input type="text" id="sellerName"><label>Seller's Address</label>
-
-  <textarea id="sellerAddress"></textarea><label>Seller's Phone Number</label> <input type="text" id="sellerPhone">
-
-<label>Seller TIN</label> <input type="text" id="sellerTIN">
-
-<label>Buyer's Name (Optional)</label> <input type="text" id="buyerName">
-
-<label>Date of Transaction</label> <input type="date" id="transDate">
-
-<label>Description of Goods/Services</label>
-
-  <textarea id="description"></textarea><label>Amount Paid (₦)</label> <input type="number" id="amountPaid">
-
-<label>Payment Method</label> <select id="paymentMethod"> <option value="Cash">Cash</option> <option value="Card">Card</option> <option value="Bank Transfer">Bank Transfer</option> <option value="POS">POS</option> </select>
-
-<label>Authorized Signature</label> <input type="text" id="signature" placeholder="Enter name of authorized personnel">
-
-<button onclick="generateReceipt()">Generate Receipt</button>
+  <input type="text" id="sellerName">
+  <label>Seller's Address</label>
+  <textarea id="sellerAddress"></textarea>
+  <label>Seller's Phone Number</label>
+  <input type="text" id="sellerPhone">
+  <label>Seller TIN</label>
+  <input type="text" id="sellerTIN">
+  <label>Buyer's Name (Optional)</label>
+  <input type="text" id="buyerName">
+  <label>Date of Transaction</label>
+  <input type="date" id="transDate">
+  <label>Description of Goods/Services</label>
+  <textarea id="description"></textarea>
+  <label>Amount Paid (₦)</label>
+  <input type="number" id="amountPaid">
+  <label>Payment Method</label>
+  <select id="paymentMethod">
+    <option value="Cash">Cash</option>
+    <option value="Card">Card</option>
+    <option value="Bank Transfer">Bank Transfer</option>
+    <option value="POS">POS</option>
+  </select>
+  <label>Authorized Signature</label>
+  <input type="text" id="signature" placeholder="Enter name of authorized personnel"><button onclick="generateReceipt()">Generate Receipt</button> <button id="downloadBtn" onclick="downloadImage()">Download as Image</button>
 
   <div id="receiptOutput" style="display:none;"></div>
-</div><script>
-  let usedReceiptNumbers = new Set();
+</div>
+<script>
+  let usedReceiptNumbers = new Set();function generateReceiptNumber() { let num; do { num = 'RCPT-' + Math.floor(100000 + Math.random() * 900000); } while (usedReceiptNumbers.has(num)); usedReceiptNumbers.add(num); return num; }
 
-  function generateReceiptNumber() {
-    let num;
-    do {
-      num = 'RCPT-' + Math.floor(100000 + Math.random() * 900000);
-    } while (usedReceiptNumbers.has(num));
-    usedReceiptNumbers.add(num);
-    return num;
-  }
+function generateReceipt() { const sellerName = document.getElementById('sellerName').value; const sellerAddress = document.getElementById('sellerAddress').value; const sellerPhone = document.getElementById('sellerPhone').value; const sellerTIN = document.getElementById('sellerTIN').value; const buyerName = document.getElementById('buyerName').value; const transDate = document.getElementById('transDate').value; const description = document.getElementById('description').value; const amountPaid = parseFloat(document.getElementById('amountPaid').value); const paymentMethod = document.getElementById('paymentMethod').value; const signature = document.getElementById('signature').value;
 
-  function generateReceipt() {
-    const sellerName = document.getElementById('sellerName').value;
-    const sellerAddress = document.getElementById('sellerAddress').value;
-    const sellerPhone = document.getElementById('sellerPhone').value;
-    const sellerTIN = document.getElementById('sellerTIN').value;
-    const buyerName = document.getElementById('buyerName').value;
-    const transDate = document.getElementById('transDate').value;
-    const description = document.getElementById('description').value;
-    const amountPaid = parseFloat(document.getElementById('amountPaid').value);
-    const paymentMethod = document.getElementById('paymentMethod').value;
-    const signature = document.getElementById('signature').value;
+if (!sellerName || !sellerAddress || !sellerPhone || !sellerTIN || !transDate || !description || isNaN(amountPaid) || !paymentMethod || !signature) {
+  return alert("Please fill in all required fields.");
+}
 
-    if (!sellerName || !sellerAddress || !sellerPhone || !sellerTIN || !transDate || !description || isNaN(amountPaid) || !paymentMethod || !signature) {
-      return alert("Please fill in all required fields.");
-    }
+const receiptNum = generateReceiptNumber();
 
-    const receiptNum = generateReceiptNumber();
+const receipt = `
+  <h2>RECEIPT</h2>
+  <p><strong>Receipt Number:</strong> ${receiptNum}</p>
+  <p><strong>Date of Transaction:</strong> ${transDate}</p>
+  <hr>
+  <p><strong>Seller:</strong><br>${sellerName}<br>${sellerAddress}<br>${sellerPhone}<br>TIN: ${sellerTIN}</p>
+  ${buyerName ? `<p><strong>Buyer:</strong> ${buyerName}</p>` : ''}
+  <p><strong>Description:</strong><br>${description}</p>
+  <p><strong>Amount Paid:</strong> ₦${amountPaid.toLocaleString()}</p>
+  <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+  <p><strong>Authorized Signature:</strong> ${signature}</p>
+`;
 
-    const receipt = `
-      <h2>RECEIPT</h2>
-      <p><strong>Receipt Number:</strong> ${receiptNum}</p>
-      <p><strong>Date of Transaction:</strong> ${transDate}</p>
-      <hr>
-      <p><strong>Seller:</strong><br>${sellerName}<br>${sellerAddress}<br>${sellerPhone}<br>TIN: ${sellerTIN}</p>
-      ${buyerName ? `<p><strong>Buyer:</strong> ${buyerName}</p>` : ''}
-      <p><strong>Description:</strong><br>${description}</p>
-      <p><strong>Amount Paid:</strong> ₦${amountPaid.toLocaleString()}</p>
-      <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-      <p><strong>Authorized Signature:</strong> ${signature}</p>
-    `;
+const output = document.getElementById('receiptOutput');
+output.innerHTML = receipt;
+output.style.display = 'block';
+document.getElementById('downloadBtn').style.display = 'block';
 
-    const output = document.getElementById('receiptOutput');
-    output.innerHTML = receipt;
-    output.style.display = 'block';
-  }
-</script></body>
+}
+
+function downloadImage() { html2canvas(document.getElementById("receiptOutput")).then(canvas => { const link = document.createElement("a"); link.download = "receipt.png"; link.href = canvas.toDataURL(); link.click(); }); } </script>
+
+</body>
 </html>
