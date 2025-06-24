@@ -462,12 +462,16 @@
 <div id="unlockModal" class="modal">
     <div class="modal-content">
         <span class="close-button" onclick="closeModal()">&times;</span>
-        <h3>Unlock Premium Tool</h3>
-        <p>Choose an unlock duration:</p>
+        <h3 id="modalTitle">Unlock Premium Tool</h3>
+        <p id="modalDescription">Choose an unlock duration:</p>
         <div class="modal-options">
-            <button onclick="unlockTool(7, 3000)">7 Days - ₦3000</button>
-            <button onclick="unlockTool(14, 7000)">14 Days - ₦7000</button>
-            <button onclick="unlockTool(30, 10000)">1 Month - ₦10000</button>
+            <button id="singleUnlock7" onclick="unlockTool(7, 3000, false)">7 Days - ₦3000</button>
+            <button id="singleUnlock14" onclick="unlockTool(14, 7000, false)">14 Days - ₦7000</button>
+            <button id="singleUnlock30" onclick="unlockTool(30, 10000, false)">1 Month - ₦10000</button>
+            <hr id="modalSeparator"> <h3 id="unlockAllTitle">Unlock All Premium Tools</h3>
+            <button id="allUnlock7" onclick="unlockTool(7, 6000, true)">7 Days - ₦6000</button>
+            <button id="allUnlock14" onclick="unlockTool(14, 12000, true)">14 Days - ₦12000</button>
+            <button id="allUnlock30" onclick="unlockTool(30, 15000, true)">1 Month - ₦15000</button>
         </div>
         <p id="modalMessage" style="color: red; margin-top: 10px;"></p>
     </div>
@@ -497,17 +501,40 @@ let currentToolToUnlock = null; // To store the link of the tool being unlocked
 // Function to check if a tool is unlocked (either individually or by premium account status)
 function isToolUnlocked(link) {
     const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
-    const tool = unlocks[link];
     const isPremiumAccount = localStorage.getItem("isPremiumUser") === "true"; // Check premium account status
+    const premiumAccountExpiresAt = localStorage.getItem("premiumAccountExpiresAt");
 
-    if (isPremiumAccount) {
-        return true; // If user is premium, all premium tools are unlocked
+    const now = new Date(); // Get current time once
+
+    // 1. Check if the overall premium account is active and covers this tool
+    if (isPremiumAccount && premiumAccountExpiresAt) {
+        const premiumExpiry = new Date(premiumAccountExpiresAt);
+        if (now < premiumExpiry) {
+            return true; // If user is premium and premium account is active, all premium tools are unlocked
+        } else {
+            // Premium account has expired, clear the premium status
+            localStorage.removeItem("isPremiumUser");
+            localStorage.removeItem("premiumAccountExpiresAt");
+            // Important: update buttons immediately so the user sees changes
+            updateButtons(); 
+        }
     }
 
-    // Otherwise, check individual tool unlock and expiration
-    if (!tool) return false;
-    const now = new Date().toISOString();
-    return now < tool.expiresAt;
+    // 2. Otherwise, check individual tool unlock and expiration
+    const tool = unlocks[link];
+    if (!tool) return false; // Tool was never unlocked individually
+
+    const toolExpiry = new Date(tool.expiresAt);
+    if (now < toolExpiry) {
+        return true; // Individual tool is still active
+    } else {
+        // Individual tool unlock has expired, remove it from localStorage
+        delete unlocks[link];
+        localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
+        // Important: update buttons immediately so the user sees changes
+        updateButtons(); 
+        return false;
+    }
 }
 
 // Function to update button text and behavior based on tool and account status
@@ -531,8 +558,8 @@ function updateButtons() {
             } else {
                 button.textContent = "Unlock";
                 button.onclick = () => {
-                    currentToolToUnlock = link;
-                    openModal();
+                    currentToolToUnlock = link; // Set the specific tool to unlock
+                    openModal(false); // Open modal for single tool unlock
                 };
             }
         }
@@ -542,33 +569,79 @@ function updateButtons() {
 // Modal functions
 const unlockModal = document.getElementById("unlockModal");
 const modalMessage = document.getElementById("modalMessage");
+const modalTitle = document.getElementById("modalTitle");
+const modalDescription = document.getElementById("modalDescription");
 
-function openModal() {
+// Get references to all the buttons and elements within the modal options
+const singleUnlock7 = document.getElementById("singleUnlock7");
+const singleUnlock14 = document.getElementById("singleUnlock14");
+const singleUnlock30 = document.getElementById("singleUnlock30");
+const modalSeparator = document.getElementById("modalSeparator");
+const unlockAllTitle = document.getElementById("unlockAllTitle");
+const allUnlock7 = document.getElementById("allUnlock7");
+const allUnlock14 = document.getElementById("allUnlock14");
+const allUnlock30 = document.getElementById("allUnlock30");
+
+
+function openModal(unlockAllClicked = false) {
     unlockModal.style.display = "flex";
     modalMessage.textContent = ""; // Clear previous messages
+
+    if (unlockAllClicked) {
+        modalTitle.textContent = "Unlock All Premium Tools";
+        modalDescription.textContent = "Choose an unlock duration for all premium tools:";
+        singleUnlock7.style.display = 'none';
+        singleUnlock14.style.display = 'none';
+        singleUnlock30.style.display = 'none';
+        modalSeparator.style.display = 'none';
+        unlockAllTitle.style.display = 'none'; // Hide this as it's the main title now
+        allUnlock7.style.display = 'block';
+        allUnlock14.style.display = 'block';
+        allUnlock30.style.display = 'block';
+    } else {
+        modalTitle.textContent = "Unlock Premium Tool";
+        modalDescription.textContent = "Choose an unlock duration:";
+        singleUnlock7.style.display = 'block';
+        singleUnlock14.style.display = 'block';
+        singleUnlock30.style.display = 'block';
+        modalSeparator.style.display = 'block';
+        unlockAllTitle.style.display = 'block'; // Show "Unlock All Premium Tools" heading
+        allUnlock7.style.display = 'block';
+        allUnlock14.style.display = 'block';
+        allUnlock30.style.display = 'block';
+    }
 }
+
 
 function closeModal() {
     unlockModal.style.display = "none";
     currentToolToUnlock = null;
 }
 
-function unlockTool(days, cost) {
+function unlockTool(days, cost, unlockAllFlag) {
     if (balance >= cost) {
         balance -= cost;
-        localStorage.setItem("coins", balance);
+        localStorage.setItem("coins", balance); // Deduct coins permanently
         balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
 
-        const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
         const expirationDate = new Date();
         expirationDate.setDate(expirationDate.getDate() + days);
-        unlocks[currentToolToUnlock] = {
-            unlocked: true,
-            expiresAt: expirationDate.toISOString()
-        };
-        localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
+        const expiresAtISO = expirationDate.toISOString();
 
-        modalMessage.textContent = `Tool unlocked for ${days} days!`;
+        if (unlockAllFlag) {
+            localStorage.setItem("isPremiumUser", "true");
+            localStorage.setItem("premiumAccountExpiresAt", expiresAtISO);
+            modalMessage.textContent = `All premium tools unlocked for ${days} days!`;
+        } else {
+            const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
+            unlocks[currentToolToUnlock] = {
+                unlocked: true,
+                expiresAt: expiresAtISO
+            };
+            localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
+            modalMessage.textContent = `Tool unlocked for ${days} days!`;
+        }
+        
         modalMessage.style.color = "green";
         updateButtons(); // Update button text to "Open"
         setTimeout(() => {
@@ -594,7 +667,10 @@ document.getElementById("toolSearch").addEventListener("input", searchTools);
 
 // Function to log out the user
 function logout() {
-    localStorage.clear();
+    // When the user logs out, we only redirect.
+    // The coin balance and tool unlock statuses (and their expiry) are stored in localStorage
+    // and are meant to persist across sessions/logouts until their time expires.
+    // So, we don't clear localStorage items related to balance or unlocks here.
     window.location.href = "register.html";
 }
 
@@ -614,6 +690,27 @@ window.onclick = function(event) {
     }
 }
 
-  </script>
+// Add event listeners to premium tool buttons to open the modal
+document.addEventListener('DOMContentLoaded', () => {
+    // This loop is largely handled by the `updateButtons` function now
+    // as it sets the `onclick` dynamically.
+    // However, if you add a standalone "Unlock All" button in your HTML,
+    // you would attach its `onclick` event to `openModal(true)`.
+
+    // Example of how you might add a separate "Unlock All" button in the topbar
+    // if you want to give users a direct way to unlock all without clicking an individual tool.
+    /*
+    const topbar = document.querySelector('.topbar');
+    if (topbar) {
+        const unlockAllTopButton = document.createElement('button');
+        unlockAllTopButton.textContent = 'Unlock All Tools';
+        unlockAllTopButton.className = 'logout-btn'; // Reusing style for simplicity, consider new class
+        unlockAllTopButton.style.backgroundColor = '#007bff'; // Example color
+        unlockAllTopButton.onclick = () => openModal(true);
+        topbar.appendChild(unlockAllTopButton);
+    }
+    */
+});
+    </script>
 </body>
 </html>
