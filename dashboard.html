@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-M" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>User Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -20,7 +20,7 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      transition: background 0.3s, color 0.3s;
+      transition: background 0.3s, color: 0.3s;
     }
     body.light {
       --bg: #f7f7f7;
@@ -230,6 +230,54 @@
         background-color: #28a745;
     }
 
+    /* Referral Section Styles */
+    .referral-section {
+        background-color: var(--card);
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 30px;
+        text-align: center;
+    }
+    .referral-section h3 {
+        color: var(--accent);
+        margin-bottom: 15px;
+    }
+    .referral-code-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    #referralCode {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: var(--bg);
+        color: var(--text);
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: center;
+    }
+    .copy-btn {
+        padding: 10px 15px;
+        background-color: var(--accent);
+        color: #000;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .copy-btn:hover {
+        background-color: #28a745;
+    }
+    .referral-message {
+        color: green;
+        margin-top: 10px;
+        font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -256,6 +304,16 @@
               Theme
           </label>
           <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="referral-section">
+          <h3>Refer Friends, Earn Coins!</h3>
+          <p>Share your unique 6-digit referral code with friends. When they sign up using your code, you'll get **200 coins**!</p>
+          <div class="referral-code-container">
+              <input type="text" id="referralCode" value="" readonly>
+              <button class="copy-btn" onclick="copyReferralCode()">Copy Code</button>
+          </div>
+          <p id="referralMessage" class="referral-message"></p>
       </div>
       <h2>Free Tools</h2>
       <div class="product-grid" id="freeTools">
@@ -667,6 +725,87 @@
     // Event listener for search input
     document.getElementById("toolSearch").addEventListener("input", searchTools);
 
+    // Function to generate a random 6-digit referral code
+    function generateReferralCode() {
+        // Generate a random number between 100000 and 999999
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    // Get or create user's referral code
+    let userReferralCode = localStorage.getItem('userReferralCode');
+    if (!userReferralCode) {
+        userReferralCode = generateReferralCode();
+        localStorage.setItem('userReferralCode', userReferralCode);
+    }
+
+    // Display referral code
+    const referralCodeInput = document.getElementById('referralCode');
+    const referralMessage = document.getElementById('referralMessage');
+    if (referralCodeInput) {
+        referralCodeInput.value = userReferralCode;
+    }
+
+    // Function to copy referral code
+    function copyReferralCode() {
+        referralCodeInput.select();
+        referralCodeInput.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand("copy");
+        referralMessage.textContent = "Code copied!";
+        referralMessage.style.color = "green";
+        setTimeout(() => {
+            referralMessage.textContent = "";
+        }, 3000);
+    }
+
+    // Check for referral bonus on page load (simulate referral bonus)
+    // This logic assumes `register.html` redirects to `dashboard.html` with `?referredBy=[referrerCode]`
+    // after a successful signup using a referral code.
+    function checkForReferralBonus() {
+        const params = new URLSearchParams(window.location.search);
+        const referredByCode = params.get('referredBy');
+        const isNewUserAfterReferral = localStorage.getItem('isNewUserAfterReferral'); // Flag set in register.html
+
+        if (referredByCode && isNewUserAfterReferral === 'true') {
+            // Find the actual user ID associated with this referral code
+            // In a real application, you'd look this up in a backend database.
+            // For this client-side demo, we'll assume the referrer's userId is stored
+            // with a key like 'user_code_[code]' mapping to their actual 'userId'.
+            // Or simpler, just directly update the balance associated with the *code itself*.
+            // This means each code needs to store its own balance.
+            // Let's modify the coin storage to be tied to the referral code for simplicity in this client-side demo.
+
+            const referrerBalanceKey = `coins_for_code_${referredByCode}`;
+            let referrerCoins = parseInt(localStorage.getItem(referrerBalanceKey)) || 0;
+
+            // Also, update the actual referrer's main 'coins' balance if they are currently logged in.
+            // This is complex for a purely client-side system. A backend is ideal.
+            // For this demo, we'll increment a *separate* balance tied to the referral code.
+            // A real system would update the actual user's coin balance.
+
+            referrerCoins += 200; // Add 200 coins
+            localStorage.setItem(referrerBalanceKey, referrerCoins);
+
+            // You might want to remove the 'isNewUserAfterReferral' flag after processing
+            localStorage.removeItem('isNewUserAfterReferral');
+
+            console.log(`Referrer with code ${referredByCode} received 200 coins! Their total referred earnings: ${referrerCoins}`);
+
+            // To avoid re-triggering, clear the query parameter or redirect
+            const newUrl = new URL(window.location.origin + window.location.pathname);
+            window.history.replaceState({}, document.title, newUrl.toString());
+
+            // If the current user is the referrer, update their display balance immediately
+            if (userReferralCode === referredByCode) {
+                balance = parseInt(localStorage.getItem("coins")) || 0; // Reload current user's actual balance
+                balance += 200; // Add bonus to current user's balance
+                localStorage.setItem("coins", balance);
+                balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
+                alert(`Congratulations! You received 200 coins for a successful referral.`);
+            }
+        }
+    }
+
+
     // Function to log out the user
     function logout() {
         // When the user logs out, we only redirect.
@@ -684,6 +823,9 @@
 
     // Initial update of buttons when the page loads
     updateButtons();
+
+    // Check for referral bonus when the dashboard loads
+    checkForReferralBonus();
 
     // Close modal if user clicks outside of it
     window.onclick = function(event) {
