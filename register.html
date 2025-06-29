@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -130,21 +131,27 @@
       </div>
       <button type="submit">Register</button>
       <div class="toggle" onclick="toggleForm('login')">Already have an account? Login</div>
-    </form><form id="loginForm" class="form-container hidden">
-  <h2>Login</h2>
-  <div class="input-group">
-    <input type="email" id="loginEmail" placeholder="Email" required>
-  </div>
-  <div class="input-group">
-    <input type="password" id="loginPassword" placeholder="Password" required>
-    <i class="fas fa-eye" onclick="togglePassword('loginPassword', this)"></i>
-  </div>
-  <div class="forgot-link" onclick="forgotPassword()">Forgot Password?</div>
-  <button type="submit">Login</button>
-  <div class="toggle" onclick="toggleForm('register')">Don't have an account? Register</div>
-</form>
+    </form>
 
-  </div>  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>  <script>
+    <form id="loginForm" class="form-container hidden">
+      <h2>Login</h2>
+      <div class="input-group">
+        <input type="email" id="loginEmail" placeholder="Email" required>
+      </div>
+      <div class="input-group">
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <i class="fas fa-eye" onclick="togglePassword('loginPassword', this)"></i>
+      </div>
+      <div class="forgot-link" onclick="forgotPassword()">Forgot Password?</div>
+      <button type="submit">Login</button>
+      <div class="toggle" onclick="toggleForm('register')">Don't have an account? Register</div>
+    </form>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
       authDomain: "conectcamp-db2c2.firebaseapp.com",
@@ -198,7 +205,7 @@
         await db.collection("users").doc(user.uid).set({
           uid: user.uid,
           email: user.email,
-          coins: 0,
+          coins: 500,
           status: "free",
           toolUnlocks: {},
           registeredAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -207,7 +214,12 @@
         alert("Registration successful! Please login.");
         toggleForm("login");
       } catch (err) {
-        alert("Error: " + err.message);
+        if (err.code === 'auth/email-already-in-use') {
+          alert("Email already registered. Please login instead.");
+          toggleForm("login");
+        } else {
+          alert("Registration error: " + err.message);
+        }
       }
     });
 
@@ -226,7 +238,7 @@
         const data = doc.data();
         localStorage.setItem("uid", user.uid);
         localStorage.setItem("email", data.email);
-        localStorage.setItem("coins", data.coins || 0);
+        localStorage.setItem("coins", data.coins || 500);
         localStorage.setItem("status", data.status || "free");
         localStorage.setItem("toolUnlocks", JSON.stringify(data.toolUnlocks || {}));
 
@@ -236,8 +248,12 @@
           window.location.href = "dashboard.html";
         }
       } catch (err) {
-        if (err.code === 'auth/network-request-failed') {
-          alert("Network error. Please check your connection.");
+        if (err.code === 'auth/user-not-found') {
+          alert("No user found with this email.");
+        } else if (err.code === 'auth/wrong-password') {
+          alert("Wrong password. Try again.");
+        } else if (err.code === 'auth/network-request-failed') {
+          alert("Network error. Please check your internet connection.");
         } else {
           alert("Login failed: " + err.message);
         }
@@ -251,5 +267,6 @@
         .then(() => alert("Password reset link sent to your email."))
         .catch(err => alert("Error: " + err.message));
     }
-  </script></body>
+  </script>
+</body>
 </html>

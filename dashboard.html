@@ -174,7 +174,6 @@
       background-color: #000;
       color: #fff;
     }
-
     /* Modal Styles */
     .modal {
         display: none;
@@ -230,6 +229,7 @@
     .modal-options button:hover {
         background-color: #28a745;
     }
+
   </style>
 </head>
 <body>
@@ -243,474 +243,454 @@
         <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
         <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
         <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </div>  <div class="main-content" id="mainContent">
-    <div class="topbar">
-        <button class="toggle-menu" onclick="toggleMenu()">☰</button>
-        <div class="balance" id="balance">
-            <i class="fas fa-wallet"></i> ₦0
-        </div>
-        <input type="text" id="toolSearch" placeholder="Search tools...">
-        <label class="theme-switch">
-            <input type="checkbox" id="themeToggle">
-            Theme
-        </label>
-        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
+    <div class="main-content" id="mainContent">
+      <div class="topbar">
+          <button class="toggle-menu" onclick="toggleMenu()">☰</button>
+          <div class="balance" id="balance">
+              <i class="fas fa-wallet"></i> ₦0
+          </div>
+          <input type="text" id="toolSearch" placeholder="Search tools...">
+          <label class="theme-switch">
+              <input type="checkbox" id="themeToggle">
+              Theme
+          </label>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+      <h2>Free Tools</h2>
+      <div class="product-grid" id="freeTools">
+          <div class="product-box" data-link="cgpa calculator.html" data-plan="free" data-name="CGPA Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>CGPA Calculator</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="profit calculator.html" data-plan="free" data-name="Profit Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>Profit Calculator</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="loan calculator .html" data-plan="free" data-name="Loan Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>Loan Calculator</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="Todolist app.html" data-plan="free" data-name="to do list app">
+              <i class="fas fa-list"></i>
+              <h3>To do list App</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="tax calculator.html" data-plan="free" data-name="Tax Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>Tax Calculator</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="vat calculator.html" data-plan="free" data-name="Vat Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>VAT Calculator</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="discount calculator .html" data-plan="free" data-name="Discount Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>Discount Calculator</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="tax planner app.html" data-plan="free" data-name="Tax Planner App">
+              <i class="fas fa-robot"></i>
+              <h3>Tax Planner App</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="intrest calculator.html" data-plan="free" data-name="Intrest Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>Intrest Calculator</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="ovwrtime calculator .html" data-plan="free" data-name="Overtime Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>Overtime Calculator</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="daily income calculator .html" data-plan="free" data-name="daily income Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>Daily Income Calculator</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="student budget app .html" data-plan="free" data-name="student budget app">
+              <i class="fas fa-calculator"></i>
+              <h3>Student Budget App</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="measurement.html" data-plan="free" data-name="Measurement Converter app">
+              <i class="fas fa-calculator"></i>
+              <h3>Measurement Converter App</h3>
+              <span class="tag free">free</span>
+              <button>Open</button>
+          </div>
+      </div>
 
-    <h2>Free Tools</h2>
-    <div class="product-grid" id="freeTools">
-        <div class="product-box" data-link="cgpa calculator.html" data-plan="free" data-name="CGPA Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>CGPA Calculator</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="profit calculator.html" data-plan="free" data-name="Profit Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>Profit Calculator</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="loan calculator .html" data-plan="free" data-name="Loan Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>Loan Calculator</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="Todolist app.html" data-plan="free" data-name="to do list app">
-            <i class="fas fa-list"></i>
-            <h3>To do list App</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="tax calculator.html" data-plan="free" data-name="Tax Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>Tax Calculator</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="vat calculator.html" data-plan="free" data-name="Vat Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>VAT Calculator</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="discount calculator .html" data-plan="free" data-name="Discount Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>Discount Calculator</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="tax planner app.html" data-plan="free" data-name="Tax Planner App">
-            <i class="fas fa-robot"></i>
-            <h3>Tax Planner App</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="intrest calculator.html" data-plan="free" data-name="Intrest Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>Intrest Calculator</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="ovwrtime calculator .html" data-plan="free" data-name="Overtime Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>Overtime Calculator</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="daily income calculator .html" data-plan="free" data-name="daily income Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>Daily Income Calculator</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="student budget app .html" data-plan="free" data-name="student budget app">
-            <i class="fas fa-calculator"></i>
-            <h3>Student Budget App</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="measurement.html" data-plan="free" data-name="Measurement Converter app">
-            <i class="fas fa-calculator"></i>
-            <h3>Measurement Converter App</h3>
-            <span class="tag free">free</span>
-            <button>Open</button>
-        </div>
+      <h2 style="margin-top: 30px;">Premium Tools</h2>
+      <div class="product-grid" id="premiumTools">
+          <div class="product-box" data-link="bookkeeping-app.html" data-plan="premium" data-name="bookkeeping app">
+              <i class="fas fa-robot"></i>
+              <h3>Book-keeping App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="invoice generator .html" data-plan="premium" data-name="invoice generator">
+              <i class="fas fa-robot"></i>
+              <h3>Invoice Generator</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="recipt generator .html" data-plan="premium" data-name="Recipt generator">
+              <i class="fas fa-robot"></i>
+              <h3>Recipt Generator</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="cashbook app.html" data-plan="premium" data-name="Cashbook App">
+              <i class="fas fa-robot"></i>
+              <h3>Cashbook App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="comprative statment app.html" data-plan="premium" data-name="comprative statment app">
+              <i class="fas fa-robot"></i>
+              <h3>Comprative Statment App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="reviews generator .html" data-plan="premium" data-name="reviews generator">
+              <i class="fas fa-robot"></i>
+              <h3>Reviews Generator App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="imvrntory app.html" data-plan="premium" data-name="inventory app">
+              <i class="fas fa-robot"></i>
+              <h3>Inventory App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="payroll app.html" data-plan="premium" data-name="payroll app">
+              <i class="fas fa-robot"></i>
+              <h3>Payroll App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="revenue forcasting app.html" data-plan="premium" data-name="Revenue forcasting app">
+              <i class="fas fa-robot"></i>
+              <h3>Revenue Forcasting App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="sales recorder .html" data-plan="premium" data-name="Sales recorder">
+              <i class="fas fa-robot"></i>
+              <h3>Sales Recorder</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="material cost calculator .html" data-plan="premium" data-name="Material cost Calculator">
+              <i class="fas fa-calculator"></i>
+              <h3>Material Cost Calculator</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="profit and loss calculator.html" data-plan="premium" data-name="profit and loss calculator">
+              <i class="fas fa-robot"></i>
+              <h3>Profit and Loss Calculator</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="quotation generator app.html" data-plan="premium" data-name="quotation generator app">
+              <i class="fas fa-robot"></i>
+              <h3>Quotation Generator App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="budget allocating app.html" data-plan="premium" data-name="budget allocating app">
+              <i class="fas fa-robot"></i>
+              <h3>Budget Allocating App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="school.html" data-plan="premium" data-name="school managment app">
+              <i class="fas fa-robot"></i>
+              <h3>School Managment App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="church.html" data-plan="premium" data-name="church managment app">
+              <i class="fas fa-robot"></i>
+              <h3>Church Managment App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="pos.html" data-plan="premium" data-name="company managment app">
+              <i class="fas fa-robot"></i>
+              <h3>Company Managment App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="point.html" data-plan="premium" data-name="point of sales app">
+              <i class="fas fa-robot"></i>
+              <h3>Point Of Sales App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+          <div class="product-box" data-link="report.html" data-plan="premium" data-name="Report-card generator App">
+              <i class="fas fa-robot"></i>
+              <h3>Report-card generator App</h3>
+              <span class="tag premium">premium</span>
+              <button>Open</button>
+          </div>
+      </div>
     </div>
-
-    <h2 style="margin-top: 30px;">Premium Tools</h2>
-    <div class="product-grid" id="premiumTools">
-        <div class="product-box" data-link="bookkeeping-app.html" data-plan="premium" data-name="bookkeeping app">
-            <i class="fas fa-robot"></i>
-            <h3>Book-keeping App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="invoice generator .html" data-plan="premium" data-name="invoice generator">
-            <i class="fas fa-robot"></i>
-            <h3>Invoice Generator</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="recipt generator .html" data-plan="premium" data-name="Recipt generator">
-            <i class="fas fa-robot"></i>
-            <h3>Recipt Generator</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="cashbook app.html" data-plan="premium" data-name="Cashbook App">
-            <i class="fas fa-robot"></i>
-            <h3>Cashbook App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="comprative statment app.html" data-plan="premium" data-name="comprative statment app">
-            <i class="fas fa-robot"></i>
-            <h3>Comprative Statment App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="reviews generator .html" data-plan="premium" data-name="reviews generator">
-            <i class="fas fa-robot"></i>
-            <h3>Reviews Generator App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="imvrntory app.html" data-plan="premium" data-name="inventory app">
-            <i class="fas fa-robot"></i>
-            <h3>Inventory App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="payroll app.html" data-plan="premium" data-name="payroll app">
-            <i class="fas fa-robot"></i>
-            <h3>Payroll App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="revenue forcasting app.html" data-plan="premium" data-name="Revenue forcasting app">
-            <i class="fas fa-robot"></i>
-            <h3>Revenue Forcasting App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="sales recorder .html" data-plan="premium" data-name="Sales recorder">
-            <i class="fas fa-robot"></i>
-            <h3>Sales Recorder</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="material cost calculator .html" data-plan="premium" data-name="Material cost Calculator">
-            <i class="fas fa-calculator"></i>
-            <h3>Material Cost Calculator</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="profit and loss calculator.html" data-plan="premium" data-name="profit and loss calculator">
-            <i class="fas fa-robot"></i>
-            <h3>Profit and Loss Calculator</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="quotation generator app.html" data-plan="premium" data-name="quotation generator app">
-            <i class="fas fa-robot"></i>
-            <h3>Quotation Generator App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="budget allocating app.html" data-plan="premium" data-name="budget allocating app">
-            <i class="fas fa-robot"></i>
-            <h3>Budget Allocating App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="school.html" data-plan="premium" data-name="school managment app">
-            <i class="fas fa-robot"></i>
-            <h3>School Managment App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="church.html" data-plan="premium" data-name="church managment app">
-            <i class="fas fa-robot"></i>
-            <h3>Church Managment App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="pos.html" data-plan="premium" data-name="company managment app">
-            <i class="fas fa-robot"></i>
-            <h3>Company Managment App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="point.html" data-plan="premium" data-name="point of sales app">
-            <i class="fas fa-robot"></i>
-            <h3>Point Of Sales App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-        <div class="product-box" data-link="report.html" data-plan="premium" data-name="Report-card generator App">
-            <i class="fas fa-robot"></i>
-            <h3>Report-card generator App</h3>
-            <span class="tag premium">premium</span>
-            <button>Open</button>
-        </div>
-    </div>
-</div>
-
-</div>
-<div id="unlockModal" class="modal">
-    <div class="modal-content">
-        <span class="close-button" onclick="closeModal()">&times;</span>
-        <h3 id="modalTitle">Unlock Premium Tool</h3>
-        <p id="modalDescription">Choose an unlock duration:</p>
-        <div class="modal-options">
-            <button id="singleUnlock7" onclick="unlockTool(7, 3000, false)">7 Days - ₦3000</button>
-            <button id="singleUnlock14" onclick="unlockTool(14, 7000, false)">14 Days - ₦7000</button>
-            <button id="singleUnlock30" onclick="unlockTool(30, 10000, false)">1 Month - ₦10000</button>
-            <hr id="modalSeparator"> <h3 id="unlockAllTitle">Unlock All Premium Tools</h3>
-            <button id="allUnlock7" onclick="unlockTool(7, 6000, true)">7 Days - ₦6000</button>
-            <button id="allUnlock14" onclick="unlockTool(14, 12000, true)">14 Days - ₦12000</button>
-            <button id="allUnlock30" onclick="unlockTool(30, 15000, true)">1 Month - ₦15000</button>
-        </div>
-        <p id="modalMessage" style="color: red; margin-top: 10px;"></p>
-    </div>
-</div>
-    <script>
+  </div>
+  <div id="unlockModal" class="modal">
+      <div class="modal-content">
+          <span class="close-button" onclick="closeModal()">&times;</span>
+          <h3 id="modalTitle">Unlock Premium Tool</h3>
+          <p id="modalDescription">Choose an unlock duration:</p>
+          <div class="modal-options">
+              <button id="singleUnlock7" onclick="unlockTool(7, 100, false)">7 Days - ₦100</button>
+              <button id="singleUnlock14" onclick="unlockTool(14, 300, false)">14 Days - ₦400</button>
+              <button id="singleUnlock30" onclick="unlockTool(30, 500, false)">1 Month - ₦500</button>
+              <hr id="modalSeparator">
+              <h3 id="unlockAllTitle">Unlock All Premium Tools</h3>
+              <button id="allUnlock7" onclick="unlockTool(7, 500, true)">7 Days - ₦500</button>
+              <button id="allUnlock14" onclick="unlockTool(14, 1000, true)">14 Days - ₦1000</button>
+              <button id="allUnlock30" onclick="unlockTool(30, 1500, true)">1 Month - ₦1500</button>
+          </div>
+          <p id="modalMessage" style="color: red; margin-top: 10px;"></p>
+      </div>
+  </div>
+  <script>
     const themeToggle = document.getElementById("themeToggle");
-const body = document.body;
+    const body = document.body;
 
-// Load theme preference
-if (localStorage.getItem("theme") === "light") {
-    body.classList.add("light");
-    themeToggle.checked = true;
-}
+    // Load theme preference
+    if (localStorage.getItem("theme") === "light") {
+        body.classList.add("light");
+        themeToggle.checked = true;
+    }
 
-// Toggle theme and save preference
-themeToggle.addEventListener("change", () => {
-    body.classList.toggle("light");
-    localStorage.setItem("theme", body.classList.contains("light") ? "light" : "dark");
-});
+    // Toggle theme and save preference
+    themeToggle.addEventListener("change", () => {
+        body.classList.toggle("light");
+        localStorage.setItem("theme", body.classList.contains("light") ? "light" : "dark");
+    });
 
-const balanceDisplay = document.getElementById("balance");
-let balance = parseInt(localStorage.getItem("coins")) || 0;
-balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
+    const balanceDisplay = document.getElementById("balance");
+    // Initialize balance to 500 for new users, otherwise load from localStorage
+    let balance = parseInt(localStorage.getItem("coins"));
+    if (isNaN(balance)) { // If localStorage.getItem("coins") returns null or invalid number
+        balance = 500;
+        localStorage.setItem("coins", balance);
+    }
+    balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
 
-let currentToolToUnlock = null; // To store the link of the tool being unlocked
+    let currentToolToUnlock = null; // To store the link of the tool being unlocked
 
-// Function to check if a tool is unlocked (either individually or by premium account status)
-function isToolUnlocked(link) {
-    const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
-    const isPremiumAccount = localStorage.getItem("isPremiumUser") === "true"; // Check premium account status
-    const premiumAccountExpiresAt = localStorage.getItem("premiumAccountExpiresAt");
+    // Function to check if a tool is unlocked (either individually or by premium account status)
+    function isToolUnlocked(link) {
+        const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
+        const isPremiumAccount = localStorage.getItem("isPremiumUser") === "true"; // Check premium account status
+        const premiumAccountExpiresAt = localStorage.getItem("premiumAccountExpiresAt");
 
-    const now = new Date(); // Get current time once
+        const now = new Date();
 
-    // 1. Check if the overall premium account is active and covers this tool
-    if (isPremiumAccount && premiumAccountExpiresAt) {
-        const premiumExpiry = new Date(premiumAccountExpiresAt);
-        if (now < premiumExpiry) {
-            return true; // If user is premium and premium account is active, all premium tools are unlocked
+        // 1. Check if the overall premium account is active and covers this tool
+        if (isPremiumAccount && premiumAccountExpiresAt) {
+            const premiumExpiry = new Date(premiumAccountExpiresAt);
+            if (now < premiumExpiry) {
+                return true; // If user is premium and premium account is active, all premium tools are unlocked
+            } else {
+                // Premium account has expired, clear the premium status
+                localStorage.removeItem("isPremiumUser");
+                localStorage.removeItem("premiumAccountExpiresAt");
+                // Important: update buttons immediately so the user sees changes
+                updateButtons();
+            }
+        }
+
+        // 2. Otherwise, check individual tool unlock and expiration
+        const tool = unlocks[link];
+        if (!tool) return false; // Tool was never unlocked individually
+
+        const toolExpiry = new Date(tool.expiresAt);
+        if (now < toolExpiry) {
+            return true; // Individual tool is still active
         } else {
-            // Premium account has expired, clear the premium status
-            localStorage.removeItem("isPremiumUser");
-            localStorage.removeItem("premiumAccountExpiresAt");
+            // Individual tool unlock has expired, remove it from localStorage
+            delete unlocks[link];
+            localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
             // Important: update buttons immediately so the user sees changes
-            updateButtons(); 
+            updateButtons();
+            return false;
         }
     }
 
-    // 2. Otherwise, check individual tool unlock and expiration
-    const tool = unlocks[link];
-    if (!tool) return false; // Tool was never unlocked individually
+    // Function to update button text and behavior based on tool and account status
+    function updateButtons() {
+        document.querySelectorAll(".product-box").forEach(box => {
+            const link = box.getAttribute("data-link");
+            const plan = box.getAttribute("data-plan");
+            const button = box.querySelector("button");
 
-    const toolExpiry = new Date(tool.expiresAt);
-    if (now < toolExpiry) {
-        return true; // Individual tool is still active
-    } else {
-        // Individual tool unlock has expired, remove it from localStorage
-        delete unlocks[link];
-        localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
-        // Important: update buttons immediately so the user sees changes
-        updateButtons(); 
-        return false;
-    }
-}
-
-// Function to update button text and behavior based on tool and account status
-function updateButtons() {
-    document.querySelectorAll(".product-box").forEach(box => {
-        const link = box.getAttribute("data-link");
-        const plan = box.getAttribute("data-plan");
-        const button = box.querySelector("button");
-
-        if (plan === "free") {
-            button.textContent = "Open";
-            button.onclick = () => {
-                window.location.href = link;
-            };
-        } else { // Premium tools
-            if (isToolUnlocked(link)) {
+            if (plan === "free") {
                 button.textContent = "Open";
                 button.onclick = () => {
                     window.location.href = link;
                 };
-            } else {
-                button.textContent = "Unlock";
-                button.onclick = () => {
-                    currentToolToUnlock = link; // Set the specific tool to unlock
-                    openModal(false); // Open modal for single tool unlock
-                };
+            } else { // Premium tools
+                if (isToolUnlocked(link)) {
+                    button.textContent = "Open";
+                    button.onclick = () => {
+                        window.location.href = link;
+                    };
+                } else {
+                    button.textContent = "Unlock";
+                    button.onclick = () => {
+                        currentToolToUnlock = link; // Set the specific tool to unlock
+                        openModal(false); // Open modal for single tool unlock
+                    };
+                }
             }
-        }
-    });
-}
-
-// Modal functions
-const unlockModal = document.getElementById("unlockModal");
-const modalMessage = document.getElementById("modalMessage");
-const modalTitle = document.getElementById("modalTitle");
-const modalDescription = document.getElementById("modalDescription");
-
-// Get references to all the buttons and elements within the modal options
-const singleUnlock7 = document.getElementById("singleUnlock7");
-const singleUnlock14 = document.getElementById("singleUnlock14");
-const singleUnlock30 = document.getElementById("singleUnlock30");
-const modalSeparator = document.getElementById("modalSeparator");
-const unlockAllTitle = document.getElementById("unlockAllTitle");
-const allUnlock7 = document.getElementById("allUnlock7");
-const allUnlock14 = document.getElementById("allUnlock14");
-const allUnlock30 = document.getElementById("allUnlock30");
-
-
-function openModal(unlockAllClicked = false) {
-    unlockModal.style.display = "flex";
-    modalMessage.textContent = ""; // Clear previous messages
-
-    if (unlockAllClicked) {
-        modalTitle.textContent = "Unlock All Premium Tools";
-        modalDescription.textContent = "Choose an unlock duration for all premium tools:";
-        singleUnlock7.style.display = 'none';
-        singleUnlock14.style.display = 'none';
-        singleUnlock30.style.display = 'none';
-        modalSeparator.style.display = 'none';
-        unlockAllTitle.style.display = 'none'; // Hide this as it's the main title now
-        allUnlock7.style.display = 'block';
-        allUnlock14.style.display = 'block';
-        allUnlock30.style.display = 'block';
-    } else {
-        modalTitle.textContent = "Unlock Premium Tool";
-        modalDescription.textContent = "Choose an unlock duration:";
-        singleUnlock7.style.display = 'block';
-        singleUnlock14.style.display = 'block';
-        singleUnlock30.style.display = 'block';
-        modalSeparator.style.display = 'block';
-        unlockAllTitle.style.display = 'block'; // Show "Unlock All Premium Tools" heading
-        allUnlock7.style.display = 'block';
-        allUnlock14.style.display = 'block';
-        allUnlock30.style.display = 'block';
+        });
     }
-}
 
+    // Modal functions
+    const unlockModal = document.getElementById("unlockModal");
+    const modalMessage = document.getElementById("modalMessage");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDescription = document.getElementById("modalDescription");
 
-function closeModal() {
-    unlockModal.style.display = "none";
-    currentToolToUnlock = null;
-}
+    const singleUnlock7 = document.getElementById("singleUnlock7");
+    const singleUnlock14 = document.getElementById("singleUnlock14");
+    const singleUnlock30 = document.getElementById("singleUnlock30");
+    const modalSeparator = document.getElementById("modalSeparator");
+    const unlockAllTitle = document.getElementById("unlockAllTitle");
+    const allUnlock7 = document.getElementById("allUnlock7");
+    const allUnlock14 = document.getElementById("allUnlock14");
+    const allUnlock30 = document.getElementById("allUnlock30");
 
-function unlockTool(days, cost, unlockAllFlag) {
-    if (balance >= cost) {
-        balance -= cost;
-        localStorage.setItem("coins", balance); // Deduct coins permanently
-        balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
+    function openModal(unlockAllClicked = false) {
+        unlockModal.style.display = "flex";
+        modalMessage.textContent = ""; // Clear previous messages
 
-        const expirationDate = new Date();
-        expirationDate.setDate(expirationDate.getDate() + days);
-        const expiresAtISO = expirationDate.toISOString();
-
-        if (unlockAllFlag) {
-            localStorage.setItem("isPremiumUser", "true");
-            localStorage.setItem("premiumAccountExpiresAt", expiresAtISO);
-            modalMessage.textContent = `All premium tools unlocked for ${days} days!`;
+        if (unlockAllClicked) {
+            modalTitle.textContent = "Unlock All Premium Tools";
+            modalDescription.textContent = "Choose an unlock duration for all premium tools:";
+            singleUnlock7.style.display = 'none';
+            singleUnlock14.style.display = 'none';
+            singleUnlock30.style.display = 'none';
+            modalSeparator.style.display = 'none';
+            unlockAllTitle.style.display = 'none'; // Hide this as it's the main title now
+            allUnlock7.style.display = 'block';
+            allUnlock14.style.display = 'block';
+            allUnlock30.style.display = 'block';
         } else {
-            const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
-            unlocks[currentToolToUnlock] = {
-                unlocked: true,
-                expiresAt: expiresAtISO
-            };
-            localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
-            modalMessage.textContent = `Tool unlocked for ${days} days!`;
+            modalTitle.textContent = "Unlock Premium Tool";
+            modalDescription.textContent = "Choose an unlock duration:";
+            singleUnlock7.style.display = 'block';
+            singleUnlock14.style.display = 'block';
+            singleUnlock30.style.display = 'block';
+            modalSeparator.style.display = 'block';
+            unlockAllTitle.style.display = 'block'; // Show "Unlock All Premium Tools" heading
+            allUnlock7.style.display = 'block';
+            allUnlock14.style.display = 'block';
+            allUnlock30.style.display = 'block';
         }
-        
-        modalMessage.style.color = "green";
-        updateButtons(); // Update button text to "Open"
-        setTimeout(() => {
+    }
+
+    function closeModal() {
+        unlockModal.style.display = "none";
+        currentToolToUnlock = null;
+    }
+
+    function unlockTool(days, cost, unlockAllFlag) {
+        if (balance >= cost) {
+            balance -= cost;
+            localStorage.setItem("coins", balance); // Deduct coins permanently
+            balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
+
+            const expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + days);
+            const expiresAtISO = expirationDate.toISOString();
+
+            if (unlockAllFlag) {
+                localStorage.setItem("isPremiumUser", "true");
+                localStorage.setItem("premiumAccountExpiresAt", expiresAtISO);
+                modalMessage.textContent = `All premium tools unlocked for ${days} days!`;
+            } else {
+                const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
+                unlocks[currentToolToUnlock] = {
+                    unlocked: true,
+                    expiresAt: expiresAtISO
+                };
+                localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
+                modalMessage.textContent = `Tool unlocked for ${days} days!`;
+            }
+
+            modalMessage.style.color = "green";
+            updateButtons(); // Update button text to "Open"
+            setTimeout(() => {
+                closeModal();
+            }, 1500); // Close modal after a short delay
+        } else {
+            modalMessage.textContent = "Insufficient coins to unlock this tool.";
+            modalMessage.style.color = "red";
+        }
+    }
+
+    // Function to filter tools based on search query
+    function searchTools() {
+        const query = document.getElementById("toolSearch").value.toLowerCase();
+        document.querySelectorAll(".product-box").forEach(box => {
+            const name = box.getAttribute("data-name").toLowerCase();
+            box.style.display = name.includes(query) ? "block" : "none";
+        });
+    }
+
+    // Event listener for search input
+    document.getElementById("toolSearch").addEventListener("input", searchTools);
+
+    // Function to log out the user
+    function logout() {
+        // When the user logs out, we only redirect.
+        // The coin balance and tool unlock statuses (and their expiry) are stored in localStorage
+        // and are meant to persist across sessions/logouts until their time expires.
+        // So, we don't clear localStorage items related to balance or unlocks here.
+        window.location.href = "register.html";
+    }
+
+    // Function to toggle sidebar menu
+    function toggleMenu() {
+        document.getElementById("sidebar").classList.toggle("active");
+        document.getElementById("mainContent").classList.toggle("shifted");
+    }
+
+    // Initial update of buttons when the page loads
+    updateButtons();
+
+    // Close modal if user clicks outside of it
+    window.onclick = function(event) {
+        if (event.target == unlockModal) {
             closeModal();
-        }, 1500); // Close modal after a short delay
-    } else {
-        modalMessage.textContent = "Insufficient coins to unlock this tool.";
-        modalMessage.style.color = "red";
+        }
     }
-}
-
-// Function to filter tools based on search query
-function searchTools() {
-    const query = document.getElementById("toolSearch").value.toLowerCase();
-    document.querySelectorAll(".product-box").forEach(box => {
-        const name = box.getAttribute("data-name").toLowerCase();
-        box.style.display = name.includes(query) ? "block" : "none";
-    });
-}
-
-// Event listener for search input
-document.getElementById("toolSearch").addEventListener("input", searchTools);
-
-// Function to log out the user
-function logout() {
-    // When the user logs out, we only redirect.
-    // The coin balance and tool unlock statuses (and their expiry) are stored in localStorage
-    // and are meant to persist across sessions/logouts until their time expires.
-    // So, we don't clear localStorage items related to balance or unlocks here.
-    window.location.href = "register.html";
-}
-
-// Function to toggle sidebar menu
-function toggleMenu() {
-    document.getElementById("sidebar").classList.toggle("active");
-    document.getElementById("mainContent").classList.toggle("shifted");
-}
-
-// Initial update of buttons when the page loads
-updateButtons();
-
-// Close modal if user clicks outside of it
-window.onclick = function(event) {
-    if (event.target == unlockModal) {
-        closeModal();
-    }
-}
-
-// Add event listeners to premium tool buttons to open the modal
-document.addEventListener('DOMContentLoaded', () => {
-    // This loop is largely handled by the `updateButtons` function now
-    // as it sets the `onclick` dynamically.
-    // However, if you add a standalone "Unlock All" button in your HTML,
-    // you would attach its `onclick` event to `openModal(true)`.
-
-    // Example of how you might add a separate "Unlock All" button in the topbar
-    // if you want to give users a direct way to unlock all without clicking an individual tool.
-    /*
-    const topbar = document.querySelector('.topbar');
-    if (topbar) {
-        const unlockAllTopButton = document.createElement('button');
-        unlockAllTopButton.textContent = 'Unlock All Tools';
-        unlockAllTopButton.className = 'logout-btn'; // Reusing style for simplicity, consider new class
-        unlockAllTopButton.style.backgroundColor = '#007bff'; // Example color
-        unlockAllTopButton.onclick = () => openModal(true);
-        topbar.appendChild(unlockAllTopButton);
-    }
-    */
-});
-    </script>
+  </script>
 </body>
 </html>

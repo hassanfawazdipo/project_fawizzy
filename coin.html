@@ -33,7 +33,7 @@
       padding: 20px;
       margin-bottom: 30px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      max-width: 500px; /* Added for better layout */
+      max-width: 500px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -83,15 +83,14 @@
 <div class="balance" id="balance">Balance: ₦0 coins</div>
 
 <div class="section">
-  <h2>🪙 Select Coin Pack (₦1 = 1 Coin)</h2>
-  <div class="option"><span>₦1,000 = 1,000 Coins</span><button onclick="buyCoins(1000)">Buy</button></div>
-  <div class="option"><span>₦5,000 = 5,000 Coins</span><button onclick="buyCoins(5000)">Buy</button></div>
-  <div class="option"><span>₦10,000 = 10,000 Coins</span><button onclick="buyCoins(10000)">Buy</button></div>
+  <h2>🪙 Coin Packs (₦1 = 1 Coin + Bonuses)</h2>
+  <div class="option"><span>₦2,000 → <b>2,500 Coins</b></span><button onclick="buyCoins(2000, 2500)">Buy</button></div>
+  <div class="option"><span>₦5,000 → <b>6,500 Coins</b></span><button onclick="buyCoins(5000, 6500)">Buy</button></div>
+  <div class="option"><span>₦10,000 → <b>15,000 Coins</b></span><button onclick="buyCoins(10000, 15000)">Buy</button></div>
   <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
 </div>
 
 <script>
-  // Firebase configuration (replace with your actual config)
   const firebaseConfig = {
     apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
     authDomain: "conectcamp-db2c2.firebaseapp.com",
@@ -102,25 +101,21 @@
     measurementId: "G-3Q2ZS872YC"
   };
 
-  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
   let currentUID = null;
 
-  // Check user authentication status
   auth.onAuthStateChanged(user => {
     if (!user) {
-      // If no user is logged in, redirect to login page
       alert("Please log in first.");
       window.location.href = "login.html";
     } else {
       currentUID = user.uid;
-      updateBalanceUI(); // Update UI with current coin balance
+      updateBalanceUI();
     }
   });
 
-  // Function to update the displayed coin balance
   function updateBalanceUI() {
     if (currentUID) {
       db.collection("users").doc(currentUID).get().then(doc => {
@@ -132,55 +127,50 @@
     }
   }
 
-  // Function to initiate coin purchase via Flutterwave
-  function buyCoins(nairaAmount) {
+  function buyCoins(nairaAmount, bonusCoins) {
     const user = auth.currentUser;
     if (!user) {
       alert("Login required to buy coins.");
       return;
     }
 
-    // Initialize Flutterwave Checkout
     FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X", // Replace with your actual Flutterwave Public Key
-      tx_ref: "coin_purchase_" + Date.now() + "_" + user.uid.substring(0, 5), // Unique transaction reference
+      public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X",
+      tx_ref: "coin_purchase_" + Date.now() + "_" + user.uid.substring(0, 5),
       amount: nairaAmount,
       currency: "NGN",
-      payment_options: "card,ussd,banktransfer", // Specify desired payment options
+      payment_options: "card,ussd,banktransfer",
       customer: {
         email: user.email,
-        phonenumber: user.phoneNumber || "N/A", // Use N/A if phone number isn't available
+        phonenumber: user.phoneNumber || "N/A",
         name: user.displayName || "Customer"
       },
       customizations: {
         title: "Coin Purchase",
-        description: `Purchase ${nairaAmount} coins for ₦${nairaAmount}`,
-        logo: "https://your-website.com/logo.png", // Replace with your logo URL
+        description: `Get ${bonusCoins} coins for ₦${nairaAmount}`,
+        logo: "https://your-website.com/logo.png" // Optional: Replace with your logo URL
       },
       callback: function (data) {
-        // This function is called when the payment is complete
         if (data.status === "successful") {
           const userRef = db.collection("users").doc(user.uid);
-          // Use a Firestore transaction to safely update the user's coin balance
           db.runTransaction(async (transaction) => {
             const doc = await transaction.get(userRef);
             const currentCoins = doc.exists ? (doc.data().coins || 0) : 0;
-            transaction.update(userRef, { coins: currentCoins + nairaAmount });
+            transaction.update(userRef, { coins: currentCoins + bonusCoins });
           }).then(() => {
-            updateBalanceUI(); // Update UI after successful transaction
-            alert(`Payment successful! ₦${nairaAmount} has been credited to your balance as ${nairaAmount} coins.`);
+            updateBalanceUI();
+            alert(`✅ Payment successful! You received ${bonusCoins} coins.`);
           }).catch(error => {
             console.error("Firebase transaction failed:", error);
-            alert("Failed to credit coins. Please contact support.");
+            alert("⚠️ Payment went through, but we couldn't credit your coins. Contact support.");
           });
         } else {
-          alert("Payment failed. Please try again or contact support.");
+          alert("❌ Payment failed or cancelled.");
         }
       },
       onclose: function () {
-        // This function is called when the checkout modal is closed without completing payment
-        console.log("Flutterwave payment modal closed.");
-      },
+        console.log("Payment popup closed.");
+      }
     });
   }
 </script>
