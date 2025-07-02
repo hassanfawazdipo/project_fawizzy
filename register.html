@@ -141,7 +141,6 @@
 </head>
 <body>
   <div class="container">
-    <!-- Register Form -->
     <form id="registerForm">
       <h2>Create Account</h2>
       <div class="input-group">
@@ -162,7 +161,6 @@
       <div class="toggle-btn">Already have an account? <span onclick="toggleForm('login')">Login</span></div>
     </form>
 
-    <!-- Login Form -->
     <form id="loginForm" class="hidden">
       <h2>Welcome Back</h2>
       <div class="input-group">
@@ -178,7 +176,6 @@
     </form>
   </div>
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
@@ -240,10 +237,11 @@
           coins: 500,
           referralCode: user.uid.substring(0, 6).toUpperCase(),
           referredBy: referralCode || null,
-          status: "free",
-          toolUnlocks: {},
+          status: "free", // Default status is free
+          toolUnlocks: {}, // No tools unlocked by default
+          isPremiumUser: false, // NEW: User is not premium by default
+          premiumAccountExpiresAt: null, // NEW: No premium all-access by default
           registeredAt: firebase.firestore.FieldValue.serverTimestamp(),
-          premiumExpiresAt: null
         });
 
         if (referralCode) {
@@ -286,6 +284,10 @@
         localStorage.setItem("coins", data.coins || 0);
         localStorage.setItem("status", data.status || "free");
         localStorage.setItem("toolUnlocks", JSON.stringify(data.toolUnlocks || {}));
+        // NEW: Load premium account status from Firestore to localStorage
+        localStorage.setItem("isPremiumUser", data.isPremiumUser ? "true" : "false");
+        localStorage.setItem("premiumAccountExpiresAt", data.premiumAccountExpiresAt ? data.premiumAccountExpiresAt.toDate().toISOString() : null);
+
 
         if (user.email === "conectcamp.ng@gmail.com") {
           window.location.href = "Admin_dashboard.html";
