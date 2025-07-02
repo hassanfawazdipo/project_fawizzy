@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Receipt Generator</title>
@@ -20,6 +22,7 @@
       box-shadow: 0 0 15px rgba(52,199,89,0.3);
       width: 100%;
       max-width: 600px;
+      margin-bottom: 20px; /* Add margin to separate generator from output */
     }
     h1 {
       text-align: center;
@@ -39,6 +42,10 @@
       background-color: #2a2d33;
       color: white;
     }
+    input[readonly] {
+      background-color: #3a3d43; /* Slightly different background for readonly fields */
+      cursor: not-allowed;
+    }
     button {
       background-color: #34C759;
       color: black;
@@ -50,6 +57,12 @@
       border-radius: 10px;
       cursor: pointer;
     }
+    button#downloadBtn { /* Target download button specifically */
+      background-color: #00bfff; /* Blue for download */
+      color: white;
+    }
+
+    /* Receipt Output Styling */
     #receiptOutput {
       background: white;
       color: black;
@@ -64,24 +77,81 @@
       text-align: center;
       border-bottom: 1px solid #ccc;
       padding-bottom: 10px;
+      margin-top: 0; /* Remove top margin for h2 inside receipt */
     }
-    #downloadBtn {
-      display: none;
-      background-color: #00bfff;
+    #receiptOutput p {
+        margin-bottom: 5px; /* Spacing for paragraphs */
+    }
+    #receiptOutput hr {
+        border: none;
+        border-top: 1px dashed #ccc;
+        margin: 15px 0;
+    }
+    #receiptOutput strong {
+        color: #333;
+    }
+
+    /* New styles for the receipt header */
+    .receipt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+    .receipt-header img {
+      max-width: 80px; /* Smaller logo for receipts */
+      max-height: 80px;
+      margin-right: 15px;
+      object-fit: contain;
+    }
+    .company-details-receipt {
+      flex-grow: 1;
+      text-align: right;
+      font-size: 0.9em;
+    }
+    .company-details-receipt h3 {
+      text-align: right;
+      margin: 0;
+      color: #34C759;
+      font-size: 1.2em;
+    }
+    .company-details-receipt p {
+      margin: 2px 0;
+      color: #555;
+    }
+
+    /* Hidden canvas for image generation */
+    canvas {
+        display: none;
     }
   </style>
 </head>
 <body>
 <div class="container">
   <h1>Receipt Generator</h1>
-  <label>Seller's Name</label>
-  <input type="text" id="sellerName">
-  <label>Seller's Address</label>
-  <textarea id="sellerAddress"></textarea>
-  <label>Seller's Phone Number</label>
-  <input type="text" id="sellerPhone">
-  <label>Seller TIN</label>
-  <input type="text" id="sellerTIN">
+
+  <label>Company Name</label>
+  <input type="text" id="companyName" placeholder="Your Company Name">
+  <label>Company Address</label>
+  <textarea id="companyAddress" rows="2" placeholder="Your Company Address"></textarea>
+  <label>Company Email</label>
+  <input type="email" id="companyEmail" placeholder="you@example.com">
+  <label>Company Contact Number</label>
+  <input type="text" id="companyContactNumber" placeholder="+234-XXX-XXXX">
+  <label>Company Logo</label>
+  <input type="file" id="companyLogo" accept="image/*">
+  <label>Company TIN</label>
+  <input type="text" id="companyTIN" readonly>
+  
+  <hr> <label>Seller's Name (if different from Company Name)</label>
+  <input type="text" id="sellerName" placeholder="e.g., John Doe">
+  <label>Seller's Address (if different from Company Address)</label>
+  <textarea id="sellerAddress" rows="2" placeholder="e.g., 123 Street, City"></textarea>
+  <label>Seller's Phone Number (if different from Company Contact)</label>
+  <input type="text" id="sellerPhone" placeholder="e.g., 08012345678">
+
   <label>Buyer's Name (Optional)</label>
   <input type="text" id="buyerName">
   <label>Date of Transaction</label>
@@ -89,7 +159,7 @@
   <label>Description of Goods/Services</label>
   <textarea id="description"></textarea>
   <label>Amount Paid (₦)</label>
-  <input type="number" id="amountPaid">
+  <input type="number" id="amountPaid" min="0" step="0.01">
   <label>Payment Method</label>
   <select id="paymentMethod">
     <option value="Cash">Cash</option>
@@ -98,42 +168,176 @@
     <option value="POS">POS</option>
   </select>
   <label>Authorized Signature</label>
-  <input type="text" id="signature" placeholder="Enter name of authorized personnel"><button onclick="generateReceipt()">Generate Receipt</button> <button id="downloadBtn" onclick="downloadImage()">Download as Image</button>
+  <input type="text" id="signature" placeholder="Enter name of authorized personnel">
+
+  <button onclick="generateReceipt()">Generate Receipt</button> 
+  <button id="downloadBtn" style="display:none;" onclick="downloadImage()">Download as Image</button>
 
   <div id="receiptOutput" style="display:none;"></div>
+  <canvas id="hiddenCanvas" style="display:none;"></canvas>
 </div>
+
 <script>
-  let usedReceiptNumbers = new Set();function generateReceiptNumber() { let num; do { num = 'RCPT-' + Math.floor(100000 + Math.random() * 900000); } while (usedReceiptNumbers.has(num)); usedReceiptNumbers.add(num); return num; }
+  let usedReceiptNumbers = new Set();
+  let usedTINs = new Set();
+  let companyLogoDataURL = ''; // Variable to store the Base64 image data
 
-function generateReceipt() { const sellerName = document.getElementById('sellerName').value; const sellerAddress = document.getElementById('sellerAddress').value; const sellerPhone = document.getElementById('sellerPhone').value; const sellerTIN = document.getElementById('sellerTIN').value; const buyerName = document.getElementById('buyerName').value; const transDate = document.getElementById('transDate').value; const description = document.getElementById('description').value; const amountPaid = parseFloat(document.getElementById('amountPaid').value); const paymentMethod = document.getElementById('paymentMethod').value; const signature = document.getElementById('signature').value;
+  // Function to generate a unique receipt number
+  function generateReceiptNumber() {
+    let num;
+    do {
+      const date = new Date();
+      // Format: RCPT-YYYYMMDD-XXXX (e.g., RCPT-20250702-1234)
+      const datePart = date.getFullYear().toString() +
+                       (date.getMonth() + 1).toString().padStart(2, '0') +
+                       date.getDate().toString().padStart(2, '0');
+      const randomPart = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+      num = `RCPT-${datePart}-${randomPart}`;
+    } while (usedReceiptNumbers.has(num));
+    usedReceiptNumbers.add(num);
+    return num;
+  }
 
-if (!sellerName || !sellerAddress || !sellerPhone || !sellerTIN || !transDate || !description || isNaN(amountPaid) || !paymentMethod || !signature) {
-  return alert("Please fill in all required fields.");
-}
+  // Function to generate a unique TIN
+  function generateTIN() {
+    let tin;
+    do {
+        // Example TIN format: TIN-XXXXXXXXXX (10 random digits)
+        tin = 'TIN-' + Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    } while (usedTINs.has(tin));
+    usedTINs.add(tin);
+    return tin;
+  }
 
-const receiptNum = generateReceiptNumber();
+  // Automatically generate TIN on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('companyTIN').value = generateTIN();
+    // Pre-fill today's date
+    document.getElementById('transDate').valueAsDate = new Date();
+  });
 
-const receipt = `
-  <h2>RECEIPT</h2>
-  <p><strong>Receipt Number:</strong> ${receiptNum}</p>
-  <p><strong>Date of Transaction:</strong> ${transDate}</p>
-  <hr>
-  <p><strong>Seller:</strong><br>${sellerName}<br>${sellerAddress}<br>${sellerPhone}<br>TIN: ${sellerTIN}</p>
-  ${buyerName ? `<p><strong>Buyer:</strong> ${buyerName}</p>` : ''}
-  <p><strong>Description:</strong><br>${description}</p>
-  <p><strong>Amount Paid:</strong> ₦${amountPaid.toLocaleString()}</p>
-  <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-  <p><strong>Authorized Signature:</strong> ${signature}</p>
-`;
+  // Event listener for the file input to read the logo
+  document.getElementById('companyLogo').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        companyLogoDataURL = e.target.result; // Store the Base64 data URL
+      };
+      reader.readAsDataURL(file); // Read the file as a Data URL
+    } else {
+      companyLogoDataURL = ''; // Clear if no file is selected
+    }
+  });
 
-const output = document.getElementById('receiptOutput');
-output.innerHTML = receipt;
-output.style.display = 'block';
-document.getElementById('downloadBtn').style.display = 'block';
+  function generateReceipt() {
+    // Company Header Details
+    const companyName = document.getElementById('companyName').value.trim();
+    const companyAddress = document.getElementById('companyAddress').value.trim();
+    const companyEmail = document.getElementById('companyEmail').value.trim();
+    const companyContactNumber = document.getElementById('companyContactNumber').value.trim();
+    const companyTIN = document.getElementById('companyTIN').value.trim(); // Get the auto-generated TIN
 
-}
+    // Receipt Details
+    const sellerName = document.getElementById('sellerName').value.trim();
+    const sellerAddress = document.getElementById('sellerAddress').value.trim();
+    const sellerPhone = document.getElementById('sellerPhone').value.trim();
+    const buyerName = document.getElementById('buyerName').value.trim();
+    const transDate = document.getElementById('transDate').value;
+    const description = document.getElementById('description').value.trim();
+    const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const signature = document.getElementById('signature').value.trim();
 
-function downloadImage() { html2canvas(document.getElementById("receiptOutput")).then(canvas => { const link = document.createElement("a"); link.download = "receipt.png"; link.href = canvas.toDataURL(); link.click(); }); } </script>
+    // Validation
+    if (!companyName || !companyAddress || !companyEmail || !companyContactNumber || !companyTIN || !transDate || !description || isNaN(amountPaid) || amountPaid <= 0 || !paymentMethod || !signature) {
+      return alert("Please fill in all required Company details, Transaction Date, Description, Amount Paid, Payment Method, and Authorized Signature. Amount must be greater than 0.");
+    }
+    
+    // Fallback for seller details if not provided separately
+    const finalSellerName = sellerName || companyName;
+    const finalSellerAddress = sellerAddress || companyAddress;
+    const finalSellerPhone = sellerPhone || companyContactNumber;
+
+    const receiptNum = generateReceiptNumber();
+
+    // Construct the receipt header HTML
+    const receiptHeaderHTML = `
+      <div class="receipt-header">
+        ${companyLogoDataURL ? `<img src="${companyLogoDataURL}" alt="Company Logo">` : ''}
+        <div class="company-details-receipt">
+          <h3>${companyName}</h3>
+          <p>${companyAddress}</p>
+          <p>Email: ${companyEmail}</p>
+          <p>Phone: ${companyContactNumber}</p>
+          <p>TIN: ${companyTIN}</p>
+        </div>
+      </div>
+    `;
+
+    const receiptContent = `
+      <h2>RECEIPT</h2>
+      <p><strong>Receipt Number:</strong> ${receiptNum}</p>
+      <p><strong>Date of Transaction:</strong> ${transDate}</p>
+      <hr>
+      <p><strong>Seller:</strong><br>${finalSellerName}<br>${finalSellerAddress}<br>${finalSellerPhone}</p>
+      ${buyerName ? `<p><strong>Buyer:</strong> ${buyerName}</p>` : ''}
+      <p><strong>Description:</strong><br>${description}</p>
+      <p><strong>Amount Paid:</strong> ₦${amountPaid.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+      <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+      <hr>
+      <p style="text-align: center; margin-top: 20px;">Received by: <strong>${signature}</strong></p>
+      <p style="text-align: center; margin-top: 30px; font-size: 0.8em; color: #777;">Thank you for your business!</p>
+    `;
+
+    const output = document.getElementById('receiptOutput');
+    output.innerHTML = receiptHeaderHTML + receiptContent; // Prepend header to content
+    output.style.display = 'block';
+    document.getElementById('downloadBtn').style.display = 'block';
+  }
+
+  function downloadImage() {
+    const receiptOutput = document.getElementById("receiptOutput");
+    const hiddenCanvas = document.getElementById("hiddenCanvas");
+
+    // Define target dimensions in pixels for 74.1in x 157.6in at 96 DPI
+    const targetWidthPx = 74.1 * 96; // 7113.6 pixels
+    const targetHeightPx = 157.6 * 96; // 15129.6 pixels
+
+    html2canvas(receiptOutput, {
+      scale: 4, // Increased scale for better resolution before resizing
+      backgroundColor: "#ffffff", // Ensure white background for the image
+      useCORS: true // Important for handling external images (though here we use data URL)
+    }).then(canvas => {
+      const ctx = hiddenCanvas.getContext('2d');
+
+      // Calculate aspect ratios
+      const outputAspectRatio = canvas.width / canvas.height;
+      const targetAspectRatio = targetWidthPx / targetHeightPx;
+
+      let finalWidth, finalHeight;
+
+      // Resize to fit target dimensions while maintaining aspect ratio
+      // Prioritize fitting height for a receipt-like long image
+      if (outputAspectRatio < targetAspectRatio) { // If output is taller/skinnier than target
+          finalHeight = targetHeightPx;
+          finalWidth = targetHeightPx * outputAspectRatio;
+      } else { // If output is shorter/wider than target
+          finalWidth = targetWidthPx;
+          finalHeight = targetWidthPx / outputAspectRatio;
+      }
+
+      hiddenCanvas.width = finalWidth;
+      hiddenCanvas.height = finalHeight;
+      ctx.drawImage(canvas, 0, 0, finalWidth, finalHeight);
+
+      const link = document.createElement("a");
+      link.download = `Receipt_${generateReceiptNumber()}.png`; // Use a new number for download filename
+      link.href = hiddenCanvas.toDataURL("image/png");
+      link.click();
+    });
+  }
+</script>
 
 </body>
 </html>

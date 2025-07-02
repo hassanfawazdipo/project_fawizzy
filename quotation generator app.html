@@ -8,147 +8,252 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
     :root {
-  --bg: #212121;
-  --card: #1A1D23;
-  --accent: #34C759;
-  --text: #ffffff;
-}
+      --bg: #212121;
+      --card: #1A1D23;
+      --accent: #34C759;
+      --text: #ffffff;
+    }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Outfit', sans-serif;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Outfit', sans-serif;
+    }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  padding: 20px;
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-  background: var(--card);
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
-}
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: var(--card);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+      margin-bottom: 20px;
+    }
 
-h2, h3 {
-  text-align: center;
-  color: var(--accent);
-  margin-bottom: 20px;
-}
+    h2, h3 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
 
-label {
-  font-weight: bold;
-  display: block;
-  margin-top: 15px;
-}
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
 
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  background-color: #2c2f35;
-  color: var(--text);
-  border: none;
-  margin-top: 5px;
-}
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #2c2f35;
+      color: var(--text);
+      border: none;
+      margin-top: 5px;
+    }
 
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
+    input[readonly] {
+      background-color: #3a3d43; /* Slightly different background for readonly fields */
+      cursor: not-allowed;
+    }
 
-.btn {
-  background: var(--accent);
-  color: black;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
-  margin-top: 20px;
-  cursor: pointer;
-}
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
 
-.total-box {
-  text-align: right;
-  margin-top: 15px;
-}
+    .btn {
+      background: var(--accent);
+      color: black;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      cursor: pointer;
+      width: auto;
+    }
 
-/* Table Styling */
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-top: 20px;
-  background: #2c2f35;
-  border-radius: 10px;
-  overflow: hidden;
-  word-break: break-word;
-  table-layout: fixed;
-}
+    .action-buttons {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+      margin-top: 30px;
+    }
 
-th, td {
-  padding: 12px;
-  text-align: left;
-  vertical-align: top;
-  border-bottom: 1px solid #444;
-  word-wrap: break-word;
-}
+    .action-buttons .btn {
+      flex: 1;
+    }
 
-th {
-  color: var(--accent);
-  background: #1f1f1f;
-}
+    /* Table Styling */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 20px;
+      background: #2c2f35;
+      border-radius: 10px;
+      overflow: hidden;
+      word-break: break-word;
+      table-layout: fixed;
+    }
 
-td {
-  color: var(--text);
-}
+    th, td {
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid #444;
+      word-wrap: break-word;
+    }
 
-/* Responsive Table on Small Screens */
-@media(max-width: 700px) {
-  .row {
-    grid-template-columns: 1fr;
-  }
-}
+    th {
+      color: var(--accent);
+      background: #1f1f1f;
+    }
 
-@media(max-width: 500px) {
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
+    td {
+      color: var(--text);
+    }
 
-  thead {
-    display: none;
-  }
+    /* Quotation Header Styles */
+    .quotation-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+    .quotation-header img {
+      max-width: 100px;
+      max-height: 100px;
+      margin-right: 20px;
+      object-fit: contain;
+    }
+    .company-details {
+      flex-grow: 1;
+      text-align: right;
+    }
+    .company-details h2 {
+      text-align: right;
+      margin: 0;
+      color: var(--accent);
+    }
+    .company-details p {
+      margin: 2px 0;
+      font-size: 0.9em;
+      color: #555;
+    }
 
-  tr {
-    margin-bottom: 15px;
-    border-bottom: 1px solid #444;
-  }
+    .total-box {
+      text-align: right;
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 2px solid #444;
+    }
+    .total-box h3 {
+      text-align: right;
+      color: var(--text);
+    }
 
-  td {
-    position: relative;
-    padding-left: 50%;
-  }
+    #quotationArea {
+        display: none;
+        background: #fff;
+        color: #000;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        margin-top: 30px;
+    }
+    #quotationArea h2 {
+        color: var(--accent);
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-top: 0;
+    }
+    #quotationArea p strong {
+        color: #333;
+    }
+    #quotationArea table {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+    }
+    #quotationArea th {
+        background: #e0e0e0;
+        color: #333;
+    }
+    #quotationArea td {
+        color: #444;
+        border: 1px solid #eee;
+    }
 
-  td::before {
-    position: absolute;
-    left: 10px;
-    width: 45%;
-    white-space: nowrap;
-    font-weight: bold;
-    color: var(--accent);
-  }
+    canvas {
+      display: none;
+    }
 
-  td:nth-child(1)::before { content: "Description"; }
-  td:nth-child(2)::before { content: "Unit Price (₦)"; }
-  td:nth-child(3)::before { content: "Quantity"; }
-  td:nth-child(4)::before { content: "Total (₦)"; }
-}
+    /* Responsive Table on Small Screens */
+    @media(max-width: 700px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+      .quotation-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .quotation-header img {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+      .company-details {
+        text-align: center;
+      }
+      .company-details h2 {
+        text-align: center;
+      }
+    }
+
+    @media(max-width: 500px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #444;
+      }
+
+      td {
+        position: relative;
+        padding-left: 50%;
+      }
+
+      td::before {
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        white-space: nowrap;
+        font-weight: bold;
+        color: var(--accent);
+      }
+
+      td:nth-child(1)::before { content: "Description"; }
+      td:nth-child(2)::before { content: "Unit Price (₦)"; }
+      td:nth-child(3)::before { content: "Quantity"; }
+      td:nth-child(4)::before { content: "Total (₦)"; }
+    }
   </style>
 </head>
 <body>
@@ -156,19 +261,31 @@ td {
     <h2>Create New Quotation</h2>
     <div class="row">
       <div>
+        <label>Company Name</label>
+        <input type="text" id="companyName" placeholder="Your Company Name" />
+
+        <label>Company Address</label>
+        <textarea id="companyAddress" rows="2" placeholder="Your Company Address"></textarea>
+
+        <label>Company Email</label>
+        <input type="email" id="companyEmail" placeholder="you@example.com" />
+
+        <label>Company Contact Number</label>
+        <input type="text" id="companyContactNumber" placeholder="+234-XXX-XXXX" />
+
+        <label>Company Logo</label>
+        <input type="file" id="companyLogo" accept="image/*">
+      </div>
+
+      <div>
         <label>Quotation Number</label>
-        <input type="text" id="quoteNumber" placeholder="e.g. QUO-001" />
+        <input type="text" id="quoteNumber" readonly />
 
         <label>Date</label>
         <input type="date" id="quoteDate" />
 
-        <label>Company Name & Address</label>
-        <textarea id="companyInfo" rows="3" placeholder="Your Company Name, Address, Contact"></textarea>
-      </div>
-
-      <div>
         <label>Client Name & Address</label>
-        <textarea id="clientInfo" rows="5" placeholder="Client Name, Address, Contact"></textarea>
+        <textarea id="clientInfo" rows="3" placeholder="Client Name, Address, Contact"></textarea>
 
         <label>Payment Terms</label>
         <input type="text" id="paymentTerms" placeholder="e.g. 50% upfront, 50% on delivery" />
@@ -195,18 +312,16 @@ td {
 
     <div class="action-buttons">
       <button class="btn" onclick="generateQuotation()">✅ Generate Quotation</button>
-      <button class="btn" id="downloadBtn" onclick="downloadAsImage()">⬇️ Download Image</button>
+      <button class="btn" id="downloadBtn" style="display:none;" onclick="downloadAsImage()">⬇️ Download Image</button>
     </div>
   </div>
 
-  <!-- Quotation Preview -->
   <div class="container" id="quotationArea">
     <h2>Customer Quotation</h2>
     <div class="row">
       <div>
         <p><strong>Quotation Number:</strong> <span id="viewQuoteNumber"></span></p>
         <p><strong>Date:</strong> <span id="viewQuoteDate"></span></p>
-        <p><strong>Company:</strong><br><span id="viewCompany"></span></p>
       </div>
       <div>
         <p><strong>Client:</strong><br><span id="viewClient"></span></p>
@@ -232,9 +347,48 @@ td {
     </div>
   </div>
 
+  <canvas id="hiddenCanvas" style="display:none;"></canvas>
+
   <script>
     let grandTotal = 0;
     const items = [];
+    let companyLogoDataURL = ''; // Variable to store the Base64 image data
+    const usedQuoteNumbers = new Set(); // To keep track of generated numbers
+
+    // Function to generate a unique quotation number
+    function generateUniqueQuoteNumber() {
+        let num;
+        do {
+            const date = new Date();
+            const year = date.getFullYear().toString().slice(2); // e.g., 25 for 2025
+            const month = (date.getMonth() + 1).toString().padStart(2, '0'); // e.g., 07 for July
+            const random = Math.floor(Math.random() * 9000) + 1000; // 4-digit random number
+            num = `QUO-${year}${month}-${random}`;
+        } while (usedQuoteNumbers.has(num)); // Ensure uniqueness
+        usedQuoteNumbers.add(num);
+        return num;
+    }
+
+    // Immediately generate and display the quote number on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('quoteNumber').value = generateUniqueQuoteNumber();
+        // Set today's date as default
+        document.getElementById('quoteDate').valueAsDate = new Date();
+    });
+
+    // Event listener for the file input to read the logo
+    document.getElementById('companyLogo').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          companyLogoDataURL = e.target.result; // Store the Base64 data URL
+        };
+        reader.readAsDataURL(file); // Read the file as a Data URL
+      } else {
+        companyLogoDataURL = ''; // Clear if no file is selected
+      }
+    });
 
     function addItem() {
       const desc = document.getElementById("desc").value;
@@ -242,7 +396,7 @@ td {
       const qty = parseFloat(document.getElementById("qty").value);
 
       if (!desc || isNaN(unit) || isNaN(qty) || unit <= 0 || qty <= 0) {
-        alert("Please enter valid item details.");
+        alert("Please enter valid item details. Description, Unit Price, and Quantity are required and must be positive numbers.");
         return;
       }
 
@@ -273,37 +427,95 @@ td {
     }
 
     function generateQuotation() {
-      const quoteNumber = document.getElementById("quoteNumber").value;
+      const companyName = document.getElementById("companyName").value.trim();
+      const companyAddress = document.getElementById("companyAddress").value.trim();
+      const companyEmail = document.getElementById("companyEmail").value.trim();
+      const companyContactNumber = document.getElementById("companyContactNumber").value.trim();
+      const quoteNumber = document.getElementById("quoteNumber").value.trim(); // Get the auto-generated number
       const quoteDate = document.getElementById("quoteDate").value;
-      const companyInfo = document.getElementById("companyInfo").value;
-      const clientInfo = document.getElementById("clientInfo").value;
-      const paymentTerms = document.getElementById("paymentTerms").value;
-      const deliveryTerms = document.getElementById("deliveryTerms").value;
+      const clientInfo = document.getElementById("clientInfo").value.trim();
+      const paymentTerms = document.getElementById("paymentTerms").value.trim();
+      const deliveryTerms = document.getElementById("deliveryTerms").value.trim();
 
-      if (!quoteNumber || !quoteDate || !companyInfo || !clientInfo) {
-        alert("Please fill all necessary fields.");
+      if (!companyName || !companyAddress || !companyEmail || !companyContactNumber || !quoteNumber || !quoteDate || !clientInfo) {
+        alert("Please fill all required Company, Quotation, and Client details.");
+        return;
+      }
+      if (items.length === 0) {
+        alert("Please add at least one item to the quotation.");
         return;
       }
 
+      // Construct the header HTML for the quotation
+      const headerHTML = `
+        <div class="quotation-header">
+          ${companyLogoDataURL ? `<img src="${companyLogoDataURL}" alt="Company Logo">` : ''}
+          <div class="company-details">
+            <h2>${companyName}</h2>
+            <p>${companyAddress}</p>
+            <p>Email: ${companyEmail}</p>
+            <p>Phone: ${companyContactNumber}</p>
+          </div>
+        </div>
+      `;
+
+      const quotationArea = document.getElementById("quotationArea");
+      // Clear any previous header before inserting a new one
+      const existingHeader = quotationArea.querySelector('.quotation-header');
+      if (existingHeader) {
+          existingHeader.remove();
+      }
+      // Prepend the header to the quotationArea
+      quotationArea.insertAdjacentHTML('afterbegin', headerHTML); // Adds before the first child
+
       document.getElementById("viewQuoteNumber").textContent = quoteNumber;
       document.getElementById("viewQuoteDate").textContent = quoteDate;
-      document.getElementById("viewCompany").textContent = companyInfo;
       document.getElementById("viewClient").textContent = clientInfo;
       document.getElementById("viewPayment").textContent = paymentTerms;
       document.getElementById("viewDelivery").textContent = deliveryTerms;
 
       updateTotal();
-      document.getElementById("quotationArea").style.display = "block";
+      quotationArea.style.display = "block";
       document.getElementById("downloadBtn").style.display = "inline-block";
     }
 
     function downloadAsImage() {
-      const quote = document.getElementById("quotationArea");
+      const quotationArea = document.getElementById("quotationArea");
+      const hiddenCanvas = document.getElementById("hiddenCanvas");
 
-      html2canvas(quote).then(canvas => {
+      // Define target dimensions in pixels for 74.1in x 157.6in at 96 DPI
+      const targetWidthPx = 74.1 * 96; // 7113.6 pixels
+      const targetHeightPx = 157.6 * 96; // 15129.6 pixels
+
+      html2canvas(quotationArea, {
+        scale: 4, // Increased scale for better resolution before resizing
+        backgroundColor: "#ffffff", // Ensure white background for the image
+        useCORS: true // Important for handling external images (though here we use data URL)
+      }).then(canvas => {
+        const ctx = hiddenCanvas.getContext('2d');
+
+        // Calculate aspect ratios
+        const outputAspectRatio = canvas.width / canvas.height;
+        const targetAspectRatio = targetWidthPx / targetHeightPx;
+
+        let finalWidth, finalHeight;
+
+        // Resize to fit target dimensions while maintaining aspect ratio
+        if (outputAspectRatio > targetAspectRatio) {
+            finalWidth = targetWidthPx;
+            finalHeight = targetWidthPx / outputAspectRatio;
+        } else {
+            finalHeight = targetHeightPx;
+            finalWidth = targetHeightPx * outputAspectRatio;
+        }
+
+        hiddenCanvas.width = finalWidth;
+        hiddenCanvas.height = finalHeight;
+        ctx.drawImage(canvas, 0, 0, finalWidth, finalHeight);
+
         const link = document.createElement("a");
-        link.download = "quotation.png";
-        link.href = canvas.toDataURL();
+        link.download = `Quotation_${document.getElementById('quoteNumber').value}.png`;
+        link.href = hiddenCanvas.toDataURL("image/png");
         link.click();
       });
     }
