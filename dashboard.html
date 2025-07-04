@@ -517,264 +517,123 @@
       </div>
     </div>
   </div>
-  <div id="unlockModal" class="modal">
-      <div class="modal-content">
-          <span class="close-button" onclick="closeModal()">&times;</span>
-          <h3 id="modalTitle">Unlock Premium Tool</h3>
-          <p id="modalDescription">Choose an unlock duration:</p>
-          <div class="modal-options">
-              <button id="singleUnlock7" onclick="unlockTool(7, 100, false)">7 Days - ₦100</button>
-              <button id="singleUnlock14" onclick="unlockTool(14, 400, false)">14 Days - ₦400</button>
-              <button id="singleUnlock30" onclick="unlockTool(30, 500, false)">1 Month - ₦500</button>
-              <hr id="modalSeparator">
-              <h3 id="unlockAllTitle">Unlock All Premium Tools</h3>
-              <button id="allUnlock7" onclick="unlockTool(7, 500, true)">7 Days - ₦500</button>
-              <button id="allUnlock14" onclick="unlockTool(14, 1000, true)">14 Days - ₦1000</button>
-              <button id="allUnlock30" onclick="unlockTool(30, 1500, true)">1 Month - ₦1500</button>
-          </div>
-          <p id="modalMessage" style="color: red; margin-top: 10px;"></p>
-      </div>
+ <!-- 🔽 Unlock Modal -->
+  <div id="unlockModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:9999;">
+    <div style="background:#fff; padding:20px; border-radius:10px; width:90%; max-width:400px; text-align:center;">
+      <h3 style="margin-bottom: 20px;">Unlock Tool Access</h3>
+      <p>Choose your plan:</p>
+      <button onclick="pay(500,7)" style="margin: 10px; padding:10px 20px; background:green; color:white; border:none; border-radius:5px;">₦500 for 7 days</button>
+      <button onclick="pay(1000,14)" style="margin: 10px; padding:10px 20px; background:#007bff; color:white; border:none; border-radius:5px;">₦1000 for 14 days</button>
+      <button onclick="pay(1500,30)" style="margin: 10px; padding:10px 20px; background:#ff9800; color:white; border:none; border-radius:5px;">₦1500 for 30 days</button>
+      <br><br>
+      <button onclick="closeModal()" style="padding:8px 16px; background:red; color:white; border:none; border-radius:5px;">Cancel</button>
+    </div>
   </div>
+
   <script>
     const themeToggle = document.getElementById("themeToggle");
     const body = document.body;
-
-    // Load theme preference from localStorage
     if (localStorage.getItem("theme") === "light") {
-        body.classList.add("light");
-        themeToggle.checked = true;
+      body.classList.add("light");
+      themeToggle.checked = true;
     }
-
     themeToggle.addEventListener("change", () => {
-        body.classList.toggle("light");
-        localStorage.setItem("theme", body.classList.contains("light") ? "light" : "dark");
+      body.classList.toggle("light");
+      localStorage.setItem("theme", body.classList.contains("light") ? "light" : "dark");
     });
 
     const balanceDisplay = document.getElementById("balance");
-
-    // Initialize balance or get stored value
-    let balance = parseInt(localStorage.getItem("coins"));
-    if (isNaN(balance)) {
-        balance = 500;
-        localStorage.setItem("coins", balance);
-    }
+    let balance = parseInt(localStorage.getItem("coins")) || 0;
     balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
 
-    let currentToolToUnlock = null;
-
     function isToolUnlocked(link) {
-        const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
-        const now = new Date();
+      const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
+      const tool = unlocks[link];
+      if (!tool) return false;
+      const now = new Date().toISOString();
+      return now < tool.expiresAt;
+    }
 
-        let isPremiumAccount = localStorage.getItem("isPremiumUser") === "true";
-        let premiumAccountExpiresAt = localStorage.getItem("premiumAccountExpiresAt");
+    function saveUnlock(link, days, cost) {
+      let balance = parseInt(localStorage.getItem("coins")) || 0;
+      if (balance < cost) {
+        alert("Insufficient balance!");
+        return;
+      }
 
-        if (isPremiumAccount && premiumAccountExpiresAt) {
-            const premiumExpiry = new Date(premiumAccountExpiresAt);
-            if (now < premiumExpiry) return true;
-            // Expired, remove
-            localStorage.removeItem("isPremiumUser");
-            localStorage.removeItem("premiumAccountExpiresAt");
-            updateButtons();
-        }
+      const now = new Date();
+      now.setDate(now.getDate() + days);
+      const expiresAt = now.toISOString();
 
-        const tool = unlocks[link];
-        if (!tool) return false;
+      const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
+      unlocks[link] = { expiresAt };
+      localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
 
-        const toolExpiry = new Date(tool.expiresAt);
-        if (now < toolExpiry) return true;
-
-        delete unlocks[link];
-        localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
-        updateButtons();
-        return false;
+      balance -= cost;
+      localStorage.setItem("coins", balance);
+      balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
+      updateButtons();
+      closeModal();
     }
 
     function updateButtons() {
-        document.querySelectorAll(".product-box").forEach(box => {
-            const link = box.getAttribute("data-link");
-            const plan = box.getAttribute("data-plan");
-            const button = box.querySelector("button");
+      document.querySelectorAll(".product-box").forEach(box => {
+        const link = box.getAttribute("data-link");
+        const plan = box.getAttribute("data-plan");
+        const button = box.querySelector("button");
 
-            if (plan === "free") {
-                button.textContent = "Open";
-                button.onclick = () => window.location.href = link;
-                box.classList.remove("locked");
-            } else {
-                if (isToolUnlocked(link)) {
-                    button.textContent = "Open";
-                    button.onclick = () => window.location.href = link;
-                    box.classList.remove("locked");
-                } else {
-                    button.textContent = "Unlock";
-                    button.onclick = () => {
-                        currentToolToUnlock = link;
-                        openModal(false);
-                    };
-                    box.classList.add("locked");
-                }
-            }
-        });
-    }
-
-    const unlockModal = document.getElementById("unlockModal");
-    const modalMessage = document.getElementById("modalMessage");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalDescription = document.getElementById("modalDescription");
-    const singleUnlock7 = document.getElementById("singleUnlock7");
-    const singleUnlock14 = document.getElementById("singleUnlock14");
-    const singleUnlock30 = document.getElementById("singleUnlock30");
-    const modalSeparator = document.getElementById("modalSeparator");
-    const unlockAllTitle = document.getElementById("unlockAllTitle");
-    const allUnlock7 = document.getElementById("allUnlock7");
-    const allUnlock14 = document.getElementById("allUnlock14");
-    const allUnlock30 = document.getElementById("allUnlock30");
-
-    function openModal(unlockAllClicked = false) {
-        unlockModal.style.display = "flex";
-        modalMessage.textContent = "";
-
-        if (unlockAllClicked) {
-            modalTitle.textContent = "Unlock All Premium Tools";
-            modalDescription.textContent = "Choose an unlock duration for all premium tools:";
-            singleUnlock7.style.display = 'none';
-            singleUnlock14.style.display = 'none';
-            singleUnlock30.style.display = 'none';
-            modalSeparator.style.display = 'none';
-            unlockAllTitle.style.display = 'none';
-            allUnlock7.style.display = 'block';
-            allUnlock14.style.display = 'block';
-            allUnlock30.style.display = 'block';
+        if (plan === "free") {
+          button.textContent = "Open";
+          button.onclick = () => window.location.href = link;
         } else {
-            let toolName = "This Tool";
-            if (currentToolToUnlock) {
-                const toolBox = document.querySelector(`.product-box[data-link="${currentToolToUnlock}"]`);
-                if (toolBox) toolName = toolBox.getAttribute('data-name');
-            }
-            modalTitle.textContent = `Unlock "${toolName}"`;
-            modalDescription.textContent = "Choose an unlock duration:";
-            singleUnlock7.style.display = 'block';
-            singleUnlock14.style.display = 'block';
-            singleUnlock30.style.display = 'block';
-            modalSeparator.style.display = 'block';
-            unlockAllTitle.style.display = 'block';
-            allUnlock7.style.display = 'block';
-            allUnlock14.style.display = 'block';
-            allUnlock30.style.display = 'block';
-        }
-    }
-
-    function closeModal() {
-        unlockModal.style.display = "none";
-        currentToolToUnlock = null;
-    }
-
-    function unlockTool(days, cost, unlockAllFlag) {
-        if (balance >= cost) {
-            balance -= cost;
-            localStorage.setItem("coins", balance);
-            balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
-
-            const expirationDate = new Date();
-            expirationDate.setDate(expirationDate.getDate() + days);
-            const expiresAtISO = expirationDate.toISOString();
-
-            if (unlockAllFlag) {
-                localStorage.setItem("isPremiumUser", "true");
-                localStorage.setItem("premiumAccountExpiresAt", expiresAtISO);
-                modalMessage.textContent = `All premium tools unlocked for ${days} days!`;
+          const unlocked = isToolUnlocked(link);
+          button.textContent = unlocked ? "Open" : "Unlock";
+          button.onclick = () => {
+            if (unlocked) {
+              window.location.href = link;
             } else {
-                if (!currentToolToUnlock) {
-                    modalMessage.textContent = "Error: No tool selected.";
-                    modalMessage.style.color = "red";
-                    return;
-                }
-                const unlocks = JSON.parse(localStorage.getItem("toolUnlocks") || "{}");
-                unlocks[currentToolToUnlock] = {
-                    unlocked: true,
-                    expiresAt: expiresAtISO
-                };
-                localStorage.setItem("toolUnlocks", JSON.stringify(unlocks));
-                modalMessage.textContent = `Tool unlocked for ${days} days!`;
+              openModal(link);
             }
-
-            modalMessage.style.color = "green";
-            updateButtons();
-            setTimeout(() => closeModal(), 1500);
-        } else {
-            modalMessage.textContent = "Insufficient coins.";
-            modalMessage.style.color = "red";
+          };
         }
+      });
     }
 
     function searchTools() {
-        const query = document.getElementById("toolSearch").value.toLowerCase();
-        document.querySelectorAll(".product-box").forEach(box => {
-            const name = box.getAttribute("data-name").toLowerCase();
-            box.style.display = name.includes(query) ? "block" : "none";
-        });
-    }
-
-    document.getElementById("toolSearch").addEventListener("input", searchTools);
-
-    function generateReferralCode() {
-        return Math.floor(100000 + Math.random() * 900000).toString();
-    }
-
-    let userReferralCode = localStorage.getItem('userReferralCode');
-    if (!userReferralCode) {
-        userReferralCode = generateReferralCode();
-        localStorage.setItem('userReferralCode', userReferralCode);
-    }
-
-    const referralCodeInput = document.getElementById('referralCode');
-    const referralMessage = document.getElementById('referralMessage');
-    if (referralCodeInput) referralCodeInput.value = userReferralCode;
-
-    function copyReferralCode() {
-        referralCodeInput.select();
-        referralCodeInput.setSelectionRange(0, 99999);
-        document.execCommand("copy");
-        referralMessage.textContent = "Code copied!";
-        referralMessage.style.color = "green";
-        setTimeout(() => referralMessage.textContent = "", 3000);
-    }
-
-    function checkForReferralBonus() {
-        const params = new URLSearchParams(window.location.search);
-        const referredByCode = params.get('referredBy');
-        const isNewUserAfterReferral = localStorage.getItem('isNewUserAfterReferral');
-
-        if (referredByCode && isNewUserAfterReferral === 'true') {
-            const bonusGivenFlag = `bonus_given_for_referral_${referredByCode}_${userReferralCode}`;
-            if (localStorage.getItem(bonusGivenFlag) !== 'true') {
-                balance += 200;
-                localStorage.setItem("coins", balance);
-                balanceDisplay.innerHTML = `<i class="fas fa-wallet"></i> ₦${balance.toLocaleString()}`;
-                alert(`Welcome! You received 200 coins for signing up through a referral.`);
-                localStorage.setItem(bonusGivenFlag, 'true');
-            }
-            localStorage.removeItem('isNewUserAfterReferral');
-            const newUrl = new URL(window.location.origin + window.location.pathname);
-            window.history.replaceState({}, document.title, newUrl.toString());
-        }
+      const query = document.getElementById("toolSearch").value.toLowerCase();
+      document.querySelectorAll(".product-box").forEach(box => {
+        const name = box.getAttribute("data-name").toLowerCase();
+        box.style.display = name.includes(query) ? "block" : "none";
+      });
     }
 
     function logout() {
-        window.location.href = "register.html";
+      localStorage.clear();
+      window.location.href = "register.html";
     }
 
     function toggleMenu() {
-        document.getElementById("sidebar").classList.toggle("active");
-        document.getElementById("mainContent").classList.toggle("shifted");
+      document.getElementById("sidebar").classList.toggle("active");
+      document.getElementById("mainContent").classList.toggle("shifted");
     }
 
-    updateButtons();
-    checkForReferralBonus();
+    let currentToolLink = "";
+    function openModal(link) {
+      currentToolLink = link;
+      document.getElementById("unlockModal").style.display = "flex";
+    }
 
-    window.onclick = function (event) {
-        if (event.target == unlockModal) closeModal();
-    };
-</script>
+    function closeModal() {
+      currentToolLink = "";
+      document.getElementById("unlockModal").style.display = "none";
+    }
+
+    function pay(amount, days) {
+      saveUnlock(currentToolLink, days, amount);
+    }
+
+    document.getElementById("toolSearch").addEventListener("input", searchTools);
+    updateButtons();
+  </script>
 </body>
 </html>
