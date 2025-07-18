@@ -217,6 +217,24 @@
       }
     }
 
+    async function generateUniqueReferralCode() {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let code;
+      let exists = true;
+
+      while (exists) {
+        code = '';
+        for (let i = 0; i < 6; i++) {
+          code += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+
+        const query = await db.collection("users").where("referralCode", "==", code).get();
+        exists = !query.empty;
+      }
+
+      return code;
+    }
+
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('registerEmail').value.trim();
@@ -230,17 +248,18 @@
       try {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
+        const uniqueReferralCode = await generateUniqueReferralCode();
 
         await db.collection("users").doc(user.uid).set({
           uid: user.uid,
           email: user.email,
           coins: 500,
-          referralCode: user.uid.substring(0, 6).toUpperCase(),
+          referralCode: uniqueReferralCode,
           referredBy: referralCode || null,
-          status: "free", // Default status is free
-          toolUnlocks: {}, // No tools unlocked by default
-          isPremiumUser: false, // NEW: User is not premium by default
-          premiumAccountExpiresAt: null, // NEW: No premium all-access by default
+          status: "free",
+          toolUnlocks: {},
+          isPremiumUser: false,
+          premiumAccountExpiresAt: null,
           registeredAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
 
@@ -248,9 +267,11 @@
           const refQuery = await db.collection("users").where("referralCode", "==", referralCode).get();
           if (!refQuery.empty) {
             const refDoc = refQuery.docs[0];
-            await db.collection("users").doc(refDoc.id).update({
-              coins: firebase.firestore.FieldValue.increment(200)
-            });
+            if (refDoc.id !== user.uid) {
+              await db.collection("users").doc(refDoc.id).update({
+                coins: firebase.firestore.FieldValue.increment(200)
+              });
+            }
           }
         }
 
@@ -284,10 +305,8 @@
         localStorage.setItem("coins", data.coins || 0);
         localStorage.setItem("status", data.status || "free");
         localStorage.setItem("toolUnlocks", JSON.stringify(data.toolUnlocks || {}));
-        // NEW: Load premium account status from Firestore to localStorage
         localStorage.setItem("isPremiumUser", data.isPremiumUser ? "true" : "false");
         localStorage.setItem("premiumAccountExpiresAt", data.premiumAccountExpiresAt ? data.premiumAccountExpiresAt.toDate().toISOString() : null);
-
 
         if (user.email === "conectcamp.ng@gmail.com") {
           window.location.href = "Admin_dashboard.html";
