@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Referral Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --bg: #212121;
+      --card: #1A1D23;
+      --accent: #34C759;
+      --text: #fff;
+      --light: #999;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .referral-box {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 0 10px rgba(52, 199, 89, 0.3);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .referral-box h2 {
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+
+    .referral-code {
+      font-size: 24px;
+      background: #333;
+      padding: 10px 20px;
+      border-radius: 10px;
+      display: inline-block;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+    }
+
+    th {
+      background: #2a2a2a;
+      color: var(--accent);
+    }
+
+    tr:nth-child(even) {
+      background-color: #2c2c2c;
+    }
+
+    tr:hover {
+      background-color: #333;
+    }
+
+    @media screen and (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      tr {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #444;
+      }
+
+      td {
+        padding: 10px;
+        text-align: right;
+        position: relative;
+      }
+
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        text-align: left;
+        font-weight: bold;
+        color: var(--light);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Referral Dashboard</h1>
+      <p>Share your code and earn rewards!</p>
+    </div>
+
+    <div class="referral-box">
+      <h2>Your Referral Code</h2>
+      <div class="referral-code" id="refCode">Loading...</div>
+    </div>
+
+    <div class="referred-users">
+      <h2 style="margin-bottom: 10px;">People You've Referred</h2>
+      <table id="refTable">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Date Referred</th>
+          </tr>
+        </thead>
+        <tbody id="refTableBody">
+          <tr><td colspan="2" style="text-align:center;">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const uid = localStorage.getItem("uid");
+    const refCodeDisplay = document.getElementById("refCode");
+    const refTableBody = document.getElementById("refTableBody");
+
+    if (!uid) {
+      alert("You are not logged in.");
+      location.href = "index.html";
+    } else {
+      db.collection("users").doc(uid).get().then(doc => {
+        if (doc.exists) {
+          const userRefCode = doc.data().referralCode;
+          refCodeDisplay.textContent = userRefCode || "No code";
+
+          // Find all users who used this user's referral code
+          db.collection("users").where("referredBy", "==", userRefCode).get()
+            .then(snapshot => {
+              refTableBody.innerHTML = "";
+              if (snapshot.empty) {
+                refTableBody.innerHTML = "<tr><td colspan='2' style='text-align:center;'>You haven’t referred anyone yet.</td></tr>";
+              } else {
+                snapshot.forEach(doc => {
+                  const user = doc.data();
+                  const email = user.email || "N/A";
+                  const date = user.registeredAt ? user.registeredAt.toDate().toLocaleString() : "Unknown";
+                  refTableBody.innerHTML += `
+                    <tr>
+                      <td data-label="Email">${email}</td>
+                      <td data-label="Date Referred">${date}</td>
+                    </tr>`;
+                });
+              }
+            });
+        } else {
+          refCodeDisplay.textContent = "Error loading code";
+        }
+      });
+    }
+  </script>
+</body>
+</html>
