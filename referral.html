@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Your Referral Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
       --bg: #212121;
@@ -54,6 +55,29 @@
       border-radius: 10px;
       display: inline-block;
       font-weight: bold;
+    }
+
+    .filters {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .filters input[type="date"],
+    .filters button {
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 10px;
+    }
+
+    .filters button {
+      background-color: var(--accent);
+      color: white;
+      cursor: pointer;
     }
 
     table {
@@ -107,6 +131,15 @@
         font-weight: bold;
         color: var(--light);
       }
+
+      .filters {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .filters input, .filters button {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -120,6 +153,11 @@
     <div class="referral-box">
       <h2>Your Referral Code</h2>
       <div class="referral-code" id="refCode">Loading...</div>
+    </div>
+
+    <div class="filters">
+      <input type="date" id="filterDate">
+      <button onclick="downloadPDF()">Download PDF</button>
     </div>
 
     <div class="referred-users">
@@ -161,6 +199,9 @@
     const uid = localStorage.getItem("uid");
     const refCodeDisplay = document.getElementById("refCode");
     const refTableBody = document.getElementById("refTableBody");
+    const filterDate = document.getElementById("filterDate");
+
+    let referrals = [];
 
     if (!uid) {
       alert("You are not logged in.");
@@ -173,6 +214,7 @@
 
           db.collection("users").where("referredBy", "==", userRefCode).get()
             .then(snapshot => {
+              referrals = [];
               refTableBody.innerHTML = "";
               if (snapshot.empty) {
                 refTableBody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>You haven’t referred anyone yet.</td></tr>";
@@ -180,24 +222,78 @@
                 snapshot.forEach(doc => {
                   const user = doc.data();
                   const email = user.email || "N/A";
-                  const registeredAt = user.registeredAt ? user.registeredAt.toDate().toLocaleString() : "Unknown";
-                  const lastPurchaseDate = user.lastCoinPurchase ? user.lastCoinPurchase.toDate().toLocaleString() : "No Purchase Yet";
-                  const lastPurchaseAmount = user.lastCoinAmount ? `₦${user.lastCoinAmount.toLocaleString()}` : "₦0";
+                  const registeredAt = user.registeredAt ? user.registeredAt.toDate() : null;
+                  const lastPurchaseDate = user.lastCoinPurchase ? user.lastCoinPurchase.toDate() : null;
+                  const lastPurchaseAmount = user.lastCoinAmount || 0;
 
-                  refTableBody.innerHTML += `
-                    <tr>
-                      <td data-label="Email">${email}</td>
-                      <td data-label="Date Referred">${registeredAt}</td>
-                      <td data-label="Last Purchase">${lastPurchaseDate}</td>
-                      <td data-label="Amount Bought">${lastPurchaseAmount}</td>
-                    </tr>`;
+                  referrals.push({
+                    email,
+                    registeredAt,
+                    lastPurchaseDate,
+                    lastPurchaseAmount
+                  });
                 });
+                renderTable();
               }
             });
         } else {
           refCodeDisplay.textContent = "Error loading code";
         }
       });
+    }
+
+    filterDate.addEventListener("change", renderTable);
+
+    function renderTable() {
+      const selectedDate = filterDate.value ? new Date(filterDate.value) : null;
+      const filtered = selectedDate
+        ? referrals.filter(ref => {
+            const regDate = new Date(ref.registeredAt);
+            return regDate.toDateString() === selectedDate.toDateString();
+          })
+        : referrals;
+
+      refTableBody.innerHTML = filtered.length === 0
+        ? "<tr><td colspan='4' style='text-align:center;'>No referrals found for selected date.</td></tr>"
+        : filtered.map(ref => `
+          <tr>
+            <td data-label="Email">${ref.email}</td>
+            <td data-label="Date Referred">${ref.registeredAt?.toLocaleString() || "Unknown"}</td>
+            <td data-label="Last Purchase">${ref.lastPurchaseDate?.toLocaleString() || "No Purchase Yet"}</td>
+            <td data-label="Amount Bought">₦${ref.lastPurchaseAmount.toLocaleString()}</td>
+          </tr>
+        `).join("");
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const selectedDate = filterDate.value;
+      const data = referrals.filter(ref => {
+        if (!selectedDate) return true;
+        const date = new Date(ref.registeredAt);
+        return date.toDateString() === new Date(selectedDate).toDateString();
+      });
+
+      doc.setFontSize(16);
+      doc.text("Referral Report", 15, 15);
+      if (selectedDate) doc.text(`Date: ${new Date(selectedDate).toDateString()}`, 15, 25);
+
+      let y = 35;
+      doc.setFontSize(12);
+      data.forEach((ref, index) => {
+        doc.text(`• ${ref.email}`, 15, y);
+        doc.text(`Referred: ${ref.registeredAt?.toLocaleString() || "Unknown"}`, 15, y + 7);
+        doc.text(`Last Purchase: ${ref.lastPurchaseDate?.toLocaleString() || "No Purchase"}`, 15, y + 14);
+        doc.text(`Amount: ₦${ref.lastPurchaseAmount.toLocaleString()}`, 15, y + 21);
+        y += 30;
+      });
+
+      if (data.length === 0) {
+        doc.text("No referrals found for this date.", 15, y);
+      }
+
+      doc.save("referrals.pdf");
     }
   </script>
 </body>
