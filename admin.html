@@ -12,19 +12,16 @@
       --accent: #34C759;
       --text: #ffffff;
     }
-
     * {
       box-sizing: border-box;
       transition: all 0.3s ease;
     }
-
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
       background: var(--bg-dark);
       color: var(--text);
     }
-
     header {
       background: var(--bg-light);
       padding: 20px;
@@ -34,13 +31,11 @@
       color: var(--accent);
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
     }
-
     .container {
       max-width: 1200px;
       margin: auto;
       padding: 20px;
     }
-
     .card {
       background: var(--bg-light);
       border-radius: 15px;
@@ -48,42 +43,35 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       overflow-x: auto;
     }
-
     h2 {
       color: var(--accent);
       margin-bottom: 15px;
     }
-
     input, button, select {
       padding: 8px;
       border-radius: 8px;
       border: none;
       font-size: 14px;
     }
-
     button {
       background: var(--accent);
       color: var(--bg-dark);
       font-weight: 600;
       cursor: pointer;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
     }
-
     th, td {
       padding: 10px;
       text-align: left;
       border-bottom: 1px solid #333;
     }
-
     th {
       color: var(--accent);
     }
-
     #modal {
       position: fixed;
       top: 0;
@@ -96,7 +84,6 @@
       padding: 40px 20px;
       z-index: 9999;
     }
-
     .modal-content {
       background: var(--bg-light);
       border-radius: 12px;
@@ -104,16 +91,22 @@
       margin: auto;
       padding: 20px;
     }
-
     .team-card {
-      background: #111;
+      background: #333;
       padding: 15px;
-      border-radius: 12px;
+      border-radius: 8px;
       margin-bottom: 15px;
-      color: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      color: #fff;
     }
-
+    .team-card table {
+      width: 100%;
+    }
+    .team-card td {
+      padding: 6px 4px;
+    }
+    .team-card strong {
+      color: #ccc;
+    }
     @media (max-width: 600px) {
       table, th, td {
         font-size: 12px;
@@ -177,7 +170,6 @@
         <th>Add Coins</th>
         <th>Ban</th>
       </tr>`;
-
       users.forEach(user => {
         html += `<tr>
           <td>${user.username || '-'}</td>
@@ -185,7 +177,7 @@
           <td>${user.status || 'free'}</td>
           <td>${user.coins || 0}</td>
           <td>${user.referralCode || 'N/A'}</td>
-          <td><button onclick="showTeam('${user.referralCode}')">Team</button></td>
+          <td><button onclick="showTeam('${user.referralCode || ''}')">Team</button></td>
           <td>
             <input type='number' id='coins_${user.id}' placeholder='0' style="width: 60px;" />
             <button onclick='addCoins("${user.id}")'>Add</button>
@@ -193,7 +185,6 @@
           <td><button onclick="banUser('${user.id}')">Ban</button></td>
         </tr>`;
       });
-
       html += `</table>`;
       userList.innerHTML = html;
     }
@@ -211,7 +202,6 @@
       const input = document.getElementById(`coins_${uid}`);
       const addAmount = parseInt(input.value);
       if (!addAmount || addAmount <= 0) return alert("Enter valid coin amount");
-
       const userRef = doc(db, "users", uid);
       const userSnap = await getDoc(userRef);
       const current = userSnap.data().coins || 0;
@@ -236,34 +226,21 @@
       if (snap.empty) {
         teamList.innerHTML = `<p>No team yet.</p>`;
       } else {
-        snap.forEach(docSnap => {
-          const user = docSnap.data();
-          const joinedDate = user.createdAt?.toDate?.().toLocaleString('en-GB') || 'N/A';
+        snap.forEach(doc => {
+          const user = doc.data();
+          const joined = user.createdAt?.toDate?.().toLocaleString('en-GB') || 'N/A';
           const lastPurchase = user.lastPurchase || "No Purchase Yet";
           const amountBought = user.amountBought || 0;
 
           teamList.innerHTML += `
-            <div class="team-card">
-              <table style="width:100%;">
-                <tr>
-                  <td><strong>Email</strong></td>
-                  <td>${user.email || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td><strong>Date Referred</strong></td>
-                  <td>${joinedDate}</td>
-                </tr>
-                <tr>
-                  <td><strong>Last Purchase</strong></td>
-                  <td>${lastPurchase}</td>
-                </tr>
-                <tr>
-                  <td><strong>Amount Bought</strong></td>
-                  <td>₦${amountBought.toLocaleString()}</td>
-                </tr>
+            <div class='team-card'>
+              <table>
+                <tr><td><strong>Email</strong></td><td>${user.email || 'N/A'}</td></tr>
+                <tr><td><strong>Date Referred</strong></td><td>${joined}</td></tr>
+                <tr><td><strong>Last Purchase</strong></td><td>${lastPurchase}</td></tr>
+                <tr><td><strong>Amount Bought</strong></td><td>₦${amountBought.toLocaleString()}</td></tr>
               </table>
-            </div>
-          `;
+            </div>`;
         });
       }
 
