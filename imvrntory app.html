@@ -1,278 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Inventory Pro+ Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Modular Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
-      authDomain: "conectcamp-db2c2.firebaseapp.com",
-      projectId: "conectcamp-db2c2",
-      storageBucket: "conectcamp-db2c2.appspot.com",
-      messagingSenderId: "648442230919",
-      appId: "1:648442230919:web:28b61283dbb72f8f966022",
-      measurementId: "G-3Q2ZS872YC"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // Elements
-    const authSection = document.getElementById("authSection");
-    const dashboard = document.getElementById("dashboard");
-
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        authSection.style.display = "none";
-        dashboard.style.display = "block";
-        startApp(user.uid);
-      } else {
-        authSection.style.display = "block";
-        dashboard.style.display = "none";
-        stopApp();
-      }
-    });
-
-    // Auth functions
-    window.register = () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      createUserWithEmailAndPassword(auth, email, password)
-        .catch(err => alert(err.message));
-    };
-
-    window.login = () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      signInWithEmailAndPassword(auth, email, password)
-        .catch(err => alert(err.message));
-    };
-
-    window.logout = () => signOut(auth).catch(err => alert(err.message));
-
-    // App state
-    let unsubscribeInventory = null, unsubscribeHistory = null;
-
-    function startApp(uid) {
-      const invRef = collection(db, "users", uid, "inventories");
-      const histRef = collection(db, "users", uid, "historyLogs");
-
-      unsubscribeInventory = onSnapshot(query(invRef, orderBy("expiry")), snapshot => {
-        window.inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        updateUI();
-      });
-
-      unsubscribeHistory = onSnapshot(query(histRef, orderBy("time", "desc")), snapshot => {
-        window.historyLog = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderHistory();
-      });
+  <style>
+    :root {
+      --dark-bg: #212121;
+      --card-bg: #1A1D23;
+      --accent: #34C759;
+      --text-color: #fff;
+      --danger: #ff4d4d;
+      --warning: #ffcc00;
     }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-color);
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    header h1 {
+      color: var(--accent);
+      font-size: 2rem;
+    }
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.02);
+    }
+    .card h3 {
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    .card input, .card select, .card button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+    }
+    .card button {
+      background: var(--accent);
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      margin-top: 10px;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #333;
+    }
+    th {
+      color: var(--accent);
+    }
+    .low-stock {
+      color: var(--danger);
+      font-weight: bold;
+    }
+    .expiring-soon {
+      background: var(--warning);
+      color: #000;
+      font-weight: bold;
+    }
+    canvas {
+      margin-top: 10px;
+    }
+    #historyLog {
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+      padding: 10px;
+      background: #111;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+    #filterDate {
+      background: #111;
+      color: white;
+      border: 1px solid #444;
+      padding: 10px;
+      border-radius: 8px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    @media (max-width: 500px) {
+      .card h3 {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><i class="fas fa-boxes"></i> Inventory Pro+ Dashboard</h1>
+    <p>Manage Stock | Track Sales | Analytics | Alerts | Logs</p>
+  </header>
 
-    function stopApp() {
-      if (unsubscribeInventory) unsubscribeInventory();
-      if (unsubscribeHistory) unsubscribeHistory();
-      window.inventory = [];
-      window.historyLog = [];
-      updateUI();
+  <div class="grid">
+    <div class="card">
+      <h3>Add Inventory</h3>
+      <input type="text" placeholder="Item Name" id="itemName"/>
+      <input type="number" placeholder="Quantity" id="itemQty"/>
+      <input type="number" placeholder="Price (₦)" id="itemPrice"/>
+      <input type="date" placeholder="Expiry Date" id="itemExpiry"/>
+      <button onclick="addItem()">Add Item</button>
+    </div>
+
+    <div class="card">
+      <h3>Inventory List</h3>
+      <input type="text" id="searchInput" placeholder="Search Item Name..." oninput="updateUI()" style="padding: 10px; border-radius: 8px; margin-bottom: 10px;" />
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Expiry</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryTable"></tbody>
+      </table>
+    </div>
+
+    <div class="card" id="reportArea">
+      <h3>Inventory Summary</h3>
+      <p>Total Items: <span id="totalItems">0</span></p>
+      <p>Total Value: ₦<span id="totalValue">0.00</span></p>
+      <canvas id="analyticsChart" height="150"></canvas>
+
+      <h3 style="margin-top: 20px;">Inventory List (Snapshot)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Expiry</th>
+          </tr>
+        </thead>
+        <tbody id="snapshotTable"></tbody>
+      </table>
+
+      <button onclick="downloadReportImage()" style="margin-top: 15px; background: var(--accent); color: black; padding: 10px; border-radius: 8px;">📥 Download Inventory as Image</button>
+    </div>
+
+    <div class="card">
+      <h3>📜 Stock Movement History</h3>
+      <input type="date" id="filterDate" onchange="filterHistory()">
+      <div id="historyLog"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+    let historyLog = JSON.parse(localStorage.getItem("historyLog")) || [];
+
+    function logHistory(action) {
+      const timestamp = new Date();
+      const entry = {
+        time: timestamp.toISOString(),
+        display: `[${timestamp.toLocaleString()}] ${action}`
+      };
+      historyLog.unshift(entry);
+      if (historyLog.length > 100) historyLog.pop();
+      localStorage.setItem("historyLog", JSON.stringify(historyLog));
       renderHistory();
     }
 
-    // Inventory methods
-    window.addItem = async () => {
-      const uid = auth.currentUser.uid;
-      const invRef = collection(db, "users", uid, "inventories");
-      const name = document.getElementById("itemName").value;
-      const qty = +document.getElementById("itemQty").value;
-      const price = +document.getElementById("itemPrice").value;
-      const expiry = document.getElementById("itemExpiry").value;
-      if (!name || !qty || !price || !expiry) return alert("Fill all fields!");
+    function renderHistory(date = null) {
+      const container = document.getElementById("historyLog");
+      container.innerHTML = historyLog
+        .filter(log => !date || log.time.startsWith(date))
+        .map(log => `<div>${log.display}</div>`)
+        .join("");
+    }
 
-      await addDoc(invRef, { name, qty, price, expiry });
-      await addDoc(collection(db, "users", uid, "historyLogs"), {
-        time: Date.now(),
-        display: `Added ${name} (Qty:${qty}, ₦${price})`
+    function filterHistory() {
+      const date = document.getElementById("filterDate").value;
+      renderHistory(date);
+    }
+
+    function updateUI() {
+      const table = document.getElementById("inventoryTable");
+      const totalItems = document.getElementById("totalItems");
+      const totalValue = document.getElementById("totalValue");
+      const searchQuery = document.getElementById("searchInput")?.value.toLowerCase() || "";
+
+      table.innerHTML = "";
+      let value = 0;
+      let filtered = inventory.filter(item => item.name.toLowerCase().includes(searchQuery));
+
+      filtered.forEach((item, index) => {
+        value += item.price * item.qty;
+        const isLowStock = item.qty <= 5 ? 'low-stock' : '';
+        const daysLeft = Math.ceil((new Date(item.expiry) - new Date()) / (1000 * 60 * 60 * 24));
+        const expiringSoon = daysLeft <= 7 ? 'expiring-soon' : '';
+
+        table.innerHTML += `
+          <tr>
+            <td contenteditable onblur="editItem(${index}, 'name', this.innerText)">${item.name}</td>
+            <td contenteditable onblur="editItem(${index}, 'qty', this.innerText)" class="${isLowStock}">${item.qty}</td>
+            <td contenteditable onblur="editItem(${index}, 'price', this.innerText)">₦${item.price}</td>
+            <td class="${expiringSoon}"><input type='date' value='${item.expiry}' onchange="editItem(${index}, 'expiry', this.value)" /></td>
+            <td><button onclick="deleteItem(${index})">❌</button></td>
+          </tr>
+        `;
       });
+
+      totalItems.innerText = filtered.length;
+      totalValue.innerText = value.toFixed(2);
+      localStorage.setItem("inventory", JSON.stringify(inventory));
+      updateChart();
+    }
+
+    function addItem() {
+      const name = document.getElementById("itemName").value;
+      const qty = parseInt(document.getElementById("itemQty").value);
+      const price = parseFloat(document.getElementById("itemPrice").value);
+      const expiry = document.getElementById("itemExpiry").value;
+
+      if (!name || !qty || !price || !expiry) return alert("Please fill all fields correctly");
+
+      inventory.push({ name, qty, price, expiry });
+      updateUI();
 
       document.getElementById("itemName").value = "";
       document.getElementById("itemQty").value = "";
       document.getElementById("itemPrice").value = "";
       document.getElementById("itemExpiry").value = "";
-    };
+      logHistory(`Added item: ${name} (Qty: ${qty}, ₦${price})`);
+    }
 
-    window.editItem = async (id, field, value) => {
-      const uid = auth.currentUser.uid;
-      const docRef = doc(db, "users", uid, "inventories", id);
-      const data = {};
-      data[field] = field === "qty" || field === "price" ? +value : value;
-      try {
-        await updateDoc(docRef, data);
-        await addDoc(collection(db, "users", uid, "historyLogs"), {
-          time: Date.now(),
-          display: `Edited ${field} to ${value}`
-        });
-      } catch (err) {
-        alert(err.message);
+    function deleteItem(index) {
+      const item = inventory[index];
+      if (confirm("Are you sure to delete this item?")) {
+        inventory.splice(index, 1);
+        updateUI();
+        logHistory(`Deleted item: ${item.name}`);
       }
-    };
+    }
 
-    window.deleteItem = async (id, name) => {
-      if (!confirm(`Delete "${name}"?`)) return;
-      const uid = auth.currentUser.uid;
-      await deleteDoc(doc(db, "users", uid, "inventories", id));
-      await addDoc(collection(db, "users", uid, "historyLogs"), {
-        time: Date.now(),
-        display: `Deleted ${name}`
-      });
-    };
+    function editItem(index, field, value) {
+      if (field === 'qty' || field === 'price') {
+        value = parseFloat(value);
+        if (isNaN(value)) return alert("Enter a valid number");
+      }
+      const oldValue = inventory[index][field];
+      inventory[index][field] = value;
+      updateUI();
+      logHistory(`Edited ${field} of ${inventory[index].name} from ${oldValue} to ${value}`);
+    }
 
-    // UI rendering
-    window.updateUI = () => {
-      const table = document.getElementById("inventoryTable");
-      const totalItems = document.getElementById("totalItems");
-      const totalValue = document.getElementById("totalValue");
-      const search = document.getElementById("searchInput").value.toLowerCase();
-      const inv = window.inventory || [];
+    function updateChart() {
+      const ctx = document.getElementById('analyticsChart').getContext('2d');
+      const labels = inventory.map(item => item.name);
+      const data = inventory.map(item => item.qty);
 
-      let val = 0, count = 0;
-      table.innerHTML = inv.filter(i => i.name.toLowerCase().includes(search))
-        .map(item => {
-          count++;
-          val += item.qty * item.price;
-          const days = Math.ceil((new Date(item.expiry) - new Date()) / 864e5);
-          const low = item.qty <= 5 ? "low-stock" : "";
-          const soon = days <= 7 ? "expiring-soon" : "";
-          return `
-            <tr>
-              <td contenteditable onblur="editItem('${item.id}','name',this.innerText)">${item.name}</td>
-              <td contenteditable onblur="editItem('${item.id}','qty',this.innerText)" class="${low}">${item.qty}</td>
-              <td contenteditable onblur="editItem('${item.id}','price',this.innerText)">₦${item.price}</td>
-              <td class="${soon}">
-                <input type="date" value="${item.expiry}" onchange="editItem('${item.id}','expiry',this.value)" />
-              </td>
-              <td><button onclick="deleteItem('${item.id}','${item.name}')">❌</button></td>
-            </tr>`;
-        }).join("");
-
-      totalItems.textContent = count;
-      totalValue.textContent = val.toFixed(2);
-      updateChart(inv);
-    };
-
-    window.renderHistory = () => {
-      const hist = window.historyLog || [];
-      const filter = document.getElementById("filterDate").value;
-      const container = document.getElementById("historyLog");
-      container.innerHTML = hist.filter(h => !filter || new Date(h.time).toISOString().startsWith(filter))
-        .map(h => `<div>[${new Date(h.time).toLocaleString()}] ${h.display}</div>`)
-        .join("");
-    };
-
-    let chart;
-    function updateChart(inv) {
-      const ctx = document.getElementById("analyticsChart").getContext("2d");
-      const labels = inv.map(i => i.name);
-      const data = inv.map(i => i.qty);
-      if (chart) chart.destroy();
-      chart = new Chart(ctx, {
-        type: "bar",
-        data: { labels, datasets: [{ label: "Stock Quantity", data, backgroundColor: "rgba(52,199,89,0.6)", borderColor: "#34C759", borderWidth: 1 }] },
-        options: { scales: { y: { beginAtZero: true } } }
+      if (window.inventoryChart) window.inventoryChart.destroy();
+      window.inventoryChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Stock Quantity',
+            data,
+            backgroundColor: 'rgba(52, 199, 89, 0.6)',
+            borderColor: '#34C759',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
       });
     }
+
+    function downloadReportImage() {
+      const snapshotTable = document.getElementById("snapshotTable");
+      snapshotTable.innerHTML = "";
+      inventory.forEach(item => {
+        snapshotTable.innerHTML += `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.qty}</td>
+            <td>₦${item.price}</td>
+            <td>${item.expiry}</td>
+          </tr>
+        `;
+      });
+
+      html2canvas(document.getElementById("reportArea")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = `Inventory_Report_${new Date().toISOString().slice(0,10)}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+
+    updateUI();
+    renderHistory();
   </script>
-  <style>
-    :root {
-      --dark-bg: #212121; --card-bg: #1A1D23; --accent: #34C759; --text-color: #fff;
-      --danger: #ff4d4d; --warning: #ffcc00;
-    }
-    * { margin:0; padding:0; box-sizing: border-box; font-family:'Segoe UI', sans-serif; }
-    body { background:var(--dark-bg); color:var(--text-color); padding:20px; }
-    .card { background:var(--card-bg); border-radius:16px;
-      padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.5); transition:0.2s; }
-    .card:hover { transform:scale(1.02); }
-    input, select, button {
-      width:100%; padding:12px; margin:8px 0; border:none; border-radius:10px;
-      font-size:1rem; transition:0.3s; }
-    input, select {
-      background:#2c2f36; border:1px solid #444; color:#fff;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
-    }
-    input:focus, select:focus {
-      outline:none; border-color:var(--accent);
-      background:#1f2229; box-shadow:0 0 0 2px rgba(52,199,89,0.4);
-    }
-    button { background:var(--accent); color:#000; font-weight:bold;
-      cursor:pointer; transition:background 0.3s, transform 0.2s; }
-    button:hover { background:#28b34f; transform:translateY(-2px); }
-    button:active { transform:scale(0.97); }
-    ::placeholder { color:#bbb; }
-    table { width:100%; margin-top:10px; border-collapse:collapse; }
-    th, td { padding:10px; border-bottom:1px solid #333; }
-    th { color:var(--accent); }
-    .low-stock { color:var(--danger); font-weight:bold; }
-    .expiring-soon { background:var(--warning); color:#000; font-weight:bold; }
-    #historyLog { max-height:200px; overflow-y:auto; font-size:0.9rem;
-      background:#111; border-radius:10px; padding:10px; margin-top:10px; }
-    #logoutBtn { float:right; background:#f44336; color:#fff;
-      padding:10px 20px; border:none; border-radius:10px; cursor:pointer; }
-    #authSection { max-width:400px; margin:100px auto; padding:30px;
-      background:var(--card-bg); border-radius:12px; }
-    @media(max-width:500px){ .card h3 { font-size:1rem; } }
-  </style>
-</head>
-<body>
-  <div id="authSection">
-     <p style="color:red; text-align:center;">use your initial login details and click login</p>
-    <h2>Inventory Login</h2>
-    <input id="email" type="email" placeholder="Email"/>
-    <input id="password" type="password" placeholder="Password"/>
-    <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
-    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
-  </div>
-
-  <div id="dashboard" style="display:none;">
-    <button onclick="logout()">Logout</button>
-    <header><h1>Inventory Pro+ Dashboard</h1></header>
-    <div class="grid">
-      <div class="card">
-        <h3>Add Inventory</h3>
-        <input id="itemName" placeholder="Item Name"/>
-        <input id="itemQty" type="number" placeholder="Quantity"/>
-        <input id="itemPrice" type="number" placeholder="Price (₦)"/>
-        <input id="itemExpiry" type="date"/>
-        <button onclick="addItem()">Add Item</button>
-      </div>
-      <div class="card">
-        <h3>Inventory List</h3>
-        <input id="searchInput" placeholder="Search..." oninput="updateUI()"/>
-        <table>
-          <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Expiry</th><th>Actions</th></tr></thead>
-          <tbody id="inventoryTable"></tbody>
-        </table>
-      </div>
-      <div class="card">
-        <h3>Summary</h3>
-        <p>Total Items: <span id="totalItems">0</span></p>
-        <p>Total Value: ₦<span id="totalValue">0.00</span></p>
-        <canvas id="analyticsChart" height="150"></canvas>
-      </div>
-      <div class="card">
-        <h3>📜 History</h3>
-        <input id="filterDate" type="date" onchange="renderHistory()"/>
-        <div id="historyLog"></div>
-      </div>
-    </div>
-  </div>
 </body>
 </html>

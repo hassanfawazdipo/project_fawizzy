@@ -1,287 +1,231 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>📚 Bookkeeping App</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+    }
+
     body {
-      background-color: #212121;
+      background-color: #121212;
       color: #fff;
       display: flex;
       justify-content: center;
       padding: 20px;
     }
+
     .container {
-      max-width: 600px;
       width: 100%;
-      background: #1A1D23;
+      max-width: 600px;
+      background: #1e1e1e;
       padding: 20px;
       border-radius: 16px;
-      box-shadow: 0 0 12px rgba(52, 199, 89, 0.25);
-      transition: 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
     }
-    h1 { text-align: center; margin-bottom: 20px; color: #34C759; }
-    form, .filter-box { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00ff7f;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
     input, select, button {
-      padding: 10px; border: none; border-radius: 8px; font-size: 16px;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
     }
-    input, select { background: #2a2d33; color: #fff; }
+
+    input, select {
+      background: #2a2a2a;
+      color: #fff;
+    }
+
     button {
-      background: #34C759; color: #000; font-weight: bold; cursor: pointer;
+      background: #00ff7f;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    .summary, .monthly-summary {
-      display: flex; justify-content: space-between;
-      padding: 10px; background: #2a2d33;
-      border-radius: 8px; margin-bottom: 20px;
+
+    button:hover {
+      background: #00e66c;
     }
-    .entries { display: flex; flex-direction: column; gap: 12px; }
-    .entry {
-      background: #2a2d33; padding: 10px;
-      border-left: 6px solid #34C759;
-      border-radius: 8px; animation: fadeIn 0.3s ease-in;
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      background: #2b2b2b;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
     }
-    .entry.expense { border-left-color: red; }
-    .entry .top { display: flex; justify-content: space-between; font-weight: bold; }
-    .entry .bottom {
-      font-size: 13px; color: #ccc; display: flex; justify-content: space-between;
+
+    .records {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .record {
+      background: #2a2a2a;
+      padding: 10px;
+      border-left: 5px solid #00ff7f;
+      border-radius: 8px;
+    }
+
+    .record.expense {
+      border-left-color: red;
+    }
+
+    .record .top {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+
+    .record .bottom {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #ccc;
       margin-top: 5px;
     }
-    .entry .controls { margin-top: 8px; display: flex; gap: 10px; }
-    canvas { background: #1A1D23; border-radius: 8px; padding: 10px; }
-    .auth-box { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-    #logoutBtn { margin-top: 10px; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    .download-btn {
+      margin-top: 10px;
     }
+
+    #captureArea {
+      background: #1e1e1e;
+      padding: 10px;
+      border-radius: 12px;
+    }
+
     @media (max-width: 600px) {
-      .summary { flex-direction: column; gap: 8px; }
+      .summary {
+        flex-direction: column;
+        gap: 8px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <p style="color:red; text-align:center;">use your initial login details and click login</p>
-  <h1>📚 Bookkeeping</h1>  <div id="authSection">
-    <div class="auth-box">
-      
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button onclick="register()">Register</button>
-      <button onclick="login()">Login</button>
-      <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
-    </div>
-  </div>  <div id="appSection" style="display:none">
-    <form id="bookForm">
+  <div class="container">
+    <h1>📚 Bookkeeping</h1>
+
+    <form id="entryForm">
       <input type="text" id="desc" placeholder="Description" required />
       <input type="number" id="amount" placeholder="Amount (₦)" required />
       <input type="date" id="date" required />
       <select id="category">
         <option value="income">Income</option>
-        <option value="sales">Sales</option>
-        <option value="purchase">Purchase</option>
         <option value="expense">Expense</option>
       </select>
       <button type="submit">Add Entry</button>
-    </form><div class="filter-box">
-  <input type="date" id="filterDate" />
-  <button onclick="applyDateFilter()">Filter by Date</button>
-  <button onclick="clearFilter()">Clear Filter</button>
-</div>
+    </form>
 
-<div class="summary">
-  <div>Income: ₦<span id="inc">0</span></div>
-  <div>Expense: ₦<span id="exp">0</span></div>
-  <div>Balance: ₦<span id="bal">0</span></div>
-</div>
+    <!-- Area to capture -->
+    <div id="captureArea">
+      <div class="summary">
+        <div>Income: ₦<span id="inc">0</span></div>
+        <div>Expense: ₦<span id="exp">0</span></div>
+        <div>Balance: ₦<span id="bal">0</span></div>
+      </div>
 
-<div class="monthly-summary">
-  <div>This Month: ₦<span id="monthlyTotal">0</span></div>
-</div>
+      <div id="recordSection" class="records"></div>
+    </div>
 
-<canvas id="chart" width="100%" height="200"></canvas>
-
-<div class="entries" id="entries"></div>
-
-<button id="logoutBtn">Logout</button>
-
+    <button class="download-btn" onclick="downloadRecordImage()">📸 Download as Image</button>
   </div>
-</div><script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
-    authDomain: "conectcamp-db2c2.firebaseapp.com",
-    projectId: "conectcamp-db2c2",
-    storageBucket: "conectcamp-db2c2.appspot.com",
-    messagingSenderId: "648442230919",
-    appId: "1:648442230919:web:28b61283dbb72f8f966022",
-    measurementId: "G-3Q2ZS872YC"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
 
-  const email = document.getElementById("email");
-  const password = document.getElementById("password");
-  const authSection = document.getElementById("authSection");
-  const appSection = document.getElementById("appSection");
-  const logoutBtn = document.getElementById("logoutBtn");
+  <script>
+    const form = document.getElementById("entryForm");
+    const desc = document.getElementById("desc");
+    const amount = document.getElementById("amount");
+    const date = document.getElementById("date");
+    const category = document.getElementById("category");
+    const recordSection = document.getElementById("recordSection");
+    const inc = document.getElementById("inc");
+    const exp = document.getElementById("exp");
+    const bal = document.getElementById("bal");
 
-  let uid = null;
-  let filteredDate = null;
-  let chartInstance = null;
+    let data = [];
 
-  const form = document.getElementById("bookForm");
-  const desc = document.getElementById("desc");
-  const amount = document.getElementById("amount");
-  const date = document.getElementById("date");
-  const category = document.getElementById("category");
-  const entries = document.getElementById("entries");
-  const inc = document.getElementById("inc");
-  const exp = document.getElementById("exp");
-  const bal = document.getElementById("bal");
-  const monthlyTotal = document.getElementById("monthlyTotal");
-
-  function register() {
-    auth.createUserWithEmailAndPassword(email.value, password.value)
-      .then(() => alert("Registered successfully!"))
-      .catch(err => alert(err.message));
-  }
-
-  function login() {
-    auth.signInWithEmailAndPassword(email.value, password.value)
-      .then(() => alert("Login successful!"))
-      .catch(err => alert(err.message));
-  }
-
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      uid = user.uid;
-      authSection.style.display = "none";
-      appSection.style.display = "block";
-      loadEntries();
-    } else {
-      appSection.style.display = "none";
-      authSection.style.display = "block";
-    }
-  });
-
-  logoutBtn.onclick = () => {
-    auth.signOut().then(() => {
-      window.location.href = "dashboard.html";
-    }).catch(err => alert("Logout failed: " + err.message));
-  };
-
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    db.collection("bookkeeping").doc(uid).collection("entries").add({
-      desc: desc.value.trim(),
-      amount: parseFloat(amount.value),
-      date: date.value,
-      category: category.value
-    }).then(() => {
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const entry = {
+        desc: desc.value.trim(),
+        amount: parseFloat(amount.value),
+        date: date.value,
+        category: category.value
+      };
+      if (!entry.desc || !entry.amount || !entry.date) return;
+      data.push(entry);
       form.reset();
-      loadEntries();
-    });
-  });
-
-  function formatDate(d) {
-    return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-  }
-
-  function render(entriesData) {
-    entries.innerHTML = "";
-    let totalIncome = 0, totalExpense = 0, thisMonthTotal = 0;
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    const chartData = [];
-
-    entriesData.forEach(doc => {
-      const entry = doc.data();
-      entry.id = doc.id;
-      const d = new Date(entry.date);
-      if (filteredDate && entry.date !== filteredDate) return;
-
-      const div = document.createElement("div");
-      div.className = "entry " + (["expense", "purchase"].includes(entry.category) ? "expense" : "");
-      div.innerHTML = `
-        <div class="top">
-          <span>${entry.desc}</span><span>₦${Number(entry.amount).toLocaleString()}</span>
-        </div>
-        <div class="bottom">
-          <span>${entry.category.toUpperCase()}</span><span>${formatDate(entry.date)}</span>
-        </div>
-        <div class="controls">
-          <button onclick="editEntry('${entry.id}', '${entry.desc}', '${entry.amount}', '${entry.date}', '${entry.category}')">Edit</button>
-          <button onclick="deleteEntry('${entry.id}')">Delete</button>
-        </div>
-      `;
-      entries.appendChild(div);
-
-      if (["income", "sales"].includes(entry.category)) totalIncome += Number(entry.amount);
-      else totalExpense += Number(entry.amount);
-
-      if (d.getMonth() === currentMonth && d.getFullYear() === currentYear)
-        thisMonthTotal += Number(entry.amount);
-
-      chartData.push({ date: formatDate(entry.date), amount: Number(entry.amount) });
+      render();
     });
 
-    inc.textContent = totalIncome.toLocaleString();
-    exp.textContent = totalExpense.toLocaleString();
-    bal.textContent = (totalIncome - totalExpense).toLocaleString();
-    monthlyTotal.textContent = thisMonthTotal.toLocaleString();
+    function render() {
+      recordSection.innerHTML = "";
+      let totalInc = 0;
+      let totalExp = 0;
 
-    renderChart(chartData);
-  }
+      data.forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "record " + (entry.category === "expense" ? "expense" : "");
+        div.innerHTML = `
+          <div class="top">
+            <span>${entry.desc}</span>
+            <span>₦${entry.amount.toLocaleString()}</span>
+          </div>
+          <div class="bottom">
+            <span>${entry.category.toUpperCase()}</span>
+            <span>${new Date(entry.date).toLocaleDateString()}</span>
+          </div>
+        `;
+        recordSection.appendChild(div);
 
-  function renderChart(data) {
-    const ctx = document.getElementById("chart").getContext("2d");
-    if (chartInstance) chartInstance.destroy();
-    chartInstance = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: data.map(e => e.date),
-        datasets: [{
-          label: "Entries",
-          data: data.map(e => e.amount),
-          backgroundColor: "#34C759"
-        }]
+        if (entry.category === "income") totalInc += entry.amount;
+        else totalExp += entry.amount;
+      });
+
+      inc.textContent = totalInc.toLocaleString();
+      exp.textContent = totalExp.toLocaleString();
+      bal.textContent = (totalInc - totalExp).toLocaleString();
+    }
+
+    function downloadRecordImage() {
+      const element = document.getElementById("captureArea");
+      if (data.length === 0) {
+        alert("No records to download!");
+        return;
       }
-    });
-  }
 
-  function loadEntries() {
-    db.collection("bookkeeping").doc(uid).collection("entries").orderBy("date", "desc").get()
-      .then(snapshot => render(snapshot.docs));
-  }
-
-  function deleteEntry(id) {
-    db.collection("bookkeeping").doc(uid).collection("entries").doc(id).delete().then(loadEntries);
-  }
-
-  function editEntry(id, d, a, dt, c) {
-    desc.value = d;
-    amount.value = a;
-    date.value = dt;
-    category.value = c;
-    deleteEntry(id);
-  }
-
-  function applyDateFilter() {
-    filteredDate = document.getElementById("filterDate").value;
-    loadEntries();
-  }
-
-  function clearFilter() {
-    filteredDate = null;
-    document.getElementById("filterDate").value = "";
-    loadEntries();
-  }
-</script></body>
+      html2canvas(element).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "bookkeeping-record.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+  </script>
+</body>
 </html>
