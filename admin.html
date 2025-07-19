@@ -1,256 +1,232 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg-dark: #212121;
-      --bg-light: #1A1D23;
-      --accent: #34C759;
+      --bg-dark: #121212;
+      --bg-light: #1e1e1e;
+      --accent: #00ff9d;
       --text: #ffffff;
-    }* {
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-}
-
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: var(--bg-dark);
-  color: var(--text);
-}
-
-header {
-  background: var(--bg-light);
-  padding: 20px;
-  text-align: center;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--accent);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-}
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
-}
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
-
-input, select, button {
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-  margin: 5px;
-  font-size: 14px;
-}
-
-button {
-  background: var(--accent);
-  color: var(--bg-dark);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-th, td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #333;
-  color: #fff;
-}
-
-th {
-  color: var(--accent);
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.9);
-  color: white;
-  overflow-y: auto;
-  padding: 30px;
-  z-index: 1000;
-  display: none;
-  flex-direction: column;
-}
-
-.modal h3 {
-  margin-top: 0;
-  color: var(--accent);
-}
-
-.modal button {
-  background: crimson;
-  align-self: flex-end;
-}
-
-@media (max-width: 600px) {
-  th, td {
-    font-size: 12px;
-  }
-}
-
+    }
+    * {
+      box-sizing: border-box;
+      transition: 0.3s ease;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+    }
+    header {
+      background: var(--bg-light);
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+    input, button, select {
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      margin-right: 5px;
+    }
+    button {
+      background: var(--accent);
+      color: var(--bg-dark);
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .controls {
+      margin-bottom: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #333;
+    }
+    th {
+      color: var(--accent);
+      text-align: left;
+    }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.9);
+      overflow-y: auto;
+      display: none;
+      padding: 40px 20px;
+      z-index: 999;
+    }
+    .modal-content {
+      background: var(--bg-light);
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .modal h3 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+    .close-btn {
+      background: red;
+      position: fixed;
+      top: 20px; right: 20px;
+      color: white;
+      font-size: 16px;
+    }
+    @media (max-width: 600px) {
+      th, td {
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-<header>Admin Dashboard</header>
-<div class="container">
-  <div class="controls">
-    <input type="text" id="searchInput" placeholder="Search username/email" />
-    <select id="statusFilter">
-      <option value="">All Status</option>
-      <option value="free">Free</option>
-      <option value="premium">Premium</option>
-      <option value="banned">Banned</option>
-    </select>
+  <header>Admin Dashboard</header>
+  <div class="container">
+    <div class="controls">
+      <input type="text" id="search" placeholder="Search by username/email">
+      <select id="filterStatus">
+        <option value="">All Status</option>
+        <option value="premium">Premium</option>
+        <option value="free">Free</option>
+      </select>
+    </div>
+    <div id="userList">Loading...</div>
   </div>
-  <div id="userList">Loading users...</div>
-</div>
-<div class="modal" id="teamModal">
-  <button onclick="closeModal()">Close</button>
-  <h3>User's Team</h3>
-  <div id="teamList">Loading...</div>
-</div><script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getFirestore, collection, getDocs, getDoc, updateDoc, doc, query, where
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
-    authDomain: "conectcamp-db2c2.firebaseapp.com",
-    projectId: "conectcamp-db2c2",
-    storageBucket: "conectcamp-db2c2.appspot.com",
-    messagingSenderId: "648442230919",
-    appId: "1:648442230919:web:28b61283dbb72f8f966022",
-    measurementId: "G-3Q2ZS872YC"
-  };
+  <!-- Team Modal -->
+  <div class="modal" id="teamModal">
+    <div class="modal-content" id="teamContent">
+      <h3>Team</h3>
+      <div id="teamList"></div>
+    </div>
+    <button class="close-btn" onclick="closeModal()">Close</button>
+  </div>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const userList = document.getElementById("userList");
-  const searchInput = document.getElementById("searchInput");
-  const statusFilter = document.getElementById("statusFilter");
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, getDocs, getDoc, updateDoc, doc, query, where
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  let allUsers = [];
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+    };
 
-  async function loadUsers() {
-    const snapshot = await getDocs(collection(db, "users"));
-    allUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    renderUsers();
-  }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  function renderUsers() {
-    const search = searchInput.value.toLowerCase();
-    const status = statusFilter.value;
+    let allUsers = [];
 
-    const filtered = allUsers.filter(user => {
-      const matchSearch = user.username?.toLowerCase().includes(search) || user.email?.toLowerCase().includes(search);
-      const matchStatus = status === '' || user.status === status;
-      return matchSearch && matchStatus;
-    });
-
-    if (filtered.length === 0) {
-      userList.innerHTML = '<p style="color:#ccc">No users found.</p>';
-      return;
+    async function loadUsers() {
+      const snapshot = await getDocs(collection(db, "users"));
+      allUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      displayUsers(allUsers);
     }
 
-    let html = `<table>
-      <tr>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Coins</th>
-        <th>Status</th>
-        <th>Referral Code</th>
-        <th>Actions</th>
-      </tr>`;
-
-    for (const user of filtered) {
-      html += `
+    function displayUsers(users) {
+      let html = `<table>
         <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Coins</th>
+          <th>Referral</th>
+          <th>Actions</th>
+        </tr>`;
+      users.forEach(user => {
+        html += `<tr>
           <td>${user.username || '-'}</td>
           <td>${user.email || '-'}</td>
-          <td>${user.coins || 0}</td>
           <td>${user.status || 'free'}</td>
-          <td>${user.referralCode || '-'}</td>
+          <td>${user.coins || 0}</td>
+          <td>${user.referredBy || '—'}</td>
           <td>
-            <input type='number' id='coins_${user.id}' placeholder='0' style='width: 60px;' />
-            <button onclick='addCoins("${user.id}")'>Add</button>
-            <button onclick='banUser("${user.id}")'>Ban</button>
-            <button onclick='showTeam("${user.referralCode}")'>Team</button>
+            <button onclick="showTeam('${user.referralCode || ''}')">Team</button>
+            <button onclick="banUser('${user.id}')">Ban</button>
           </td>
         </tr>`;
-    }
-
-    html += '</table>';
-    userList.innerHTML = html;
-  }
-
-  window.addCoins = async (uid) => {
-    const input = document.getElementById(`coins_${uid}`);
-    const addAmount = parseInt(input.value);
-    if (!addAmount || addAmount <= 0) return alert("Invalid amount");
-    const userRef = doc(db, "users", uid);
-    const userSnap = await getDoc(userRef);
-    const current = userSnap.data().coins || 0;
-    await updateDoc(userRef, { coins: current + addAmount });
-    alert("Coins added");
-    loadUsers();
-  }
-
-  window.banUser = async (uid) => {
-    if (!confirm("Ban this user?")) return;
-    await updateDoc(doc(db, "users", uid), { status: "banned" });
-    alert("User banned");
-    loadUsers();
-  }
-
-  window.showTeam = async (refCode) => {
-    const modal = document.getElementById("teamModal");
-    const list = document.getElementById("teamList");
-    list.innerHTML = "Loading...";
-    modal.style.display = "flex";
-
-    const q = query(collection(db, "users"), where("referredBy", "==", refCode));
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) {
-      list.innerHTML = "<p>No team yet.</p>";
-    } else {
-      let content = "<ul>";
-      snapshot.forEach(doc => {
-        const u = doc.data();
-        content += `<li><strong>${u.username}</strong> - ${u.email} - ${u.status || 'free'} - ${new Date(u.timestamp?.seconds * 1000 || 0).toLocaleDateString()}</li>`;
       });
-      content += "</ul>";
-      list.innerHTML = content;
+      html += `</table>`;
+      document.getElementById("userList").innerHTML = html;
     }
-  }
 
-  window.closeModal = () => {
-    document.getElementById("teamModal").style.display = "none";
-  }
+    document.getElementById("search").addEventListener("input", () => {
+      const term = document.getElementById("search").value.toLowerCase();
+      const filtered = allUsers.filter(u =>
+        (u.username || '').toLowerCase().includes(term) ||
+        (u.email || '').toLowerCase().includes(term)
+      );
+      displayUsers(filtered);
+    });
 
-  searchInput.addEventListener("input", renderUsers);
-  statusFilter.addEventListener("change", renderUsers);
+    document.getElementById("filterStatus").addEventListener("change", () => {
+      const status = document.getElementById("filterStatus").value;
+      const filtered = status ? allUsers.filter(u => u.status === status) : allUsers;
+      displayUsers(filtered);
+    });
 
-  loadUsers();
-</script></body>
+    window.banUser = async (uid) => {
+      if (confirm("Are you sure you want to ban this user?")) {
+        await updateDoc(doc(db, "users", uid), { banned: true });
+        alert("User banned");
+        loadUsers();
+      }
+    };
+
+    window.showTeam = async (refCode) => {
+      const q = query(collection(db, "users"), where("referredBy", "==", refCode));
+      const result = await getDocs(q);
+      const teamList = document.getElementById("teamList");
+      if (result.empty) {
+        teamList.innerHTML = `<p style="color: #ccc;">No team yet.</p>`;
+      } else {
+        let html = `<table>
+          <tr><th>Username</th><th>Email</th><th>Status</th><th>Coins</th></tr>`;
+        result.forEach(doc => {
+          const d = doc.data();
+          html += `<tr>
+            <td>${d.username || '-'}</td>
+            <td>${d.email || '-'}</td>
+            <td>${d.status || 'free'}</td>
+            <td>${d.coins || 0}</td>
+          </tr>`;
+        });
+        html += `</table>`;
+        teamList.innerHTML = html;
+      }
+      document.getElementById("teamModal").style.display = "block";
+    };
+
+    window.closeModal = () => {
+      document.getElementById("teamModal").style.display = "none";
+    };
+
+    loadUsers();
+  </script>
+</body>
 </html>
