@@ -7,26 +7,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --bg-dark: #212121;
-      --bg-light: #1A1D23;
-      --accent: #34C759;
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
       --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
       box-sizing: border-box;
-      transition: all 0.3s ease;
+      transition: var(--transition);
     }
 
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: var(--bg-dark);
+      background: var(--bg);
       color: var(--text);
     }
 
     header {
-      background: var(--bg-light);
+      background: var(--sidebar);
       padding: 20px;
       text-align: center;
       font-size: 24px;
@@ -42,10 +53,10 @@
     }
 
     .card {
-      background: var(--bg-light);
+      background: var(--card);
       border-radius: 15px;
       padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      box-shadow: var(--card-shadow);
       overflow-x: auto;
     }
 
@@ -63,7 +74,7 @@
 
     button {
       background: var(--accent);
-      color: var(--bg-dark);
+      color: var(--light-text);
       font-weight: 600;
       cursor: pointer;
     }
@@ -71,7 +82,6 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      overflow-x: auto;
       font-size: 14px;
     }
 
@@ -79,7 +89,7 @@
       padding: 10px;
       text-align: left;
       border-bottom: 1px solid #333;
-      color: #fff;
+      color: var(--text);
     }
 
     th {
@@ -124,7 +134,7 @@
     }
 
     .modal .close-btn {
-      background: red;
+      background: var(--danger);
       margin-top: 20px;
     }
 
@@ -247,7 +257,7 @@
               <button onclick='addCoins("${user.id}")'>Add</button>
             </td>
             <td>
-              <button onclick='banUser("${user.id}")' style="background:red;">Ban</button>
+              <button onclick='banUser("${user.id}")' style="background: var(--danger);">Ban</button>
             </td>
           </tr>`;
       });
@@ -383,7 +393,6 @@
 
     searchInput.addEventListener("input", renderUsers);
     statusFilter.addEventListener("change", renderUsers);
-
     loadUsers();
   </script>
 </body>

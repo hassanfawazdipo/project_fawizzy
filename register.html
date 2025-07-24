@@ -9,11 +9,19 @@
     :root {
       --bg: #212121;
       --sidebar: #1A1D23;
-      --accent: #34C759;
-      --text: #FFFFFF;
       --card: #1A1D23;
-      --light-bg: #f7f7f7;
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      --text: #ffffff;
       --light-text: #000000;
+      --light-bg: #f8f9fa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
@@ -38,9 +46,10 @@
       max-width: 420px;
       background: var(--card);
       border-radius: 20px;
-      box-shadow: 0 0 40px rgba(52, 199, 89, 0.3);
+      box-shadow: var(--card-shadow);
       padding: 40px 30px;
       animation: pop 0.6s ease-out;
+      color: var(--text);
     }
 
     form {
@@ -68,7 +77,11 @@
       border-radius: 12px;
       color: var(--text);
       font-size: 16px;
-      transition: border 0.3s ease, background 0.3s ease;
+      transition: var(--transition);
+    }
+
+    .input-group input::placeholder {
+      color: #bbb;
     }
 
     .input-group input:focus {
@@ -82,24 +95,25 @@
       top: 50%;
       right: 15px;
       transform: translateY(-50%);
-      color: #888;
+      color: #999;
       cursor: pointer;
     }
 
     button {
       background: var(--accent);
       border: none;
-      color: var(--sidebar);
+      color: var(--light-text);
       font-weight: 600;
       font-size: 16px;
       padding: 14px;
       border-radius: 12px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: var(--transition);
     }
 
     button:hover {
-      background: #2eb14f;
+      background: var(--success);
+      color: var(--light-text);
     }
 
     .toggle-btn {

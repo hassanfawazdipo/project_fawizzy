@@ -9,10 +9,20 @@
   <style>
     :root {
       --bg: #212121;
+      --sidebar: #1A1D23;
       --card: #1A1D23;
-      --accent: #34C759;
-      --text: #fff;
-      --light: #999;
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body {
@@ -38,7 +48,7 @@
       background: var(--card);
       padding: 20px;
       border-radius: 16px;
-      box-shadow: 0 0 10px rgba(52, 199, 89, 0.3);
+      box-shadow: var(--card-shadow);
       text-align: center;
       margin-bottom: 30px;
     }
@@ -78,6 +88,11 @@
       background-color: var(--accent);
       color: white;
       cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filters button:hover {
+      background: var(--accent-secondary);
     }
 
     table {
@@ -86,7 +101,7 @@
       background: var(--card);
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      box-shadow: var(--card-shadow);
     }
 
     th, td {
@@ -129,7 +144,7 @@
         left: 10px;
         text-align: left;
         font-weight: bold;
-        color: var(--light);
+        color: var(--text);
       }
 
       .filters {

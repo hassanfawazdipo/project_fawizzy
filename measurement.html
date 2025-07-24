@@ -1,106 +1,127 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Advanced Measurement Converter</title>
   <style>
     :root {
-      --dark: #212121;
-      --darker: #1A1D23;
-      --green: #34C759;
-      --white: #ffffff;
-    }* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-}
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
 
-body {
-  background-color: var(--dark);
-  color: var(--white);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-}
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
 
-.converter {
-  background-color: var(--darker);
-  padding: 2rem;
-  border-radius: 1rem;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
 
-h1 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: var(--green);
-}
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
 
-select, input, button {
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-}
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-select, input {
-  background-color: var(--dark);
-  color: var(--white);
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
 
-button {
-  background-color: var(--green);
-  color: var(--white);
-  font-weight: bold;
-  cursor: pointer;
-}
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
 
-button:hover {
-  background-color: #28a745;
-}
+    .converter {
+      background-color: var(--card);
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: var(--card-shadow);
+    }
 
-#result {
-  text-align: center;
-  font-size: 1.25rem;
-  margin-top: 1rem;
-  color: var(--green);
-}
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+    }
 
-@media screen and (max-width: 600px) {
-  .converter {
-    padding: 1rem;
-  }
-}
+    select,
+    input,
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
 
+    select,
+    input {
+      background-color: var(--sidebar);
+      color: var(--text);
+    }
+
+    button {
+      background-color: var(--accent);
+      color: var(--light-text);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: var(--accent-secondary);
+    }
+
+    #result {
+      text-align: center;
+      font-size: 1.25rem;
+      margin-top: 1rem;
+      color: var(--accent);
+    }
+
+    @media screen and (max-width: 600px) {
+      .converter {
+        padding: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="converter">
     <h1>Measurement Converter</h1>
-    <input type="number" id="inputValue" placeholder="Enter value" /><select id="measurementType" onchange="populateUnits()">
-  <option value="length">Length</option>
-  <option value="mass">Mass</option>
-  <option value="temperature">Temperature</option>
-  <option value="time">Time</option>
-  <option value="area">Area</option>
-  <option value="volume">Volume</option>
-  <option value="speed">Speed</option>
-</select>
+    <input type="number" id="inputValue" placeholder="Enter value" />
+    <select id="measurementType" onchange="populateUnits()">
+      <option value="length">Length</option>
+      <option value="mass">Mass</option>
+      <option value="temperature">Temperature</option>
+      <option value="time">Time</option>
+      <option value="area">Area</option>
+      <option value="volume">Volume</option>
+      <option value="speed">Speed</option>
+    </select>
+    <select id="fromUnit"></select>
+    <select id="toUnit"></select>
+    <button onclick="convertMeasurement()">Convert</button>
+    <div id="result"></div>
+  </div>
 
-<select id="fromUnit"></select>
-<select id="toUnit"></select>
-
-<button onclick="convertMeasurement()">Convert</button>
-<div id="result"></div>
-
-  </div>  <script>
+  <script>
     const units = {
       length: ["Meter", "Kilometer", "Centimeter", "Millimeter", "Mile", "Yard", "Foot", "Inch"],
       mass: ["Kilogram", "Gram", "Milligram", "Pound", "Ounce"],
@@ -142,9 +163,9 @@ button:hover {
         base: "Second",
         convert: {
           Second: 1,
-          Minute: 1/60,
-          Hour: 1/3600,
-          Day: 1/86400
+          Minute: 1 / 60,
+          Hour: 1 / 3600,
+          Day: 1 / 86400
         }
       },
       area: {
@@ -211,12 +232,12 @@ button:hover {
       if (type === "temperature") {
         let result = null;
         if (from === to) result = value;
-        else if (from === "Celsius" && to === "Fahrenheit") result = value * 9/5 + 32;
+        else if (from === "Celsius" && to === "Fahrenheit") result = value * 9 / 5 + 32;
         else if (from === "Celsius" && to === "Kelvin") result = value + 273.15;
-        else if (from === "Fahrenheit" && to === "Celsius") result = (value - 32) * 5/9;
-        else if (from === "Fahrenheit" && to === "Kelvin") result = (value - 32) * 5/9 + 273.15;
+        else if (from === "Fahrenheit" && to === "Celsius") result = (value - 32) * 5 / 9;
+        else if (from === "Fahrenheit" && to === "Kelvin") result = (value - 32) * 5 / 9 + 273.15;
         else if (from === "Kelvin" && to === "Celsius") result = value - 273.15;
-        else if (from === "Kelvin" && to === "Fahrenheit") result = (value - 273.15) * 9/5 + 32;
+        else if (from === "Kelvin" && to === "Fahrenheit") result = (value - 273.15) * 9 / 5 + 32;
         resultDiv.textContent = `${value} ${from} = ${result.toFixed(2)} ${to}`;
         return;
       }
@@ -228,5 +249,6 @@ button:hover {
     }
 
     populateUnits();
-  </script></body>
+  </script>
+</body>
 </html>

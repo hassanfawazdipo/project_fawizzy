@@ -9,9 +9,25 @@
     :root {
       --bg: #212121;
       --sidebar: #1A1D23;
-      --accent: #34C759;
-      --text: #FFFFFF;
+      --card: #1A1D23;
+
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -23,29 +39,34 @@
       height: 100vh;
       padding: 20px;
     }
+
     .settings-container {
-      background-color: var(--sidebar);
+      background-color: var(--card);
       padding: 30px;
       border-radius: 15px;
       width: 100%;
       max-width: 500px;
-      box-shadow: 0 0 20px rgba(52, 199, 89, 0.2);
+      box-shadow: var(--card-shadow);
       animation: pop 0.5s ease;
     }
+
     .settings-container h2 {
       text-align: center;
       color: var(--accent);
       margin-bottom: 30px;
     }
+
     .form-group {
       margin-bottom: 20px;
     }
+
     .form-group label {
       display: block;
       margin-bottom: 8px;
       font-weight: bold;
-      color: #ccc;
+      color: #cccccc;
     }
+
     .form-group input {
       width: 100%;
       padding: 12px;
@@ -55,23 +76,27 @@
       color: var(--text);
       outline: none;
     }
+
     .form-group input:focus {
       border: 1px solid var(--accent);
     }
+
     button {
       background-color: var(--accent);
-      color: var(--sidebar);
+      color: var(--light-text);
       border: none;
       padding: 14px;
       width: 100%;
       border-radius: 10px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.3s;
+      transition: var(--transition);
     }
+
     button:hover {
-      background-color: #2eb14f;
+      background-color: var(--accent-secondary);
     }
+
     .back-link {
       display: block;
       text-align: center;
@@ -79,9 +104,11 @@
       color: #aaa;
       text-decoration: none;
     }
+
     .back-link:hover {
       color: var(--accent);
     }
+
     @keyframes pop {
       0% { transform: scale(0.9); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
@@ -123,11 +150,10 @@
     const db = firebase.firestore();
     let currentUser = null;
 
-    // Check if user is logged in
     auth.onAuthStateChanged(async user => {
       if (!user) {
         alert("You must be logged in to access this page.");
-        return window.location.href = 'index.html'; // Redirect to login
+        return window.location.href = 'index.html';
       }
       currentUser = user;
 
@@ -145,7 +171,6 @@
       }
     });
 
-    // Save changes to Firestore
     async function saveChanges() {
       const username = document.getElementById("username").value.trim();
       if (!username) {

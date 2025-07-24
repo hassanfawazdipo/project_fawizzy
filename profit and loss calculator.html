@@ -5,98 +5,152 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profit & Loss Calculator</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", sans-serif; }
-    body {
-      background: #212121;
-      color: white;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-      min-height: 100vh;
-      flex-direction: column;
-      align-items: center;
-    }
-    .calculator {
-      background: #1A1D23;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 0 15px rgba(52, 199, 89, 0.3);
-      width: 100%;
-      max-width: 500px;
-      margin-bottom: 30px;
-    }
-    h2 {
-      text-align: center;
-      color: #34C759;
-      margin-bottom: 20px;
-    }
-    label {
-      margin-top: 10px;
-      font-size: 14px;
-      display: block;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      background: #2a2d33;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      margin-top: 5px;
-    }
-    button {
-      background: #34C759;
-      color: #000;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      width: 100%;
-      margin-top: 20px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #28a745;
-    }
-    .result, .history {
-      background: #1A1D23;
-      padding: 20px;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 700px;
-      box-shadow: 0 0 10px rgba(52, 199, 89, 0.2);
-    }
-    .result p {
-      margin: 5px 0;
-    }
-    .profit { color: #34C759; font-weight: bold; }
-    .loss { color: red; font-weight: bold; }
+   :root {
+  --bg: #212121;
+  --sidebar: #1A1D23;
+  --card: #1A1D23;
+  --accent: #667eea;
+  --accent-secondary: #764ba2;
+  --text: #ffffff;
+  --light-text: #000000;
+  --light-bg: #f8f9fa;
+  --success: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --info: #3498db;
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-      font-size: 14px;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-      background: #2a2d33;
-    }
-    th {
-      background: #34C759;
-      color: black;
-    }
-    tr:nth-child(even) td {
-      background: #26292f;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+}
 
-    @media(max-width: 600px) {
-      h2 { font-size: 20px; }
-      input, button { font-size: 14px; }
-      table, th, td { font-size: 12px; }
-    }
+body {
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+}
+
+.calculator {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 30px;
+}
+
+h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+label {
+  margin-top: 10px;
+  font-size: 14px;
+  display: block;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  background: #2a2d33;
+  color: var(--text);
+  border: none;
+  border-radius: 8px;
+  margin-top: 5px;
+}
+
+button {
+  background: var(--accent);
+  color: var(--light-text);
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  width: 100%;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button:hover {
+  background: var(--accent-secondary);
+}
+
+.result,
+.history {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+}
+
+.result p {
+  margin: 5px 0;
+}
+
+.profit {
+  color: var(--success);
+  font-weight: bold;
+}
+
+.loss {
+  color: var(--danger);
+  font-weight: bold;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  background: #2a2d33;
+}
+
+th {
+  background: var(--accent);
+  color: var(--light-text);
+}
+
+tr:nth-child(even) td {
+  background: #26292f;
+}
+
+@media (max-width: 600px) {
+  h2 {
+    font-size: 20px;
+  }
+  input,
+  button {
+    font-size: 14px;
+  }
+  table,
+  th,
+  td {
+    font-size: 12px;
+  }
+}
   </style>
 </head>
 <body>

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -6,131 +7,178 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
     :root {
-      --bg: #212121;
-      --sidebar: #1A1D23;
-      --accent: #34C759;
-      --text: #FFFFFF;
-      --card: #1A1D23;
-      --light-bg: #f7f7f7;
-      --light-text: #000000;
-    }* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+      --bg: #212121; /* Dark background */
+      --sidebar: #1A1D23; /* Sidebar / card background */
+      --card: #1A1D23; /* Card background */
+      
+      --accent: #667eea; /* Updated from primary color */
+      --accent-secondary: #764ba2; /* Optional secondary accent */
+      
+      --text: #ffffff; /* Default light text */
+      --light-text: #000000; /* For light mode or light elements */
+      --light-bg: #f8f9fa; /* Light background */
+      
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-header {
-  background: var(--sidebar);
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-}
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-.menu-toggle {
-  font-size: 1.5rem;
-  color: var(--accent);
-  cursor: pointer;
-}
+    header {
+      background: var(--sidebar);
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
 
-nav {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: var(--card);
-  display: none;
-  flex-direction: column;
-  padding: 1rem;
-  border-top: 1px solid #333;
-}
+    .menu-toggle {
+      font-size: 1.5rem;
+      color: var(--accent);
+      cursor: pointer;
+    }
 
-nav.active {
-  display: flex;
-}
+    nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: var(--card);
+      display: none;
+      flex-direction: column;
+      padding: 1rem;
+      border-top: 1px solid #333;
+    }
 
-nav a {
-  color: var(--text);
-  padding: 0.5rem 0;
-  text-decoration: none;
-}
+    nav.active {
+      display: flex;
+    }
 
-.container {
-  padding: 2rem;
-}
+    nav a {
+      color: var(--text);
+      padding: 0.5rem 0;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
 
-.balance {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-}
+    nav a:hover {
+      color: var(--accent);
+    }
 
-.section {
-  margin-bottom: 2rem;
-}
+    .container {
+      padding: 2rem;
+    }
 
-.tools-grid {
-  display: grid;
-  gap: 1rem;
-}
+    .balance {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      font-weight: bold;
+      color: var(--success);
+    }
 
-.tool-box {
-  background: var(--card);
-  padding: 1rem;
-  border-radius: 10px;
-  text-align: center;
-}
+    .section {
+      margin-bottom: 2rem;
+    }
 
-.tool-box button {
-  margin-top: 1rem;
-  background: var(--accent);
-  color: var(--sidebar);
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
+    .tools-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  display: none;
-}
+    .tool-box {
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s;
+    }
 
-.modal.active {
-  display: flex;
-}
+    .tool-box:hover {
+      transform: translateY(-5px);
+    }
 
-.modal-content {
-  background: var(--card);
-  padding: 2rem;
-  border-radius: 10px;
-  text-align: center;
-  color: var(--text);
-}
+    .tool-box h3 {
+      margin-bottom: 1rem;
+    }
 
-.modal-content h3 {
-  margin-bottom: 1rem;
-}
+    .tool-box button {
+      margin-top: 1rem;
+      background: var(--accent);
+      color: var(--sidebar);
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
 
-.modal-content button {
-  margin: 0.5rem;
-  padding: 0.5rem 1rem;
-}
+    .tool-box button:hover {
+      background: var(--accent-secondary);
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      display: none;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .modal-content h3 {
+      margin-bottom: 1rem;
+    }
+
+    .modal-content button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--accent);
+      color: var(--sidebar);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .modal-content button:hover {
+      background: var(--accent-secondary);
+    }
 
   </style>
 </head>
@@ -142,338 +190,262 @@ nav a {
       <a href="settings.html">Profile</a>
       <a href="coin.html">Buy Coins</a>
       <a href="Page1.html">Blog</a>
-         <a href="referral.html">referral</a>
-      
+      <a href="referral.html">Referral</a>
       <a href="#" onclick="logout()">Logout</a>
     </nav>
-  </header>  <div class="container">
-    <div class="balance" id="balanceDisplay">Balance: ₦0</div><div class="section">
-  <h2>Free Tools</h2>
-  <div class="tools-grid">
-    <div class="tool-box">
-      <h3>CGPA Calculator</h3>
-      <button onclick="window.location.href='cgpa calculator.html'">Open</button>
-    </div>
-  
-      
-    <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Profit Calculator</h3>
-      <button onclick="window.location.href='profit calculator.html'">Open</button>
-    </div>
-      
+  </header>  
+  <div class="container">
+    <div class="balance" id="balanceDisplay">Balance: ₦0</div>
+    <div class="section">
+      <h2>Free Tools</h2>
       <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Loan Calculator</h3>
-      <button onclick="window.location.href='loan calculator .html'">Open</button>
+        <div class="tool-box">
+          <h3>Profit Calculator</h3>
+          <button onclick="window.location.href='profit calculator.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>Loan Calculator</h3>
+          <button onclick="window.location.href='loan calculator.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>To Do List App</h3>
+          <button onclick="window.location.href='Todolist app.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>Tax Calculator</h3>
+          <button onclick="window.location.href='tax calculator.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>VAT Calculator</h3>
+          <button onclick="window.location.href='vat calculator.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>Discount Calculator</h3>
+          <button onclick="window.location.href='discount calculator.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>Interest Calculator</h3>
+          <button onclick="window.location.href='interest calculator.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>Overtime Calculator</h3>
+          <button onclick="window.location.href='overtime calculator.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>Daily Income Calculator</h3>
+          <button onclick="window.location.href='daily income calculator.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>Tax Planner App</h3>
+          <button onclick="window.location.href='tax planner app.html'">Open</button>
+        </div>
+        <div class="tool-box">
+          <h3>Measurement Converter</h3>
+          <button onclick="window.location.href='measurement.html'">Open</button>
+        </div>
+      </div>
     </div>
-        
-        <div class="tools-grid">
-    <div class="tool-box">
-      <h3>To do list App</h3>
-      <button onclick="window.location.href='Todolist app.html'">Open</button>
-    </div>
-          
-          <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Tax Calculator</h3>
-      <button onclick="window.location.href='tax calculator.html'">Open</button>
-    </div>
-            
-            <div class="tools-grid">
-    <div class="tool-box">
-      <h3>VAT Calculator</h3>
-      <button onclick="window.location.href='vat calculator.html'">Open</button>
-    </div>
-              
-              <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Discount Calculator</h3>
-      <button onclick="window.location.href='diacoubt calculator .html'">Open</button>
-    </div>
-                
-                <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Intrest Calculator</h3>
-      <button onclick="window.location.href='intrest calculator.html'">Open</button>
-    </div>
-                  
-                  <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Overtime Calculator</h3>
-      <button onclick="window.location.href='ovwrtime calculator .html'">Open</button>
-    </div>
-                    
-                    <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Daily Income Calculator</h3>
-      <button onclick="window.location.href='daily income calculator .html'">Open</button>
-    </div>
-                      
-                      <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Tax Planner App</h3>
-      <button onclick="window.location.href='tax planner app.html'">Open</button>
-    </div>
-                        
-                        
-        <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Student Budget App</h3>
-      <button onclick="window.location.href='student budget app .html'">Open</button>
-    </div>
-         
-          <div class="tools-grid">
-    <div class="tool-box">
-      <h3>Measurement Converter</h3>
-      <button onclick="window.location.href='measuremapp.html'">Open</button>
-    </div>
-          
-  </div>
-</div>
-
-<div class="section">
-  <h2>Premium Tools</h2>
-  <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Revenue Generator</h3>
-      <button onclick="showModal('tool1')" id="tool1Btn">Unlock</button>
-    </div>
-  
-  
-  <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Book Keeping App</h3>
-      <button onclick="showModal('tool2')" id="tool2Btn">Unlock</button>
-    </div>
-    
-    <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Invoice Generator</h3>
-      <button onclick="showModal('tool1')" id="tool3Btn">Unlock</button>
-    </div>
-      
+    <div class="section">
+      <h2>Premium Tools</h2>
       <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Recipt Generator</h3>
-      <button onclick="showModal('tool1')" id="tool4Btn">Unlock</button>
+        <div class="tool-box" id="premiumTool">
+          <h3>Revenue Generator</h3>
+          <button onclick="showModal('tool1')" id="tool1Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Book Keeping App</h3>
+          <button onclick="showModal('tool2')" id="tool2Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Invoice Generator</h3>
+          <button onclick="showModal('tool3')" id="tool3Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Receipt Generator</h3>
+          <button onclick="showModal('tool4')" id="tool4Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Cashbook App</h3>
+          <button onclick="showModal('tool5')" id="tool5Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Comparative Statement App</h3>
+          <button onclick="showModal('tool6')" id="tool6Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Reviews Generator</h3>
+          <button onclick="showModal('tool7')" id="tool7Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Inventory App</h3>
+          <button onclick="showModal('tool8')" id="tool8Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Company Management App</h3>
+          <button onclick="showModal('tool9')" id="tool9Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Sales Recorder</h3>
+          <button onclick="showModal('tool10')" id="tool10Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Material Cost Calculator</h3>
+          <button onclick="showModal('tool11')" id="tool11Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Profit and Loss Calculator</h3>
+          <button onclick="showModal('tool12')" id="tool12Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Quotation Generator</h3>
+          <button onclick="showModal('tool13')" id="tool13Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>Budget Allocating App</h3>
+          <button onclick="showModal('tool14')" id="tool14Btn">Unlock</button>
+        </div>
+        <div class="tool-box" id="premiumTool">
+          <h3>School Management App</h3>
+          <button onclick="showModal('tool15')" id="tool15Btn">Unlock</button>
+        </div>
+      </div>
     </div>
-        
-        <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Cashbook App</h3>
-      <button onclick="showModal('tool1')" id="tool5Btn">Unlock</button>
-    </div>
-          
-          <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Conparative Statment App</h3>
-      <button onclick="showModal('tool1')" id="tool6Btn">Unlock</button>
-    </div>
-            
-            <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Reviews Generator</h3>
-      <button onclick="showModal('tool1')" id="tool7Btn">Unlock</button>
-    </div>
-              
-              <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3> Inventory App</h3>
-      <button onclick="showModal('tool1')" id="tool8Btn">Unlock</button>
-    </div>
-                
-                <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Payroll App</h3>
-      <button onclick="showModal('tool1')" id="tool9Btn">Unlock</button>
-    </div>
-                  
-                  <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3> Sales Recorder</h3>
-      <button onclick="showModal('tool1')" id="tool10Btn">Unlock</button>
-    </div>
-                    
-                    <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Material Cost Calculator</h3>
-      <button onclick="showModal('tool1')" id="tool11Btn">Unlock</button>
-    </div>
-                      
-                      
-        <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Profit and Loss Calculator</h3>
-      <button onclick="showModal('tool1')" id="tool12Btn">Unlock</button>
-    </div>
-          
-          <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Quotation Generator</h3>
-      <button onclick="showModal('tool1')" id="tool13Btn">Unlock</button>
-    </div>
-            
-            <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Budget Allocating App</h3>
-      <button onclick="showModal('tool1')" id="tool14Btn">Unlock</button>
-    </div>
-              
-                        
-                      <div class="tools-grid">
-    <div class="tool-box" id="premiumTool">
-      <h3>Report Card Generator</h3>
-      <button onclick="showModal('tool1')" id="tool19Btn">Unlock</button>
-    </div>
-        
   </div>
-</div>
-
-  </div>  <div class="modal" id="modal">
+  
+  <div class="modal" id="modal">
     <div class="modal-content">
-      <h3>Unlock for:</h3>
+      <h3>Unlock Tool</h3>
+      <p>Choose a duration:</p>
       <button onclick="unlockTool('tool1', 500, 7)">₦500 for 7 days</button>
       <button onclick="unlockTool('tool1', 1000, 14)">₦1000 for 14 days</button>
       <button onclick="unlockTool('tool1', 1500, 30)">₦1500 for 30 days</button>
+      <br><br>
+      <button onclick="modal.classList.remove('active')">Cancel</button>
     </div>
   </div> 
-                 
-                  </div>  <div class="modal" id="modal">
-    <div class="modal-content">
-      <h3>Unlock for:</h3>
-      <button onclick="unlockTool('tool2', 500, 7)">₦500 for 7 days</button>
-      <button onclick="unlockTool('tool2', 1000, 14)">₦1000 for 14 days</button>
-      <button onclick="unlockTool('tool2', 1500, 30)">₦1500 for 30 days</button>
-    </div>
-  </div> 
-                  
-             <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
-    authDomain: "conectcamp-db2c2.firebaseapp.com",
-    projectId: "conectcamp-db2c2",
-    storageBucket: "conectcamp-db2c2.appspot.com",
-    messagingSenderId: "648442230919",
-    appId: "1:648442230919:web:28b61283dbb72f8f966022"
-  };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-  const uid = localStorage.getItem("uid");
-  const modal = document.getElementById("modal");
-  const menuIcon = document.getElementById("menuIcon");
-  const mobileMenu = document.getElementById("mobileMenu");
+    const uid = localStorage.getItem("uid");
+    const modal = document.getElementById("modal");
+    const menuIcon = document.getElementById("menuIcon");
+    const mobileMenu = document.getElementById("mobileMenu");
 
-  let currentData;
+    let currentData;
 
-  const toolLinks = {
-    tool1: "revenue forcasting app.html",
-    tool2: "bookkeeping-app.html",
-    tool3: "invoice generator .html",
-    tool4: "recipt generator .html",
-    tool5: "cashbook app.html",
-    tool6: "comprative statment app.html",
-    tool7: "reviews generator .html",
-    tool8: "imvrntory app.html",
-    tool9: "payroll app.html",
-    tool10: "sales recorder .html",
-    tool11: "material cost calculator .html",
-    tool12: "profit and loss calculator.html",
-    tool13: "quotation generator app.html",
-    tool14: "budget allocating app.html",
-    tool15: "school.html",
-    tool16: "church.html",
-    tool17: "revenue.html",
-    tool18: "pos.html",
-    tool19: "report.html"
-  };
+    const toolLinks = {
+      tool1: "revenue forcasting app.html",
+      tool2: "bookkeeping-app.html",
+      tool3: "invoice generator.html",
+      tool4: "receipt generator.html",
+      tool5: "cashbook app.html",
+      tool6: "comparative statement app.html",
+      tool7: "reviews generator.html",
+      tool8: "inventory app.html",
+      tool9: "payroll app.html",
+      tool10: "sales recorder.html",
+      tool11: "material cost calculator.html",
+      tool12: "profit and loss calculator.html",
+      tool13: "quotation generator app.html",
+      tool14: "budget allocating app.html",
+      tool15: "school.html",
+    };
 
-  // Toggle mobile menu
-  menuIcon.addEventListener("click", () => {
-    mobileMenu.classList.toggle("active");
-    menuIcon.classList.toggle("fa-bars");
-    menuIcon.classList.toggle("fa-times");
-  });
-
-  function logout() {
-    localStorage.clear();
-    auth.signOut();
-    window.location.href = "index.html";
-  }
-
-  async function fetchUser() {
-    const doc = await db.collection("users").doc(uid).get();
-    if (!doc.exists) return alert("User not found");
-
-    currentData = doc.data();
-    document.getElementById("balanceDisplay").innerText = `Balance: ₦${currentData.coins}`;
-
-    // Loop through all tools (1–19)
-    for (let i = 1; i <= 19; i++) {
-      const toolId = `tool${i}`;
-      const btn = document.getElementById(`${toolId}Btn`);
-      const expiry = currentData.toolUnlocks?.[toolId];
-
-      if (!btn) continue;
-
-      if (expiry && expiry.toDate() > new Date()) {
-        btn.innerText = "Open";
-        btn.onclick = () => window.location.href = toolLinks[toolId];
-      } else {
-        btn.innerText = "Unlock";
-        btn.onclick = () => showModal(toolId);
-      }
-    }
-  }
-
-  function showModal(toolId) {
-    modal.classList.add("active");
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h3>Unlock Tool</h3>
-        <p>Choose a duration:</p>
-        <button onclick="unlockTool('${toolId}', 500, 7)">₦500 for 7 days</button>
-        <button onclick="unlockTool('${toolId}', 1000, 14)">₦1000 for 14 days</button>
-        <button onclick="unlockTool('${toolId}', 1500, 30)">₦1500 for 30 days</button>
-        <br><br>
-        <button onclick="modal.classList.remove('active')">Cancel</button>
-      </div>
-    `;
-  }
-
-  async function unlockTool(toolId, amount, days) {
-    if (currentData.coins < amount) {
-      alert("Insufficient balance");
-      return;
-    }
-
-    const newBalance = currentData.coins - amount;
-    const expiry = new Date();
-    expiry.setDate(expiry.getDate() + days);
-
-    await db.collection("users").doc(uid).update({
-      coins: newBalance,
-      [`toolUnlocks.${toolId}`]: firebase.firestore.Timestamp.fromDate(expiry)
+    // Toggle mobile menu
+    menuIcon.addEventListener("click", () => {
+      mobileMenu.classList.toggle("active");
+      menuIcon.classList.toggle("fa-bars");
+      menuIcon.classList.toggle("fa-times");
     });
 
-    localStorage.setItem("coins", newBalance);
-    modal.classList.remove("active");
-    fetchUser();
-  }
+    function logout() {
+      localStorage.clear();
+      auth.signOut();
+      window.location.href = "index.html";
+    }
 
-  // Close modal when clicking outside
-  window.addEventListener("click", (e) => {
-    if (e.target === modal) modal.classList.remove("active");
-  });
+    async function fetchUser() {
+      const doc = await db.collection("users").doc(uid).get();
+      if (!doc.exists) return alert("User not found");
 
-  window.onload = fetchUser;
-</script>
-              </body>
+      currentData = doc.data();
+      document.getElementById("balanceDisplay").innerText = `Balance: ₦${currentData.coins}`;
+
+      // Loop through all tools (1–15)
+      for (let i = 1; i <= 15; i++) {
+        const toolId = `tool${i}`;
+        const btn = document.getElementById(`${toolId}Btn`);
+        const expiry = currentData.toolUnlocks?.[toolId];
+
+        if (!btn) continue;
+
+        if (expiry && expiry.toDate() > new Date()) {
+          btn.innerText = "Open";
+          btn.onclick = () => window.location.href = toolLinks[toolId];
+        } else {
+          btn.innerText = "Unlock";
+          btn.onclick = () => showModal(toolId);
+        }
+      }
+    }
+
+    function showModal(toolId) {
+      modal.classList.add("active");
+      modal.innerHTML = `
+        <div class="modal-content">
+          <h3>Unlock Tool</h3>
+          <p>Choose a duration:</p>
+          <button onclick="unlockTool('${toolId}', 500, 7)">₦500 for 7 days</button>
+          <button onclick="unlockTool('${toolId}', 1000, 14)">₦1000 for 14 days</button>
+          <button onclick="unlockTool('${toolId}', 1500, 30)">₦1500 for 30 days</button>
+          <br><br>
+          <button onclick="modal.classList.remove('active')">Cancel</button>
+        </div>
+      `;
+    }
+
+    async function unlockTool(toolId, amount, days) {
+      if (currentData.coins < amount) {
+        alert("Insufficient balance");
+        return;
+      }
+
+      const newBalance = currentData.coins - amount;
+      const expiry = new Date();
+      expiry.setDate(expiry.getDate() + days);
+
+      await db.collection("users").doc(uid).update({
+        coins: newBalance,
+        [`toolUnlocks.${toolId}`]: firebase.firestore.Timestamp.fromDate(expiry)
+      });
+
+      localStorage.setItem("coins", newBalance);
+      modal.classList.remove("active");
+      fetchUser();
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("active");
+    });
+
+    window.onload = fetchUser;
+  </script>
+</body>
 </html>

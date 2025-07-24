@@ -1,277 +1,810 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ConectCamp - All-in-One Business Tools</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-  --dark: #212121;
-  --darker: #1A1D23;
-  --green: #34C759;
-  --white: #ffffff;
-}
+      --bg: #212121; /* Dark background */
+      --sidebar: #1A1D23; /* Sidebar / card background */
+      --card: #1A1D23; /* Card background */
+      
+      --accent: #667eea; /* Updated from primary color */
+      --accent-secondary: #764ba2; /* Optional secondary accent */
+      
+      --text: #ffffff; /* Default light text */
+      --light-text: #000000; /* For light mode or light elements */
+      --light-bg: #f8f9fa; /* Light background */
+      
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-body {
-  background: var(--dark);
-  color: var(--white);
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
 
-/* Header */
-header {
-  background: var(--darker);
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
 
-.logo {
-  font-size: 24px;
-  color: var(--green);
-  font-weight: bold;
-}
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
 
-.nav-container {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
+    ::-webkit-scrollbar-thumb {
+      background: var(--gradient);
+      border-radius: 4px;
+    }
 
-nav ul {
-  display: flex;
-  gap: 20px;
-  list-style: none;
-}
+    /* Header Styles */
+    .custom-header {
+      background: var(--sidebar);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+      transition: var(--transition);
+    }
 
-nav ul li a {
-  color: var(--white);
-  text-decoration: none;
-  font-size: 16px;
-}
+    .navbar-brand {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-.menu-toggle {
-  display: none;
-  font-size: 22px;
-  color: var(--white);
-  cursor: pointer;
-}
+    .navbar-nav .nav-link {
+      color: var(--text) !important;
+      font-weight: 500;
+      padding: 0.75rem 1rem !important;
+      transition: var(--transition);
+      position: relative;
+    }
 
-/* Responsive Navigation */
-@media (max-width: 768px) {
-  .nav-container {
-    flex-direction: row-reverse;
-    justify-content: space-between;
-    width: 100%;
-  }
+    .navbar-nav .nav-link:hover {
+      color: var(--accent) !important;
+      transform: translateY(-2px);
+    }
 
-  nav ul {
-    display: none;
-    flex-direction: column;
-    background: var(--darker);
-    position: absolute;
-    top: 70px;
-    right: 0;
-    width: 200px;
-    padding: 20px;
-  }
+    .navbar-nav .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: var(--gradient);
+      transition: var(--transition);
+      transform: translateX(-50%);
+    }
 
-  nav ul.active {
-    display: flex;
-  }
+    .navbar-nav .nav-link:hover::after {
+      width: 80%;
+    }
 
-  .menu-toggle {
-    display: block;
-  }
-}
+    .navbar-toggler {
+      border: none;
+      padding: 0.25rem 0.5rem;
+    }
 
-/* Hero Section */
-.hero {
-  padding: 80px 20px;
-  text-align: center;
-}
+    .navbar-toggler:focus {
+      box-shadow: none;
+    }
 
-.hero h1 {
-  font-size: 3rem;
-  color: var(--green);
-}
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
 
-.hero p {
-  max-width: 600px;
-  margin: 20px auto;
-  font-size: 18px;
-}
+    /* Hero Section */
+    .hero-section {
+      background: linear-gradient(135deg, var(--bg) 0%, var(--sidebar) 100%);
+      padding: 5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
 
-.hero img {
-  width: 300px;
-  border-radius: 12px;
-  margin: 20px 0;
-}
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--gradient);
+      opacity: 0.05;
+      z-index: 1;
+    }
 
-.btn {
-  background: var(--green);
-  color: var(--white);
-  padding: 12px 25px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  margin: 10px;
-}
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
 
-/* Tools Section */
-section {
-  padding: 60px 20px;
-  max-width: 1200px;
-  margin: auto;
-}
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
 
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-.tool-card {
-  background: var(--darker);
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-}
+    .gradient-btn {
+      background: var(--gradient);
+      border: none;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+      box-shadow: var(--card-shadow);
+      display: inline-block;
+    }
 
-.tool-card i {
-  font-size: 60px;
-  color: var(--green);
-  margin-bottom: 15px;
-}
+    .gradient-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 25px 80px rgba(102, 126, 234, 0.3);
+      color: white;
+      text-decoration: none;
+    }
 
-.tool-card h4 {
-  color: var(--green);
-  margin-bottom: 10px;
-}
+    /* Tools Section */
+    .tools-section {
+      padding: 5rem 0;
+      background: var(--bg);
+    }
 
-/* FAQ Section */
-details {
-  background: var(--darker);
-  margin: 10px 0;
-  border-radius: 8px;
-  padding: 15px;
-  cursor: pointer;
-}
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-summary {
-  font-weight: bold;
-  color: var(--green);
-  font-size: 18px;
-}
+    .tool-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      transition: var(--transition);
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
 
-/* Map */
-iframe {
-  width: 100%;
-  height: 300px;
-  border: none;
-  margin: 40px 0;
-}
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient);
+      transform: scaleX(0);
+      transition: var(--transition);
+    }
 
-/* Footer */
-footer {
-  background: var(--darker);
-  padding: 30px 20px;
-  text-align: center;
-  color: var(--white);
-}
+    .tool-card:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--card-shadow);
+      border-color: var(--accent);
+    }
 
-.social-icons {
-  margin-top: 10px;
-}
+    .tool-card:hover::before {
+      transform: scaleX(1);
+    }
 
-.social-icons a {
-  color: var(--green);
-  font-size: 24px;
-  margin: 0 10px;
-  text-decoration: none;
-}
+    .tool-icon {
+      font-size: 3rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      display: block;
+    }
 
+    .tool-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+
+    .tool-description {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Map Section */
+    .map-section {
+      padding: 3rem 0;
+      background: var(--sidebar);
+    }
+
+    .map-container {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+
+    .map-container iframe {
+      width: 100%;
+      height: 400px;
+      border: none;
+      filter: grayscale(0.3) contrast(1.2);
+    }
+
+    /* Footer */
+    .custom-footer {
+      background: var(--sidebar);
+      padding: 3rem 0 2rem;
+      border-top: 1px solid rgba(102, 126, 234, 0.1);
+    }
+
+    .footer-content {
+      text-align: center;
+    }
+
+    .social-icons {
+      margin-top: 1.5rem;
+    }
+
+    .social-link {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--accent);
+      font-size: 1.25rem;
+      margin: 0 0.5rem;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .social-link:hover {
+      background: var(--gradient);
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .tool-card {
+        margin-bottom: 1.5rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .gradient-btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.95rem;
+      }
+    }
+
+    /* Animation Classes */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: var(--transition);
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Loading Animation */
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    .loading {
+      animation: pulse 2s infinite;
+    }
   </style>
 </head>
 <body>
-  <header>
-  <div class="logo">ConectCamp</div>
-  <div class="nav-container">
-    <i class="fas fa-bars menu-toggle" onclick="toggleMenu()"></i>
-    <nav>
-      <ul id="menu">
-        <li><a href="#tools">Tools</a></li>
-        <li><a href="#mission">Mission</a></li>
-        <li><a href="#vision">Vision</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="contact.html">Reviews</a></li>
-        <li><a href="register.html">Register</a></li>
-        <li><a href="register.html">Login</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
-  <div class="hero">
-    <h1>Empowering Every Business with Smart Tools</h1>
-    <p>No matter your industry, size, or goal — ConectCamp provides powerful tools for all. From automation to growth, we help businesses and individuals thrive.</p>
-      <a href="register.html" class="btn">Get Started</a>
-  </div>  <section id="tools">
-    <h2 style="text-align:center; margin-bottom:30px; color:var(--green);">Our Smart Business Tools</h2>
-    <div class="tools-grid">
-      <div class="tool-card"><i class="fas fa-graduation-cap"></i><h4>CGPA Calculator</h4><p>Calculate your academic performance easily.</p></div>
-      <div class="tool-card"><i class="fas fa-id-badge"></i><h4>Profile Calculator</h4><p>Evaluate your personal or business profile.</p></div>
-      <div class="tool-card"><i class="fas fa-hand-holding-usd"></i><h4>Loan Calculator</h4><p>Plan and compare loan payments effectively.</p></div>
-      <div class="tool-card"><i class="fas fa-list-check"></i><h4>To-Do List App</h4><p>Organize your daily tasks with ease.</p></div>
-      <div class="tool-card"><i class="fas fa-money-bill-wave"></i><h4>Tax Calculator</h4><p>Estimate taxes based on your income.</p></div>
-      <div class="tool-card"><i class="fas fa-percent"></i><h4>VAT Calculator</h4><p>Calculate Value Added Tax quickly.</p></div>
-      <div class="tool-card"><i class="fas fa-tags"></i><h4>Discount Calculator</h4><p>Find final prices after discount instantly.</p></div>
-      <div class="tool-card"><i class="fas fa-calendar-alt"></i><h4>Tax Planner App</h4><p>Strategically plan your taxes annually.</p></div>
-      <div class="tool-card"><i class="fas fa-chart-line"></i><h4>Interest Calculator</h4><p>Compute simple and compound interests.</p></div>
-      <div class="tool-card"><i class="fas fa-clock"></i><h4>Overtime Calculator</h4><p>Track extra work hours accurately.</p></div>
-      <div class="tool-card"><i class="fas fa-coins"></i><h4>Daily Income Calculator</h4><p>Evaluate your earnings per day.</p></div>
-      <div class="tool-card"><i class="fas fa-ruler-combined"></i><h4>Measurement Converter</h4><p>Convert units across all categories.</p></div>
-      <div class="tool-card"><i class="fas fa-book"></i><h4>Book Keeping App</h4><p>Track expenses, incomes, and balances.</p></div>
-      <div class="tool-card"><i class="fas fa-file-invoice"></i><h4>Invoice Generator</h4><p>Create professional invoices in seconds.</p></div>
-      <div class="tool-card"><i class="fas fa-receipt"></i><h4>Receipt Generator</h4><p>Generate printable receipts instantly.</p></div>
-      <div class="tool-card"><i class="fas fa-cash-register"></i><h4>Cashbook App</h4><p>Maintain a detailed cash record log.</p></div>
-      <div class="tool-card"><i class="fas fa-balance-scale"></i><h4>Comparative Statement App</h4><p>Compare income and expenses clearly.</p></div>
-      <div class="tool-card"><i class="fas fa-star-half-alt"></i><h4>Reviews Generator</h4><p>Collect and display star-based reviews.</p></div>
-      <div class="tool-card"><i class="fas fa-boxes"></i><h4>Inventory App</h4><p>Track stock, quantity, and levels.</p></div>
-      <div class="tool-card"><i class="fas fa-users-cog"></i><h4>Payroll App</h4><p>Manage employee salary and deductions.</p></div>
-      <div class="tool-card"><i class="fas fa-chart-bar"></i><h4>Revenue Forecasting App</h4><p>Predict future revenue with accuracy.</p></div>
-      <div class="tool-card"><i class="fas fa-clipboard-list"></i><h4>Sales Recorder</h4><p>Keep daily sales records organized.</p></div>
-      <div class="tool-card"><i class="fas fa-hard-hat"></i><h4>Material Cost Calculator</h4><p>Estimate cost of materials easily.</p></div>
-      <div class="tool-card"><i class="fas fa-chart-pie"></i><h4>Profit & Loss Calculator</h4><p>Track gains and losses precisely.</p></div>
-      <div class="tool-card"><i class="fas fa-quote-right"></i><h4>Quotation Generator</h4><p>Create professional quotations easily.</p></div>
-      <div class="tool-card"><i class="fas fa-building"></i><h4>Company Management App</h4><p>Oversee business activities and data.</p></div>
-      <div class="tool-card"><i class="fas fa-school"></i><h4>School Management App</h4><p>Manage students, teachers, and classes.</p></div>
-      <div class="tool-card"><i class="fas fa-church"></i><h4>Church Management App</h4><p>Track contributions and members.</p></div>
-      <div class="tool-card"><i class="fas fa-file-alt"></i><h4>Report Card Generator</h4><p>Create accurate student report cards.</p></div>
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg custom-header sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="#home">ConectCamp</a>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#tools">Tools</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#mission">Mission</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#vision">Vision</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#faq">FAQ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contact.html">Reviews</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="register.html">Register</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="register.html">Login</a>
+          </li>
+        </ul>
+      </div>
     </div>
-  </section>  <section>
-    <iframe src="https://www.google.com/maps?q=1%20bola%20hassan%20alapere%20ketu%20lagos&output=embed"></iframe>
-  </section>  <footer>
-    <p>&copy; 2025 ConectCamp. All rights reserved.</p>
-    <div class="social-icons">
-      <a href="https://tiktok.com" target="_blank"><i class="fab fa-tiktok"></i></a>
-      <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
-      <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
-      <a href="https://wa.me/234" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="hero-content text-center">
+            <h1 class="hero-title fade-in">Empowering Every Business with Smart Tools</h1>
+            <p class="hero-subtitle fade-in">No matter your industry, size, or goal — ConectCamp provides powerful tools for all. From automation to growth, we help businesses and individuals thrive.</p>
+            <a href="register.html" class="gradient-btn fade-in">
+              <i class="fas fa-rocket me-2"></i>Get Started
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-  </footer>  <script>
-    function toggleMenu() {
-      document.getElementById("menu").classList.toggle("active");
+  </section>
+
+  <!-- Tools Section -->
+  <section id="tools" class="tools-section">
+    <div class="container">
+      <h2 class="section-title fade-in">Our Smart Business Tools</h2>
+      <div class="row g-4">
+        <!-- Tool Cards -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-graduation-cap tool-icon"></i>
+            <h4 class="tool-title">CGPA Calculator</h4>
+            <p class="tool-description">Calculate your academic performance easily with precision and accuracy.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-id-badge tool-icon"></i>
+            <h4 class="tool-title">Profile Calculator</h4>
+            <p class="tool-description">Evaluate your personal or business profile comprehensively.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-hand-holding-usd tool-icon"></i>
+            <h4 class="tool-title">Loan Calculator</h4>
+            <p class="tool-description">Plan and compare loan payments effectively with detailed analysis.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-list-check tool-icon"></i>
+            <h4 class="tool-title">To-Do List App</h4>
+            <p class="tool-description">Organize your daily tasks with ease and boost productivity.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-money-bill-wave tool-icon"></i>
+            <h4 class="tool-title">Tax Calculator</h4>
+            <p class="tool-description">Estimate taxes based on your income with accurate calculations.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-percent tool-icon"></i>
+            <h4 class="tool-title">VAT Calculator</h4>
+            <p class="tool-description">Calculate Value Added Tax quickly and efficiently.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-tags tool-icon"></i>
+            <h4 class="tool-title">Discount Calculator</h4>
+            <p class="tool-description">Find final prices after discount instantly and accurately.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-calendar-alt tool-icon"></i>
+            <h4 class="tool-title">Tax Planner App</h4>
+            <p class="tool-description">Strategically plan your taxes annually with smart insights.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-chart-line tool-icon"></i>
+            <h4 class="tool-title">Interest Calculator</h4>
+            <p class="tool-description">Compute simple and compound interests with precision.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-clock tool-icon"></i>
+            <h4 class="tool-title">Overtime Calculator</h4>
+            <p class="tool-description">Track extra work hours accurately and calculate overtime pay.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-coins tool-icon"></i>
+            <h4 class="tool-title">Daily Income Calculator</h4>
+            <p class="tool-description">Evaluate your earnings per day with detailed breakdowns.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-ruler-combined tool-icon"></i>
+            <h4 class="tool-title">Measurement Converter</h4>
+            <p class="tool-description">Convert units across all categories with high accuracy.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-book tool-icon"></i>
+            <h4 class="tool-title">Book Keeping App</h4>
+            <p class="tool-description">Track expenses, incomes, and balances systematically.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-file-invoice tool-icon"></i>
+            <h4 class="tool-title">Invoice Generator</h4>
+            <p class="tool-description">Create professional invoices in seconds with customization.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-receipt tool-icon"></i>
+            <h4 class="tool-title">Receipt Generator</h4>
+            <p class="tool-description">Generate printable receipts instantly with professional formatting.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-cash-register tool-icon"></i>
+            <h4 class="tool-title">Cashbook App</h4>
+            <p class="tool-description">Maintain a detailed cash record log with transaction history.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-balance-scale tool-icon"></i>
+            <h4 class="tool-title">Comparative Statement App</h4>
+            <p class="tool-description">Compare income and expenses clearly with visual reports.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-star-half-alt tool-icon"></i>
+            <h4 class="tool-title">Reviews Generator</h4>
+            <p class="tool-description">Collect and display star-based reviews with analytics.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-boxes tool-icon"></i>
+            <h4 class="tool-title">Inventory App</h4>
+            <p class="tool-description">Track stock, quantity, and levels with real-time updates.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-users-cog tool-icon"></i>
+            <h4 class="tool-title">Payroll App</h4>
+            <p class="tool-description">Manage employee salary and deductions efficiently.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-chart-bar tool-icon"></i>
+            <h4 class="tool-title">Revenue Forecasting App</h4>
+            <p class="tool-description">Predict future revenue with accuracy using data analytics.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-clipboard-list tool-icon"></i>
+            <h4 class="tool-title">Sales Recorder</h4>
+            <p class="tool-description">Keep daily sales records organized with detailed tracking.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-hard-hat tool-icon"></i>
+            <h4 class="tool-title">Material Cost Calculator</h4>
+            <p class="tool-description">Estimate cost of materials easily with comprehensive analysis.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-chart-pie tool-icon"></i>
+            <h4 class="tool-title">Profit & Loss Calculator</h4>
+            <p class="tool-description">Track gains and losses precisely with detailed reporting.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-quote-right tool-icon"></i>
+            <h4 class="tool-title">Quotation Generator</h4>
+            <p class="tool-description">Create professional quotations easily with customizable templates.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-building tool-icon"></i>
+            <h4 class="tool-title">Company Management App</h4>
+            <p class="tool-description">Oversee business activities and data comprehensively.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-school tool-icon"></i>
+            <h4 class="tool-title">School Management App</h4>
+            <p class="tool-description">Manage students, teachers, and classes efficiently.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-church tool-icon"></i>
+            <h4 class="tool-title">Church Management App</h4>
+            <p class="tool-description">Track contributions and members with detailed records.</p>
+          </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="tool-card fade-in">
+            <i class="fas fa-file-alt tool-icon"></i>
+            <h4 class="tool-title">Report Card Generator</h4>
+            <p class="tool-description">Create accurate student report cards with professional formatting.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map Section -->
+  <section class="map-section">
+    <div class="container">
+      <div class="map-container">
+        <iframe src="https://www.google.com/maps?q=1%20bola%20hassan%20alapere%20ketu%20lagos&output=embed" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="custom-footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="mb-0">&copy; 2025 ConectCamp. All rights reserved.</p>
+        <div class="social-icons">
+          <a href="https://tiktok.com" target="_blank" class="social-link" aria-label="TikTok">
+            <i class="fab fa-tiktok"></i>
+          </a>
+          <a href="https://instagram.com" target="_blank" class="social-link" aria-label="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="https://twitter.com" target="_blank" class="social-link" aria-label="Twitter">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="https://wa.me/234" target="_blank" class="social-link" aria-label="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JavaScript -->
+  <script>
+    // Intersection Observer for fade-in animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    // Observe all elements with fade-in class
+    document.addEventListener('DOMContentLoaded', () => {
+      const fadeElements = document.querySelectorAll('.fade-in');
+      fadeElements.forEach(el => observer.observe(el));
+    });
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Navbar background opacity on scroll
+    window.addEventListener('scroll', () => {
+      const navbar = document.querySelector('.custom-header');
+      if (window.scrollY > 50) {
+        navbar.style.backgroundColor = 'rgba(26, 29, 35, 0.95)';
+      } else {
+        navbar.style.backgroundColor = 'var(--sidebar)';
+      }
+    });
+
+    // Add loading animation to cards on hover
+    document.querySelectorAll('.tool-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.classList.add('loading');
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.classList.remove('loading');
+      });
+    });
+
+    // Performance optimization: Lazy load images
+    if ('IntersectionObserver' in window) {
+      const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            img.src = img.dataset.src;
+            img.classList.remove('lazy');
+            imageObserver.unobserve(img);
+          }
+        });
+      });
+
+      document.querySelectorAll('img[data-src]').forEach(img => {
+        imageObserver.observe(img);
+      });
     }
-  </script></body>
+
+    // Add click analytics for tool cards (placeholder for future implementation)
+    document.querySelectorAll('.tool-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const toolName = this.querySelector('.tool-title').textContent;
+        console.log(`Tool clicked: ${toolName}`);
+        // Here you could add analytics tracking
+      });
+    });
+
+    // Enhanced mobile navigation
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    
+    if (navbarToggler && navbarCollapse) {
+      navbarToggler.addEventListener('click', () => {
+        navbarToggler.classList.toggle('active');
+      });
+      
+      // Close mobile menu when clicking on a link
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          if (navbarCollapse.classList.contains('show')) {
+            navbarToggler.click();
+          }
+        });
+      });
+    }
+  </script>
+</body>
 </html>
