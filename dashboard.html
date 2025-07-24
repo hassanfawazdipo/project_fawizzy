@@ -1,32 +1,34 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard</title>
+  <title>Conect camp</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #212121; /* Dark background */
-      --sidebar: #1A1D23; /* Sidebar / card background */
-      --card: #1A1D23; /* Card background */
-      
-      --accent: #667eea; /* Updated from primary color */
-      --accent-secondary: #764ba2; /* Optional secondary accent */
-      
-      --text: #ffffff; /* Default light text */
-      --light-text: #000000; /* For light mode or light elements */
-      --light-bg: #f8f9fa; /* Light background */
-      
-      --success: #2ecc71;
-      --danger: #e74c3c;
-      --warning: #f39c12;
-      --info: #3498db;
-      
-      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+  --bg: #212121; /* Dark background */
+  --sidebar: #1A1D23; /* Sidebar / card background */
+  --card: #1A1D23; /* Card background */
+  
+  --accent: #667eea; /* Updated from primary color */
+  --accent-secondary: #764ba2; /* Optional secondary accent */
+  
+  --text: #ffffff; /* Default light text */
+  --light-text: #000000; /* For light mode or light elements */
+  --light-bg: #f8f9fa; /* Light background */
+  
+  --success: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --info: #3498db;
+  
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
     * {
       box-sizing: border-box;
@@ -35,300 +37,1137 @@
     }
 
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(240, 147, 251, 0.08) 0%, transparent 50%);
       color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
+    /* Loading Animation */
+    .loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(102, 126, 234, 0.3);
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Header Glassmorphism */
     header {
-      background: var(--sidebar);
-      padding: 1rem;
+      background: rgba(26, 29, 35, 0.8);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-bottom: var(--glass-border);
+      padding: 2rem 3rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--gradient);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.4rem;
+      font-weight: 700;
+      box-shadow: var(--glass-shadow);
+    }
+
+    .logo h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
     }
 
     .menu-toggle {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       color: var(--accent);
       cursor: pointer;
+      padding: 0.75rem;
+      border-radius: 12px;
+      transition: var(--transition);
+      background: rgba(102, 126, 234, 0.1);
+      border: var(--glass-border);
     }
 
+    .menu-toggle:hover {
+      background: rgba(102, 126, 234, 0.2);
+      transform: scale(1.05);
+    }
+
+    /* Navigation */
     nav {
       position: absolute;
       top: 100%;
-      left: 0;
-      width: 100%;
-      background: var(--card);
+      right: 0;
+      min-width: 280px;
+      background: rgba(26, 29, 35, 0.95);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: var(--glass-border);
+      border-radius: 20px;
       display: none;
       flex-direction: column;
-      padding: 1rem;
-      border-top: 1px solid #333;
+      padding: 1.5rem;
+      margin: 1rem;
+      box-shadow: var(--glass-shadow);
+      transform: translateY(-10px);
+      opacity: 0;
+      transition: var(--transition);
     }
 
     nav.active {
       display: flex;
+      transform: translateY(0);
+      opacity: 1;
+      animation: slideDown 0.4s var(--bounce);
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     nav a {
       color: var(--text);
-      padding: 0.5rem 0;
+      padding: 1rem 1.5rem;
       text-decoration: none;
-      transition: color 0.2s ease;
+      transition: var(--transition);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
     }
 
     nav a:hover {
+      background: rgba(102, 126, 234, 0.15);
       color: var(--accent);
+      transform: translateX(8px);
     }
 
+    /* Container */
     .container {
-      padding: 2rem;
+      padding: 3rem;
+      max-width: 1600px;
+      margin: 0 auto;
     }
 
-    .balance {
-      font-size: 1.5rem;
-      margin-bottom: 2rem;
-      font-weight: bold;
-      color: var(--success);
+    /* Balance Card */
+    .balance-card {
+      background: rgba(26, 29, 35, 0.7);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: var(--glass-border);
+      border-radius: 24px;
+      padding: 3rem;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--glass-shadow);
+      transition: var(--transition);
     }
 
+    .balance-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient);
+    }
+
+    .balance-card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-subtle);
+      border-radius: 50%;
+      opacity: 0.5;
+      z-index: -1;
+    }
+
+    .balance-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
+    }
+
+    .balance-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .balance-info h2 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .balance-amount {
+      font-size: 3.5rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .balance-actions {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: inherit;
+      font-size: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(102, 126, 234, 0.1);
+      color: var(--accent);
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(102, 126, 234, 0.2);
+      transform: translateY(-3px);
+      border-color: rgba(102, 126, 234, 0.5);
+    }
+
+    /* Section Headers */
     .section {
-      margin-bottom: 2rem;
+      margin-bottom: 4rem;
     }
 
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .section-badge {
+      padding: 0.5rem 1rem;
+      background: rgba(102, 126, 234, 0.15);
+      color: var(--accent);
+      border-radius: 25px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border: var(--glass-border);
+    }
+
+    /* Tools Grid */
     .tools-grid {
       display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     }
 
+    /* Tool Cards - Premium Glassmorphism */
     .tool-box {
-      background: var(--card);
-      padding: 1rem;
-      border-radius: 10px;
+      background: rgba(26, 29, 35, 0.7);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: var(--glass-border);
+      border-radius: 24px;
+      padding: 2rem;
       text-align: center;
-      box-shadow: var(--card-shadow);
-      transition: transform 0.3s;
+      box-shadow: var(--glass-shadow);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .tool-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-subtle);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .tool-box::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-subtle);
+      border-radius: 50%;
+      opacity: 0;
+      transition: var(--transition);
+      z-index: -1;
     }
 
     .tool-box:hover {
-      transform: translateY(-5px);
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 25px 50px rgba(102, 126, 234, 0.2);
+      border-color: rgba(102, 126, 234, 0.4);
+    }
+
+    .tool-box:hover::before {
+      opacity: 1;
+    }
+
+    .tool-box:hover::after {
+      opacity: 0.3;
+    }
+
+    .tool-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+      transition: var(--transition);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .tool-box:hover .tool-icon {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
     }
 
     .tool-box h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
       margin-bottom: 1rem;
+      color: var(--text);
+      letter-spacing: -0.01em;
     }
 
-    .tool-box button {
-      margin-top: 1rem;
-      background: var(--accent);
-      color: var(--sidebar);
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s;
+    .tool-description {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 2rem;
+      line-height: 1.6;
     }
 
-    .tool-box button:hover {
-      background: var(--accent-secondary);
+    .tool-box .btn {
+      width: 100%;
+      margin-top: auto;
     }
 
+    /* Premium Tools Styling */
+    .premium-tool {
+      position: relative;
+    }
+
+    .premium-tool::after {
+      content: '✨ Premium';
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: var(--gradient);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Modal Glassmorphism */
     .modal {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex;
       align-items: center;
       justify-content: center;
-      display: none;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
     }
 
     .modal.active {
-      display: flex;
+      opacity: 1;
+      visibility: visible;
     }
 
     .modal-content {
-      background: var(--card);
-      padding: 2rem;
-      border-radius: 10px;
+      background: rgba(26, 29, 35, 0.95);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: var(--glass-border);
+      border-radius: 30px;
+      padding: 3rem;
       text-align: center;
       color: var(--text);
+      max-width: 90vw;
+      width: 500px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+      transform: scale(0.9);
+      transition: var(--transition);
     }
 
-    .modal-content h3 {
-      margin-bottom: 1rem;
+    .modal.active .modal-content {
+      transform: scale(1);
+      animation: modalBounce 0.5s var(--bounce);
     }
 
-    .modal-content button {
-      margin: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: var(--accent);
-      color: var(--sidebar);
-      border: none;
-      border-radius: 6px;
+    @keyframes modalBounce {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      margin-bottom: 2rem;
+    }
+
+    .modal-header h3 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .modal-description {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 2.5rem;
+      font-size: 1.1rem;
+    }
+
+    .pricing-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .pricing-option {
+      background: rgba(102, 126, 234, 0.1);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: var(--transition);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       cursor: pointer;
-      transition: background 0.3s;
     }
 
-    .modal-content button:hover {
+    .pricing-option:hover {
+      background: rgba(102, 126, 234, 0.2);
+      border-color: rgba(102, 126, 234, 0.4);
+      transform: translateX(4px);
+    }
+
+    .pricing-info {
+      text-align: left;
+    }
+
+    .pricing-price {
+      font-weight: 800;
+      color: var(--success);
+      font-size: 1.3rem;
+    }
+
+    .pricing-duration {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 0.25rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1.5rem;
+      }
+
+      header {
+        padding: 1.5rem;
+      }
+
+      .logo h1 {
+        font-size: 1.5rem;
+      }
+
+      .balance-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .balance-amount {
+        font-size: 2.5rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .modal-content {
+        margin: 1rem;
+        padding: 2rem;
+      }
+
+      .pricing-options {
+        gap: 1rem;
+      }
+
+      .pricing-option {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+      }
+
+      nav {
+        right: 1rem;
+        min-width: 250px;
+      }
+    }
+
+    /* Utility Classes */
+    .fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 15px rgba(102, 126, 234, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+      }
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gradient);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
       background: var(--accent-secondary);
     }
 
   </style>
 </head>
 <body>
+  <!-- Loading Screen -->
+  <div class="loader" id="loader">
+    <div class="loader-spinner"></div>
+  </div>
+
   <header>
-    <h1>Dashboard</h1>
-    <i class="fas fa-bars menu-toggle" id="menuIcon"></i>
-    <nav id="mobileMenu">
-      <a href="settings.html">Profile</a>
-      <a href="coin.html">Buy Coins</a>
-      <a href="Page1.html">Blog</a>
-      <a href="referral.html">Referral</a>
-      <a href="#" onclick="logout()">Logout</a>
-    </nav>
-  </header>  
+    <div class="logo">
+      <div class="logo-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h1>Conect Camp</h1>
+    </div>
+    <div class="header-actions">
+      <i class="fas fa-bars menu-toggle" id="menuIcon"></i>
+      <nav id="mobileMenu">
+        <a href="settings.html">
+          <i class="fas fa-user"></i>
+          Profile
+        </a>
+        <a href="coin.html">
+          <i class="fas fa-coins"></i>
+          Buy Coins
+        </a>
+        <a href="Page1.html">
+          <i class="fas fa-blog"></i>
+          Blog
+        </a>
+        <a href="referral.html">
+          <i class="fas fa-share-alt"></i>
+          Referral
+        </a>
+        <a href="#" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </a>
+      </nav>
+    </div>
+  </header>
+
   <div class="container">
-    <div class="balance" id="balanceDisplay">Balance: ₦0</div>
-    <div class="section">
-      <h2>Free Tools</h2>
-      <div class="tools-grid">
-        <div class="tool-box">
-          <h3>Profit Calculator</h3>
-          <button onclick="window.location.href='profit calculator.html'">Open</button>
+    <!-- Balance Card -->
+    <div class="balance-card fade-in">
+      <div class="balance-content">
+        <div class="balance-info">
+          <h2>Your Balance</h2>
+          <div class="balance-amount" id="balanceDisplay">₦0</div>
         </div>
-        <div class="tool-box">
-          <h3>Loan Calculator</h3>
-          <button onclick="window.location.href='loan calculator.html'">Open</button>
-        </div>
-        <div class="tool-box">
-          <h3>To Do List App</h3>
-          <button onclick="window.location.href='Todolist app.html'">Open</button>
-        </div>
-        <div class="tool-box">
-          <h3>Tax Calculator</h3>
-          <button onclick="window.location.href='tax calculator.html'">Open</button>
-        </div>
-        <div class="tool-box">
-          <h3>VAT Calculator</h3>
-          <button onclick="window.location.href='vat calculator.html'">Open</button>
-        </div>
-        <div class="tool-box">
-          <h3>Discount Calculator</h3>
-          <button onclick="window.location.href='discount calculator.html'">Open</button>
-        </div>
-        <div class="tool-box">
-          <h3>Interest Calculator</h3>
-          <button onclick="window.location.href='interest calculator.html'">Open</button>
-        </div>
-        <div class="tool-box">
-          <h3>Overtime Calculator</h3>
-          <button onclick="window.location.href='overtime calculator.html'">Open</button>
-        </div>
-        <div class="tool-box">
-          <h3>Daily Income Calculator</h3>
-          <button onclick="window.location.href='daily income calculator.html'">Open</button>
-        </div>
-        <div class="tool-box">
-          <h3>Tax Planner App</h3>
-          <button onclick="window.location.href='tax planner app.html'">Open</button>
-        </div>
-        <div class="tool-box">
-          <h3>Measurement Converter</h3>
-          <button onclick="window.location.href='measurement.html'">Open</button>
+        <div class="balance-actions">
+          <a href="coin.html" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Add Coins
+          </a>
+          <button class="btn btn-secondary">
+            <i class="fas fa-history"></i>
+            History
+          </button>
         </div>
       </div>
     </div>
-    <div class="section">
-      <h2>Premium Tools</h2>
+
+    <!-- Free Tools Section -->
+    <div class="section fade-in">
+      <div class="section-header">
+        <h2 class="section-title">Free Tools</h2>
+        <span class="section-badge">No Cost</span>
+      </div>
       <div class="tools-grid">
-        <div class="tool-box" id="premiumTool">
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-calculator"></i>
+          </div>
+          <h3>Profit Calculator</h3>
+          <p class="tool-description">Calculate your business profits with ease and accuracy using our advanced algorithms</p>
+          <button class="btn btn-primary" onclick="window.location.href='profit calculator.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-hand-holding-usd"></i>
+          </div>
+          <h3>Loan Calculator</h3>
+          <p class="tool-description">Plan your loans and calculate monthly payments instantly with detailed breakdown</p>
+          <button class="btn btn-primary" onclick="window.location.href='loan calculator.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-tasks"></i>
+          </div>
+          <h3>To Do List App</h3>
+          <p class="tool-description">Organize your daily tasks and boost productivity with smart categorization</p>
+          <button class="btn btn-primary" onclick="window.location.href='Todolist app.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-file-invoice-dollar"></i>
+          </div>
+          <h3>Tax Calculator</h3>
+          <p class="tool-description">Calculate your taxes accurately and efficiently with up-to-date tax brackets</p>
+          <button class="btn btn-primary" onclick="window.location.href='tax calculator.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-receipt"></i>
+          </div>
+          <h3>VAT Calculator</h3>
+          <p class="tool-description">Calculate VAT amounts for your business transactions across different regions</p>
+          <button class="btn btn-primary" onclick="window.location.href='vat calculator.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-percentage"></i>
+          </div>
+          <h3>Discount Calculator</h3>
+          <p class="tool-description">Calculate discounts and savings for better deals with percentage breakdowns</p>
+          <button class="btn btn-primary" onclick="window.location.href='discount calculator.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-chart-area"></i>
+          </div>
+          <h3>Interest Calculator</h3>
+          <p class="tool-description">Calculate simple and compound interest rates with detailed projections</p>
+          <button class="btn btn-primary" onclick="window.location.href='interest calculator.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h3>Overtime Calculator</h3>
+          <p class="tool-description">Calculate overtime pay and work hours accurately with customizable rates</p>
+          <button class="btn btn-primary" onclick="window.location.href='overtime calculator.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-calendar-day"></i>
+          </div>
+          <h3>Daily Income Calculator</h3>
+          <p class="tool-description">Track and calculate your daily income streams with detailed analytics</p>
+          <button class="btn btn-primary" onclick="window.location.href='daily income calculator.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-chart-pie"></i>
+          </div>
+          <h3>Tax Planner App</h3>
+          <p class="tool-description">Plan your tax strategies for maximum savings with professional insights</p>
+          <button class="btn btn-primary" onclick="window.location.href='tax planner app.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+        
+        <div class="tool-box">
+          <div class="tool-icon">
+            <i class="fas fa-ruler-combined"></i>
+          </div>
+          <h3>Measurement Converter</h3>
+          <p class="tool-description">Convert between different units of measurement with precision and ease</p>
+          <button class="btn btn-primary" onclick="window.location.href='measurement.html'">
+            <i class="fas fa-play"></i>
+            Open Tool
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Premium Tools Section -->
+    <div class="section fade-in">
+      <div class="section-header">
+        <h2 class="section-title">Premium Tools</h2>
+        <span class="section-badge">Premium</span>
+      </div>
+      <div class="tools-grid">
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
           <h3>Revenue Generator</h3>
-          <button onclick="showModal('tool1')" id="tool1Btn">Unlock</button>
+          <p class="tool-description">Advanced revenue forecasting and generation tools with AI-powered insights</p>
+          <button class="btn btn-primary" onclick="showModal('tool1')" id="tool1Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-book"></i>
+          </div>
           <h3>Book Keeping App</h3>
-          <button onclick="showModal('tool2')" id="tool2Btn">Unlock</button>
+          <p class="tool-description">Professional bookkeeping solution for your business with automated entries</p>
+          <button class="btn btn-primary" onclick="showModal('tool2')" id="tool2Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-file-invoice"></i>
+          </div>
           <h3>Invoice Generator</h3>
-          <button onclick="showModal('tool3')" id="tool3Btn">Unlock</button>
+          <p class="tool-description">Create professional invoices with custom branding and automated calculations</p>
+          <button class="btn btn-primary" onclick="showModal('tool3')" id="tool3Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-receipt"></i>
+          </div>
           <h3>Receipt Generator</h3>
-          <button onclick="showModal('tool4')" id="tool4Btn">Unlock</button>
+          <p class="tool-description">Generate professional receipts for all transactions with custom templates</p>
+          <button class="btn btn-primary" onclick="showModal('tool4')" id="tool4Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-cash-register"></i>
+          </div>
           <h3>Cashbook App</h3>
-          <button onclick="showModal('tool5')" id="tool5Btn">Unlock</button>
+          <p class="tool-description">Digital cashbook for tracking cash flow with real-time balance updates</p>
+          <button class="btn btn-primary" onclick="showModal('tool5')" id="tool5Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-balance-scale"></i>
+          </div>
           <h3>Comparative Statement App</h3>
-          <button onclick="showModal('tool6')" id="tool6Btn">Unlock</button>
+          <p class="tool-description">Compare financial statements across periods with detailed variance analysis</p>
+          <button class="btn btn-primary" onclick="showModal('tool6')" id="tool6Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-star"></i>
+          </div>
           <h3>Reviews Generator</h3>
-          <button onclick="showModal('tool7')" id="tool7Btn">Unlock</button>
+          <p class="tool-description">Generate and manage customer reviews efficiently with sentiment analysis</p>
+          <button class="btn btn-primary" onclick="showModal('tool7')" id="tool7Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-boxes"></i>
+          </div>
           <h3>Inventory App</h3>
-          <button onclick="showModal('tool8')" id="tool8Btn">Unlock</button>
+          <p class="tool-description">Complete inventory management system with real-time stock tracking</p>
+          <button class="btn btn-primary" onclick="showModal('tool8')" id="tool8Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-building"></i>
+          </div>
           <h3>Company Management App</h3>
-          <button onclick="showModal('tool9')" id="tool9Btn">Unlock</button>
+          <p class="tool-description">Comprehensive company management solution with employee tracking</p>
+          <button class="btn btn-primary" onclick="showModal('tool9')" id="tool9Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
           <h3>Sales Recorder</h3>
-          <button onclick="showModal('tool10')" id="tool10Btn">Unlock</button>
+          <p class="tool-description">Track and record all your sales activities with performance analytics</p>
+          <button class="btn btn-primary" onclick="showModal('tool10')" id="tool10Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-hard-hat"></i>
+          </div>
           <h3>Material Cost Calculator</h3>
-          <button onclick="showModal('tool11')" id="tool11Btn">Unlock</button>
+          <p class="tool-description">Calculate material costs for projects accurately with market price updates</p>
+          <button class="btn btn-primary" onclick="showModal('tool11')" id="tool11Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
           <h3>Profit and Loss Calculator</h3>
-          <button onclick="showModal('tool12')" id="tool12Btn">Unlock</button>
+          <p class="tool-description">Advanced P&L statements and analysis with predictive modeling</p>
+          <button class="btn btn-primary" onclick="showModal('tool12')" id="tool12Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-quote-right"></i>
+          </div>
           <h3>Quotation Generator</h3>
-          <button onclick="showModal('tool13')" id="tool13Btn">Unlock</button>
+          <p class="tool-description">Create professional quotations for clients with automatic pricing</p>
+          <button class="btn btn-primary" onclick="showModal('tool13')" id="tool13Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-piggy-bank"></i>
+          </div>
           <h3>Budget Allocating App</h3>
-          <button onclick="showModal('tool14')" id="tool14Btn">Unlock</button>
+          <p class="tool-description">Smart budget allocation and tracking system with spending insights</p>
+          <button class="btn btn-primary" onclick="showModal('tool14')" id="tool14Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
-        <div class="tool-box" id="premiumTool">
+        
+        <div class="tool-box premium-tool">
+          <div class="tool-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
           <h3>School Management App</h3>
-          <button onclick="showModal('tool15')" id="tool15Btn">Unlock</button>
+          <p class="tool-description">Complete school administration system with student and staff management</p>
+          <button class="btn btn-primary" onclick="showModal('tool15')" id="tool15Btn">
+            <i class="fas fa-lock"></i>
+            Unlock
+          </button>
         </div>
       </div>
     </div>
   </div>
   
+  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-content">
-      <h3>Unlock Tool</h3>
-      <p>Choose a duration:</p>
-      <button onclick="unlockTool('tool1', 500, 7)">₦500 for 7 days</button>
-      <button onclick="unlockTool('tool1', 1000, 14)">₦1000 for 14 days</button>
-      <button onclick="unlockTool('tool1', 1500, 30)">₦1500 for 30 days</button>
-      <br><br>
-      <button onclick="modal.classList.remove('active')">Cancel</button>
+      <div class="modal-header">
+        <h3>Unlock Premium Tool</h3>
+        <p class="modal-description">Choose your preferred duration to unlock this powerful tool</p>
+      </div>
+      <div class="pricing-options">
+        <div class="pricing-option" onclick="unlockTool('tool1', 500, 7)">
+          <div class="pricing-info">
+            <div class="pricing-price">₦500</div>
+            <div class="pricing-duration">7 days access</div>
+          </div>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+        <div class="pricing-option" onclick="unlockTool('tool1', 1000, 14)">
+          <div class="pricing-info">
+            <div class="pricing-price">₦1,000</div>
+            <div class="pricing-duration">14 days access</div>
+          </div>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+        <div class="pricing-option" onclick="unlockTool('tool1', 1500, 30)">
+          <div class="pricing-info">
+            <div class="pricing-price">₦1,500</div>
+            <div class="pricing-duration">30 days access</div>
+          </div>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="modal.classList.remove('active')">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+      </div>
     </div>
-  </div> 
+  </div>
   
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
   <script>
+    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
       authDomain: "conectcamp-db2c2.firebaseapp.com",
@@ -342,13 +1181,17 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // Global Variables
     const uid = localStorage.getItem("uid");
     const modal = document.getElementById("modal");
     const menuIcon = document.getElementById("menuIcon");
     const mobileMenu = document.getElementById("mobileMenu");
+    const loader = document.getElementById("loader");
 
     let currentData;
+    let currentTool = null;
 
+    // Tool Links Mapping
     const toolLinks = {
       tool1: "revenue forcasting app.html",
       tool2: "bookkeeping-app.html",
@@ -367,27 +1210,102 @@
       tool15: "school.html",
     };
 
-    // Toggle mobile menu
-    menuIcon.addEventListener("click", () => {
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', function() {
+      // Hide loader after a short delay
+      setTimeout(() => {
+        loader.classList.add('hidden');
+      }, 1200);
+
+      // Add fade-in animation to elements
+      const fadeElements = document.querySelectorAll('.fade-in');
+      fadeElements.forEach((el, index) => {
+        setTimeout(() => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, 300 * index);
+      });
+
+      // Fetch user data if logged in
+      if (uid) {
+        fetchUser();
+      }
+    });
+
+    // Mobile Menu Toggle
+    menuIcon.addEventListener("click", (e) => {
+      e.stopPropagation();
       mobileMenu.classList.toggle("active");
       menuIcon.classList.toggle("fa-bars");
       menuIcon.classList.toggle("fa-times");
     });
 
+    // Close menu when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!mobileMenu.contains(e.target) && !menuIcon.contains(e.target)) {
+        mobileMenu.classList.remove("active");
+        menuIcon.classList.remove("fa-times");
+        menuIcon.classList.add("fa-bars");
+      }
+    });
+
+    // Close modal when clicking outside
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.classList.remove("active");
+        currentTool = null;
+      }
+    });
+
+    // Logout Function
     function logout() {
       localStorage.clear();
       auth.signOut();
       window.location.href = "index.html";
     }
 
+    // Fetch User Data
     async function fetchUser() {
-      const doc = await db.collection("users").doc(uid).get();
-      if (!doc.exists) return alert("User not found");
+      try {
+        const doc = await db.collection("users").doc(uid).get();
+        if (!doc.exists) {
+          alert("User not found");
+          return;
+        }
 
-      currentData = doc.data();
-      document.getElementById("balanceDisplay").innerText = `Balance: ₦${currentData.coins}`;
+        currentData = doc.data();
+        
+        // Update balance display with animation
+        const balanceElement = document.getElementById("balanceDisplay");
+        const targetBalance = currentData.coins || 0;
+        animateNumber(balanceElement, 0, targetBalance, 1500, '₦');
 
-      // Loop through all tools (1–15)
+        // Update tool buttons
+        updateToolButtons();
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        document.getElementById("balanceDisplay").innerText = "₦0";
+      }
+    }
+
+    // Animate Number Function
+    function animateNumber(element, start, end, duration, prefix = '') {
+      const range = end - start;
+      const increment = range / (duration / 16);
+      let current = start;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+          current = end;
+          clearInterval(timer);
+        }
+        element.innerText = `${prefix}${Math.floor(current).toLocaleString()}`;
+      }, 16);
+    }
+
+    // Update Tool Buttons
+    function updateToolButtons() {
       for (let i = 1; i <= 15; i++) {
         const toolId = `tool${i}`;
         const btn = document.getElementById(`${toolId}Btn`);
@@ -396,56 +1314,183 @@
         if (!btn) continue;
 
         if (expiry && expiry.toDate() > new Date()) {
-          btn.innerText = "Open";
+          // Tool is unlocked
+          btn.innerHTML = '<i class="fas fa-play"></i> Open Tool';
+          btn.classList.remove('btn-primary');
+          btn.classList.add('btn-secondary');
           btn.onclick = () => window.location.href = toolLinks[toolId];
+          
+          // Add pulse animation to unlocked tools
+          btn.parentElement.classList.add('pulse');
         } else {
-          btn.innerText = "Unlock";
+          // Tool is locked
+          btn.innerHTML = '<i class="fas fa-lock"></i> Unlock';
+          btn.classList.remove('btn-secondary');
+          btn.classList.add('btn-primary');
           btn.onclick = () => showModal(toolId);
+          
+          btn.parentElement.classList.remove('pulse');
         }
       }
     }
 
+    // Show Modal
     function showModal(toolId) {
+      currentTool = toolId;
       modal.classList.add("active");
-      modal.innerHTML = `
-        <div class="modal-content">
-          <h3>Unlock Tool</h3>
-          <p>Choose a duration:</p>
-          <button onclick="unlockTool('${toolId}', 500, 7)">₦500 for 7 days</button>
-          <button onclick="unlockTool('${toolId}', 1000, 14)">₦1000 for 14 days</button>
-          <button onclick="unlockTool('${toolId}', 1500, 30)">₦1500 for 30 days</button>
-          <br><br>
-          <button onclick="modal.classList.remove('active')">Cancel</button>
+      
+      // Update modal content with tool-specific pricing
+      const modalContent = modal.querySelector('.modal-content');
+      modalContent.innerHTML = `
+        <div class="modal-header">
+          <h3>Unlock Premium Tool</h3>
+          <p class="modal-description">Choose your preferred duration to unlock this powerful tool</p>
+        </div>
+        <div class="pricing-options">
+          <div class="pricing-option" onclick="unlockTool('${toolId}', 500, 7)">
+            <div class="pricing-info">
+              <div class="pricing-price">₦500</div>
+              <div class="pricing-duration">7 days access</div>
+            </div>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+          <div class="pricing-option" onclick="unlockTool('${toolId}', 1000, 14)">
+            <div class="pricing-info">
+              <div class="pricing-price">₦1,000</div>
+              <div class="pricing-duration">14 days access</div>
+            </div>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+          <div class="pricing-option" onclick="unlockTool('${toolId}', 1500, 30)">
+            <div class="pricing-info">
+              <div class="pricing-price">₦1,500</div>
+              <div class="pricing-duration">30 days access</div>
+            </div>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="modal.classList.remove('active')">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
         </div>
       `;
     }
 
-    async function unlockTool(toolId, amount, days) {
-      if (currentData.coins < amount) {
-        alert("Insufficient balance");
+    // Unlock Tool Function
+    async function unlockTool(toolId, cost, days) {
+      if (!currentData || currentData.coins < cost) {
+        alert("Insufficient balance! Please buy more coins.");
         return;
       }
 
-      const newBalance = currentData.coins - amount;
-      const expiry = new Date();
-      expiry.setDate(expiry.getDate() + days);
+      try {
+        // Show loading state
+        const modal = document.getElementById('modal');
+        modal.innerHTML = `
+          <div class="modal-content">
+            <div class="loader-spinner" style="margin: 2rem auto;"></div>
+            <p>Processing your purchase...</p>
+          </div>
+        `;
 
-      await db.collection("users").doc(uid).update({
-        coins: newBalance,
-        [`toolUnlocks.${toolId}`]: firebase.firestore.Timestamp.fromDate(expiry)
-      });
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + days);
 
-      localStorage.setItem("coins", newBalance);
-      modal.classList.remove("active");
-      fetchUser();
+        const updates = {
+          coins: currentData.coins - cost,
+          [`toolUnlocks.${toolId}`]: expiry
+        };
+
+        await db.collection("users").doc(uid).update(updates);
+        
+        // Update local data
+        currentData.coins -= cost;
+        if (!currentData.toolUnlocks) currentData.toolUnlocks = {};
+        currentData.toolUnlocks[toolId] = { toDate: () => expiry };
+
+        // Update UI
+        document.getElementById("balanceDisplay").innerText = `₦${currentData.coins.toLocaleString()}`;
+        updateToolButtons();
+        
+        // Close modal
+        modal.classList.remove("active");
+        
+        // Show success message
+        showSuccessMessage(`Tool unlocked successfully for ${days} days!`);
+        
+      } catch (error) {
+        console.error("Error unlocking tool:", error);
+        alert("Failed to unlock tool. Please try again.");
+        modal.classList.remove("active");
+      }
     }
 
-    // Close modal when clicking outside
-    window.addEventListener("click", (e) => {
-      if (e.target === modal) modal.classList.remove("active");
-    });
+    // Show Success Message
+    function showSuccessMessage(message) {
+      const successDiv = document.createElement('div');
+      successDiv.style.cssText = `
+        position: fixed;
+        top: 30px;
+        right: 30px;
+        background: rgba(46, 204, 113, 0.95);
+        backdrop-filter: blur(20px);
+        color: white;
+        padding: 1.5rem 2.5rem;
+        border-radius: 16px;
+        z-index: 10000;
+        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3);
+        animation: slideInRight 0.4s ease;
+      `;
+      successDiv.innerHTML = `
+        <i class="fas fa-check-circle" style="margin-right: 0.75rem;"></i>
+        ${message}
+      `;
+      
+      document.body.appendChild(successDiv);
+      
+      setTimeout(() => {
+        successDiv.style.animation = 'slideOutRight 0.4s ease';
+        setTimeout(() => document.body.removeChild(successDiv), 400);
+      }, 4000);
+    }
 
-    window.onload = fetchUser;
+    // Add CSS animations for success message
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      
+      @keyframes slideOutRight {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize fade-in elements on load
+    window.onload = () => {
+      if (uid) {
+        fetchUser();
+      }
+    };
+
   </script>
 </body>
 </html>
